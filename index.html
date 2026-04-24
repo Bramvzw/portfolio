@@ -448,21 +448,19 @@
   .nav-toggle{
     display:none;
     background:transparent;border:none;cursor:pointer;
-    padding:4px;flex-direction:column;justify-content:center;gap:5px;
-    width:28px;height:24px;
+    padding:4px 0;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink-mute);
+    transition:color .2s ease;
   }
-  .nav-toggle span{
-    display:block;height:1px;background:var(--ink-dim);
-    transition:transform .3s ease, opacity .2s ease;
-    transform-origin:center;
-  }
-  .nav-toggle span:nth-child(1){width:22px;}
-  .nav-toggle span:nth-child(2){width:14px;}
-  .nav-toggle span:nth-child(3){width:18px;}
-  .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg);width:22px;}
-  .nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0;}
-  .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg);width:22px;}
-  @media (max-width:720px){ .nav-toggle{display:flex;} }
+  .nav-toggle:hover{color:var(--ink);}
+  .nav-toggle .nt-open{display:block;}
+  .nav-toggle .nt-close{display:none;}
+  .nav-toggle[aria-expanded="true"] .nt-open{display:none;}
+  .nav-toggle[aria-expanded="true"] .nt-close{display:block;}
+  .nav-toggle[aria-expanded="true"]{color:var(--ink);}
+  @media (max-width:720px) and (min-width:601px){ .nav-toggle{display:block;} }
 
   /* ---------- Mobile nav overlay ---------- */
   .mobile-nav{
@@ -813,12 +811,14 @@
   .about-grid{
     display:grid;
     grid-template-columns: 1fr 1.35fr;
-    gap:96px;
+    gap:72px;
     max-width:1400px;
     margin:40px auto 0;
-    align-items:start;
+    align-items:stretch;
   }
   @media (max-width:1000px){ .about-grid{grid-template-columns:1fr;gap:60px} }
+  .about-left{ display:flex; flex-direction:column; gap:20px; align-items:flex-end; }
+  @media (max-width:600px){ .about-left .uptime-line{ display:none; } }
 
   .about-quote-slab{
     max-width:1400px;
@@ -1151,9 +1151,14 @@
   .exp-head h2 em{font-family:'Lora',serif;font-style:italic;color:var(--amber);font-weight:400;}
   .exp-head p{color:var(--ink-dim);font-size:17px;line-height:1.75;max-width:460px;align-self:end;}
 
-  .exp-list{border-top:1px solid var(--rule);}
+  .exp-list{ position:relative; }
+  .exp-list::before{
+    content:""; position:absolute; top:0; left:0; height:1px;
+    background:var(--amber);
+    width:calc(var(--lp,0) * 100%);
+  }
   .exp-item{
-    display:grid;grid-template-columns: 80px 1fr auto;gap:40px;align-items:baseline;
+    display:grid;grid-template-columns: 80px 1fr auto;gap:40px;align-items:center;
     padding:36px 0;
     border-bottom:1px solid var(--rule);
     position:relative;
@@ -1171,6 +1176,7 @@
     background:linear-gradient(135deg,rgba(232,150,42,.05) 0%,transparent 55%);
     display:flex; flex-direction:column; gap:10px;
     transition:border-color .2s ease, background .2s ease;
+    text-decoration:none; cursor:pointer;
   }
   .cred-card:hover{ border-color:rgba(232,150,42,.5); background:linear-gradient(135deg,rgba(232,150,42,.09) 0%,transparent 55%); }
   .cred-card::before{
@@ -1375,7 +1381,7 @@
   }
   .contact .email .line{display:block;white-space:nowrap;}
   @media (max-width:900px){
-    .contact .email{font-size:clamp(24px,6vw,52px);white-space:normal;word-break:break-word;}
+    .contact .email{font-size:clamp(36px,9vw,52px);white-space:normal;word-break:break-word;}
     .contact .email .line{white-space:normal;}
   }
   .contact .email:hover{color:var(--amber);}
@@ -1695,6 +1701,67 @@
     will-change:transform, opacity;
     text-shadow:0 0 8px rgba(232,150,42,0.4);
   }
+
+  /* ===== MOBILE (max 600px) ===== */
+  @media (max-width:600px) {
+    /* Tighter padding */
+    section { padding:80px 20px; }
+    .hero { padding:90px 20px 80px; }
+    .contact .kicker { font-size:clamp(28px,8vw,40px); }
+
+    /* Hero heading: flow words naturally, no awkward single-word rows */
+    .hero h1 { font-size:38px; line-height:1.0; margin-bottom:28px; }
+    .hero h1 .row { display:inline; white-space:normal; overflow:visible; }
+    .hero h1 .row + .row::before { content:' '; }
+
+    /* About photo: portrait kills mobile UX without a real photo */
+    .profile-photo { aspect-ratio:4/3; }
+
+    /* About grid single-column gap + less top margin */
+    .about-grid { gap:36px; margin-top:20px; }
+
+    /* Expertise items: ensure text is visible on mobile (GSAP fallback) */
+    .exp-item .text { opacity:1 !important; transform:none !important; }
+    .exp-item .kw { opacity:1 !important; }
+    .about-body p { opacity:1 !important; transform:none !important; }
+
+    /* Large section headings: reduce min size */
+    .work-header h2 { font-size:clamp(28px,7.5vw,44px); }
+    .stack-title { font-size:clamp(24px,7vw,40px); }
+    .exp-h2, [data-i18n="exp-h2"] { font-size:clamp(20px,6vw,32px); }
+
+    /* Credentials: smaller card padding */
+    .cred-card { padding:24px 20px; }
+
+    /* Contact value text */
+    .register-entry .value { font-size:clamp(18px,5vw,22px); }
+
+    /* Topbar: name truncates gracefully */
+    .topbar .mark-name { max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    /* Project cards: titel → desc → foto → tags → case study */
+    .project { gap:0; margin-bottom:20px; display:flex; flex-direction:column; align-items:flex-start; text-align:left; }
+    .project .body { display:contents; }
+    .project .index  { order:1; }
+    .project h3      { order:2; font-size:clamp(24px,7vw,32px); }
+    .project .desc   { order:3; font-size:15px; line-height:1.6; margin-top:16px; }
+    .project .mockup { order:4; height:150px; position:relative; margin:16px 0; width:100%; }
+    .project .mockup-ui { inset:24px 20px; }
+    .project .tags   { order:5; justify-content:center; width:100%; }
+    .project .tags .tag:nth-child(n+4) { display:none; }
+    .project .meta   { display:none; }
+    .project .case-toggle { order:7; margin-top:28px; }
+    .project .case-study  { order:8; }
+
+    /* Stack: 2-column compact grid */
+    .tech-grid { grid-template-columns:repeat(2,1fr); }
+    .tech-cart { padding:16px 14px; gap:8px; }
+    .tech-cart .role { display:none; }
+    .tech-cart .name { font-size:18px; }
+    .tech-cart .glyph { width:32px; height:32px; font-size:14px; }
+    .tech-cart .meta-row { flex-direction:column; gap:2px; align-items:flex-start; }
+    .tech-cart .meta-row span:last-child { display:none; }
+  }
 </style>
 </head>
 <body>
@@ -1784,7 +1851,7 @@
     <span class="cp-trigger-label">Search</span>
     <span class="cp-trigger-kbd" id="cpTriggerKbd">⌘K</span>
   </button>
-  <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"><span class="nt-open">Menu</span><span class="nt-close">Close</span></button>
   <div class="settings-wrap" id="settingsWrap">
     <button class="settings-btn" id="settingsBtn" aria-label="Settings" aria-expanded="false">
       <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
@@ -1843,7 +1910,7 @@
   </div>
 
 
-  <div class="sec-num">00 / Index</div>
+  <div class="sec-num" data-i18n="sec-0">00 / Index</div>
 
   <div class="hero-inner">
     <div class="eyebrow">
@@ -1884,28 +1951,20 @@
 
 <!-- 2. ABOUT -->
 <section class="about" id="about">
-  <div class="sec-num">01 / About</div>
+  <div class="sec-num" data-i18n="sec-1">01 / About</div>
   <div style="max-width:1400px;margin:0 auto;">
     <div class="sec-label" data-i18n="about-label">Profile — a short interview</div>
   </div>
   <div class="about-grid">
     <div class="about-left">
       <div class="profile-photo" aria-label="Profile photo placeholder"></div>
+      <div class="uptime-line" aria-label="Uptime"><span class="um">$ uptime:</span> <span id="uptimeVal">—</span> <span class="um" data-i18n="uptime-suffix">days as engineer</span></div>
     </div>
 
     <div class="about-body">
       <p data-i18n="about-p1">I've spent a decade shipping SaaS: as the engineer who wrote the code, and as the product owner who decided it was good enough to leave my hands. <strong style="color:var(--ink);font-weight:500;">10+ years building products from zero to production.</strong> Both roles taught me the same lesson — <strong style="color:var(--ink);font-weight:500;">restraint is a feature</strong>. Most products fail because they keep adding. Mine don't.</p>
       <p data-i18n="about-p2">I work in small, deliberate teams. I don't chase frameworks. I chase the quiet satisfaction of a product that does one thing so well nobody thinks about it. If you've ever opened an app and forgot you were in an app — that's the point.</p>
       <p data-i18n="about-p3">Everything I build is built twice. Once to understand it. Once to finish it.</p>
-
-      <div class="about-card">
-        <span class="k" data-i18n="about-card-k">Based</span>
-        <span class="v" data-i18n="about-card-v">Zwolle — working across Europe</span>
-        <span class="k" style="color:var(--ink-mute)">NL · EU</span>
-      </div>
-      <pre class="commit-log" aria-label="git log excerpt"><span class="cmd">$ git log --oneline --author="Bram van Zwolle"</span><span class="out"><span class="arrow">&gt;</span> 10 years of commits</span><span class="out"><span class="arrow">&gt;</span> full-stack to product, no handoff</span><span class="out"><span class="arrow">&gt;</span> ships what he scopes</span></pre>
-
-      <div class="uptime-line" aria-label="Uptime"><span class="um">$ uptime:</span> <span id="uptimeVal">—</span> <span class="um" data-i18n="uptime-suffix">days as engineer</span></div>
     </div>
   </div>
 
@@ -1913,7 +1972,7 @@
 
 <!-- 3. WORK -->
 <section class="work" id="work">
-  <div class="sec-num">02 / Work</div>
+  <div class="sec-num" data-i18n="sec-2">02 / Work</div>
   <div class="work-header">
     <h2 data-i18n="work-h2">Three products, <em>built to last</em> — each shipped, each still earning its keep.</h2>
   </div>
@@ -2042,7 +2101,7 @@
 
 <!-- 4. EXPERTISE -->
 <section class="expertise" id="expertise">
-  <div class="sec-num">03 / Expertise</div>
+  <div class="sec-num" data-i18n="sec-3">03 / Expertise</div>
   <div class="exp-wrap">
     <div class="sec-label" data-i18n="exp-label">Working principles</div>
     <div class="exp-head">
@@ -2070,33 +2129,21 @@
         <span class="text" data-i18n="exp-4">As a product owner, I say no <em>more than I say yes.</em> That's the job.</span>
         <span class="kw">Roadmap · Scope</span>
       </li>
-      <li class="exp-item">
-        <span class="num">05</span>
-        <span class="text" data-i18n="exp-5">Speed is a feeling. I optimise for <em>the feel of the cursor</em>, not the benchmarks.</span>
-        <span class="kw">Performance · Feel</span>
-      </li>
-      <li class="exp-item">
-        <span class="num">06</span>
-        <span class="text" data-i18n="exp-6">I ship small teams — <em>two to four</em>. If it needs more people, the idea is too big.</span>
-        <span class="kw">Teams · Scale</span>
-      </li>
     </ol>
 
     <div class="credentials">
       <span class="sec-label">Credentials</span>
       <div class="cred-cards">
-        <div class="cred-card">
+        <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cred-card" data-hoverable>
           <span class="cc-badge">PSPO I</span>
           <div class="cc-title">Professional Scrum<br>Product Owner</div>
           <span class="cc-issuer">Scrum.org</span>
-          <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cc-verify" data-hoverable>Verify ↗</a>
-        </div>
-        <div class="cred-card">
+        </a>
+        <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cred-card" data-hoverable>
           <span class="cc-badge">PSPO II</span>
           <div class="cc-title">Professional Scrum<br>Product Owner</div>
           <span class="cc-issuer">Scrum.org</span>
-          <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cc-verify" data-hoverable>Verify ↗</a>
-        </div>
+        </a>
       </div>
     </div>
 
@@ -2193,7 +2240,7 @@
 
 <!-- 5. CONTACT -->
 <section class="contact" id="contact">
-  <div class="sec-num">04 / Contact</div>
+  <div class="sec-num" data-i18n="sec-4">04 / Contact</div>
   <div class="contact-inner">
     <div class="sec-label" data-i18n="contact-label">Correspondence</div>
     <div class="kicker" data-i18n="contact-kicker">Let's <em>talk.</em><span class="hand"></span></div>
@@ -2203,24 +2250,24 @@
     </a>
     <ol class="register-list">
       <li class="register-entry">
-        <span class="num">Response</span>
-        <span class="value">Within <em>two working days.</em></span>
-        <span class="note">Monday to Friday, 09:00–18:00 CET. Slower on weekends — I read, but rarely respond.</span>
+        <span class="num" data-i18n="contact-response-k">Response</span>
+        <span class="value" data-i18n="contact-response-v">Within <em>two working days.</em></span>
+        <span class="note" data-i18n="contact-response-note">Monday to Friday, 09:00–18:00 CET. Slower on weekends — I read, but rarely respond.</span>
       </li>
       <li class="register-entry">
-        <span class="num">Elsewhere</span>
-        <span class="value">Find me under the <em>same name,</em> everywhere.</span>
+        <span class="num" data-i18n="contact-elsewhere-k">Elsewhere</span>
+        <span class="value" data-i18n="contact-elsewhere-v">Find me under the <em>same name,</em> everywhere.</span>
         <div class="links">
           <a href="#" data-hoverable>Read.cv ↗</a>
           <a href="#" data-hoverable>GitHub ↗</a>
           <a href="#" data-hoverable>LinkedIn ↗</a>
         </div>
-        <a href="#" class="cv-link" data-hoverable>Download CV ↓</a>
+        <a href="#" class="cv-link" data-hoverable data-i18n="contact-cv">Download CV ↓</a>
       </li>
       <li class="register-entry">
-        <span class="num">Based</span>
-        <span class="value">Zwolle, NL — <em>working remote.</em></span>
-        <span class="note">Available across Europe. Timezone: CET. Travel possible for the right engagement.</span>
+        <span class="num" data-i18n="contact-based-k">Based</span>
+        <span class="value" data-i18n="contact-based-v">Zwolle, NL — <em>working remote.</em></span>
+        <span class="note" data-i18n="contact-based-note">Available across Europe. Timezone: CET. Travel possible for the right engagement.</span>
       </li>
     </ol>
   </div>
@@ -2306,6 +2353,12 @@ window.addEventListener('load', () => {
     );
   });
 
+  // Expertise top hairline draw
+  gsap.fromTo('.exp-list', { '--lp': 0 }, {
+    '--lp': 1, duration: 1.2, ease: 'power3.out',
+    scrollTrigger: { trigger: '.exp-list', start: 'top 85%' }
+  });
+
   // Expertise hairline draw + text reveal
   document.querySelectorAll('.exp-item').forEach((el, i) => {
     gsap.to(el.querySelector('.text'), {
@@ -2379,16 +2432,18 @@ const i18n = {
     'exp-2':'Every surface earns its place. <em>Decoration</em> is a tax users pay forever.',
     'exp-3':'I write full-stack because <em>the seams</em> are where bad software is born.',
     'exp-4':'As a product owner, I say no <em>more than I say yes.</em> That\'s the job.',
-    'exp-5':'Speed is a feeling. I optimise for <em>the feel of the cursor</em>, not the benchmarks.',
-    'exp-6':'I ship small teams — <em>two to four</em>. If it needs more people, the idea is too big.',
     'contact-label':'Correspondence','contact-kicker':'Let\'s <em>talk.</em><span class="hand"></span>',
     'cron-comment':'# Mon–Fri, 09:00–18:00 CET',
     'contact-200':'200 OK — working at Sibi',
     'contact-cv':'Download CV ↓',
-    'contact-response-k':'Response','contact-response-v':'Within two working days',
-    'contact-elsewhere-k':'Elsewhere','contact-avail-k':'Availability',
-    'contact-based-k':'Based','contact-based-v':'Zwolle, NL · remote',
+    'contact-response-k':'Response','contact-response-v':'Within <em>two working days.</em>',
+    'contact-response-note':'Monday to Friday, 09:00–18:00 CET. Slower on weekends — I read, but rarely respond.',
+    'contact-elsewhere-k':'Elsewhere','contact-elsewhere-v':'Find me under the <em>same name,</em> everywhere.',
+    'contact-avail-k':'Availability',
+    'contact-based-k':'Based','contact-based-v':'Zwolle, NL — <em>working remote.</em>',
+    'contact-based-note':'Available across Europe. Timezone: CET. Travel possible for the right engagement.',
     'footer-built':'Built with precision. Committed to main.',
+    'sec-0':'00 / Index','sec-1':'01 / About','sec-2':'02 / Work','sec-3':'03 / Expertise','sec-4':'04 / Contact',
   },
   nl: {
     'nav-about':'Over','nav-work':'Werk',
@@ -2431,16 +2486,18 @@ const i18n = {
     'exp-2':'Elk element verdient zijn plek. <em>Decoratie</em> is een belasting die gebruikers voor altijd betalen.',
     'exp-3':'Ik schrijf full-stack omdat <em>de naden</em> de plek zijn waar slechte software ontstaat.',
     'exp-4':'Als product owner zeg ik vaker nee <em>dan ja.</em> Dat is het werk.',
-    'exp-5':'Snelheid is een gevoel. Ik optimaliseer voor <em>het gevoel van de cursor</em>, niet de benchmarks.',
-    'exp-6':'Ik werk met kleine teams — <em>twee tot vier</em>. Als er meer mensen voor nodig zijn, is het idee te groot.',
     'contact-label':'Correspondentie','contact-kicker':'Laten we <em>praten.</em><span class="hand"></span>',
     'cron-comment':'# ma–vr, 09:00–18:00 CET',
     'contact-200':'200 OK — werkzaam bij Sibi',
     'contact-cv':'Download CV ↓',
-    'contact-response-k':'Reactietijd','contact-response-v':'Binnen twee werkdagen',
-    'contact-elsewhere-k':'Elders','contact-avail-k':'Beschikbaarheid',
-    'contact-based-k':'Gevestigd','contact-based-v':'Zwolle, NL · remote',
+    'contact-response-k':'Reactietijd','contact-response-v':'Binnen <em>twee werkdagen.</em>',
+    'contact-response-note':'Maandag tot vrijdag, 09:00–18:00 CET. In het weekend reageer ik trager — ik lees, maar reageer zelden.',
+    'contact-elsewhere-k':'Elders','contact-elsewhere-v':'Overal te vinden onder <em>dezelfde naam.</em>',
+    'contact-avail-k':'Beschikbaarheid',
+    'contact-based-k':'Gevestigd','contact-based-v':'Zwolle, NL — <em>remote beschikbaar.</em>',
+    'contact-based-note':'Beschikbaar door heel Europa. Tijdzone: CET. Reizen mogelijk voor de juiste opdracht.',
     'footer-built':'Gebouwd met precisie. Gecommit naar main.',
+    'sec-0':'00 / Index','sec-1':'01 / Over','sec-2':'02 / Werk','sec-3':'03 / Expertise','sec-4':'04 / Contact',
   }
 };
 
@@ -2915,17 +2972,6 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
   setInterval(tick, 1000);
 })();
 
-/* --- 20. Console easter egg --- */
-(() => {
-  try {
-    const title = 'color:#e8962a;font-weight:700;font-family:JetBrains Mono,monospace;font-size:13px;line-height:1.6';
-    const dim   = 'color:#7f7468;font-family:JetBrains Mono,monospace;font-size:12px;line-height:1.6';
-    const acc   = 'color:#e8962a;font-family:JetBrains Mono,monospace;font-size:12px;line-height:1.6';
-    console.log('%c> hey, you opened devtools.', title);
-    console.log('%c> that\'s a good sign.', dim);
-    console.log('%c> bram@vanzwolle.net', acc);
-  } catch(_){}
-})();
 
 </script>
 </body>
