@@ -97,9 +97,8 @@
     .grain  { display:none; }
     .hairlines i { animation:none !important; }
     .hero h1 .word, .reveal-line > span { will-change:auto; }
-    /* Remove mix-blend-mode on mobile — forces software compositing and kills scroll perf */
     .hero-atmos .texture  { mix-blend-mode:normal; opacity:0.06; }
-    .hero-atmos .texture2 { mix-blend-mode:normal; opacity:0.15; }
+    .hero-atmos .texture2 { mix-blend-mode:normal; opacity:0.12; }
   }
 
   /* ---------- Grain overlay ---------- */
@@ -567,32 +566,32 @@
     position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
   }
   .hero-atmos .texture{
-    position:absolute;inset:0;
+    position:absolute;inset:-600px;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'><defs><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch' seed='7'/><feColorMatrix values='0 0 0 0 0.88  0 0 0 0 0.76  0 0 0 0 0.55  0 0 0 0.5 0'/></filter></defs><rect width='600' height='600' filter='url(%23f)'/></svg>");
     background-size: 600px 600px;
     background-repeat: repeat;
     opacity: 0.10;
     mix-blend-mode: overlay;
     animation: tex-pan 140s linear infinite;
-    will-change: background-position;
+    will-change: transform;
   }
   @keyframes tex-pan {
-    0%   { background-position: 0 0; }
-    100% { background-position: -600px -600px; }
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(-600px, -600px); }
   }
   .hero-atmos .texture2{
-    position:absolute;inset:0;
+    position:absolute;inset:-800px;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'><defs><filter id='g' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' stitchTiles='stitch' seed='3'/><feColorMatrix values='0 0 0 0 0.91  0 0 0 0 0.78  0 0 0 0 0.55  0 0 0 0.6 0'/></filter></defs><rect width='800' height='800' filter='url(%23g)'/></svg>");
     background-size: 800px 800px;
     background-repeat: repeat;
     opacity: 0.28;
     mix-blend-mode: screen;
     animation: tex-pan2 220s linear infinite;
-    will-change: background-position;
+    will-change: transform;
   }
   @keyframes tex-pan2 {
-    0%   { background-position: 0 0; }
-    100% { background-position: 800px -800px; }
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(800px, -800px); }
   }
   .hero-atmos .wash{
     position:absolute;inset:0;
