@@ -97,6 +97,9 @@
     .grain  { display:none; }
     .hairlines i { animation:none !important; }
     .hero h1 .word, .reveal-line > span { will-change:auto; }
+    /* Texture animations use mix-blend-mode + feTurbulence SVG — kills mobile GPU */
+    .hero-atmos .texture,
+    .hero-atmos .texture2 { display:none; }
   }
 
   /* ---------- Grain overlay ---------- */
