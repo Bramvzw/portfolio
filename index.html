@@ -1084,6 +1084,8 @@
     font-size:15px;line-height:1.65;
     color:var(--ink-dim);
     margin:0;
+    overflow-wrap:break-word;
+    min-width:0;
   }
   .case-study dd em{color:var(--ink);font-style:italic;}
 
@@ -1389,7 +1391,7 @@
   }
   .contact .email .line{display:block;white-space:nowrap;}
   @media (max-width:900px){
-    .contact .email{font-size:clamp(26px,7vw,52px);white-space:normal;word-break:break-word;}
+    .contact .email{font-size:clamp(32px,8.5vw,52px);white-space:normal;overflow-wrap:break-word;}
     .contact .email .line{white-space:normal;}
   }
   .contact .email:hover{color:var(--amber);}
