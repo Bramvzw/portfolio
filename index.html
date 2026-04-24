@@ -97,9 +97,9 @@
     .grain  { display:none; }
     .hairlines i { animation:none !important; }
     .hero h1 .word, .reveal-line > span { will-change:auto; }
-    /* Texture animations use mix-blend-mode + feTurbulence SVG — kills mobile GPU */
-    .hero-atmos .texture,
-    .hero-atmos .texture2 { display:none; }
+    /* Remove mix-blend-mode on mobile — forces software compositing and kills scroll perf */
+    .hero-atmos .texture  { mix-blend-mode:normal; opacity:0.06; }
+    .hero-atmos .texture2 { mix-blend-mode:normal; opacity:0.15; }
   }
 
   /* ---------- Grain overlay ---------- */
@@ -199,7 +199,15 @@
   }
   .topbar .mark{
     display:flex;align-items:center;gap:10px;color:var(--ink);
-    font-weight:500;
+    font-weight:500;cursor:pointer;position:relative;
+  }
+  @keyframes hint-tap{
+    0%   { opacity:0;   transform:translateY(12px); }
+    18%  { opacity:1;   transform:translateY(12px); }
+    42%  { opacity:1;   transform:translateY(0) scale(0.92); }
+    60%  { opacity:1;   transform:translateY(12px); }
+    84%  { opacity:1;   transform:translateY(12px); }
+    100% { opacity:0;   transform:translateY(12px); }
   }
   .topbar .mark .dot{width:6px;height:6px;background:var(--amber);border-radius:50%;display:inline-block;animation:dot-pulse 2.4s ease-in-out infinite;}
   @keyframes dot-pulse{
@@ -1595,21 +1603,33 @@
   /* --- Brand tooltip --- */
   .brand-tip{
     position:fixed; z-index:80;
-    font-family:'JetBrains Mono', ui-monospace, monospace;
-    font-size:11px; color:var(--ink);
-    background:rgba(13,11,9,0.96);
-    border:1px solid rgba(232,150,42,0.45);
-    padding:8px 12px;
-    letter-spacing:0; text-transform:none;
-    opacity:0; transform:translateY(-4px);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    background:rgba(13,11,9,0.97);
+    border:1px solid rgba(232,150,42,0.3);
+    min-width:210px;
+    opacity:0; transform:translateY(-6px);
     transition:opacity .2s ease, transform .2s ease;
-    pointer-events:none; white-space:nowrap;
-    box-shadow:0 8px 28px rgba(0,0,0,.5);
+    pointer-events:none;
+    box-shadow:0 8px 28px rgba(0,0,0,.6);
   }
-  .brand-tip.visible{ opacity:1; transform:translateY(0); }
-  .brand-tip .t-k{ color:var(--amber); }
-  .brand-tip .t-true{ color:#7fc96d; }
-  .brand-tip .t-s{ color:var(--ink-dim); }
+  .brand-tip.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .bt-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:11px 14px;
+    color:var(--ink-dim); text-decoration:none;
+    border-bottom:1px solid rgba(255,255,255,.05);
+    transition:color .15s ease, background .15s ease;
+    gap:24px;
+  }
+  .bt-row:last-child{ border-bottom:none; }
+  .bt-row:hover{ color:var(--ink); background:rgba(232,150,42,.06); }
+  .bt-action{ color:var(--amber); flex-shrink:0; font-size:10px; letter-spacing:.1em; }
+  .bt-copy{
+    width:100%; background:transparent; border:none; cursor:pointer;
+    text-align:left; font-family:inherit; font-size:inherit; letter-spacing:inherit; text-transform:inherit;
+  }
+  .bt-copy:hover{ color:var(--ink); background:rgba(232,150,42,.06); }
 
   /* --- Tag hover tooltip --- */
   .tag-tip{
@@ -1722,6 +1742,7 @@
     .hero { padding:90px 20px 80px; }
     .hero-meta { bottom: max(60px, env(safe-area-inset-bottom) + 40px); }
     .contact .kicker { font-size:clamp(28px,8vw,40px); }
+    .hero-tagline { font-size:15px; }
 
     /* Hero heading: flow words naturally, no awkward single-word rows */
     .hero h1 { font-size:38px; line-height:1.0; margin-bottom:28px; }
@@ -1761,7 +1782,8 @@
     .project .desc   { order:3; font-size:15px; line-height:1.6; margin-top:16px; }
     .project .mockup { order:4; height:150px; position:relative; margin:16px 0; width:100%; }
     .project .mockup-ui { inset:24px 20px; }
-    .project .tags   { order:5; justify-content:center; width:100%; }
+    .project .tags   { order:5; justify-content:center; width:100%; align-self:stretch; }
+    .project .tag    { padding:6px 10px; font-size:10px; }
     .project .tags .tag:nth-child(n+4) { display:none; }
     .project .meta   { display:none; }
     .project .case-toggle { order:7; margin-top:28px; }
@@ -1815,7 +1837,28 @@
 </div>
 
 <!-- Brand tooltip -->
-<div class="brand-tip" id="brandTip" aria-hidden="true">{ <span class="t-k">"available"</span>: <span class="t-true">true</span>, <span class="t-k">"location"</span>: <span class="t-s">"Zwolle"</span> }</div>
+<div class="brand-tip" id="brandTip" role="menu" aria-hidden="true">
+  <button class="bt-row bt-copy" id="btEmail" data-email="bram@vanzwolle.net">
+    <span>bram@vanzwolle.net</span>
+    <span class="bt-action" id="btEmailAction"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M11 5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2"/></svg></span>
+  </button>
+  <a href="https://github.com/Bramvzw" target="_blank" rel="noopener" class="bt-row">
+    <span>GitHub</span>
+    <span class="bt-action"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9"/><polyline points="10 2 14 2 14 6"/><line x1="14" y1="2" x2="8" y2="8"/></svg></span>
+  </a>
+  <a href="#" target="_blank" rel="noopener" class="bt-row" id="btLinkedin">
+    <span>LinkedIn</span>
+    <span class="bt-action"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9"/><polyline points="10 2 14 2 14 6"/><line x1="14" y1="2" x2="8" y2="8"/></svg></span>
+  </a>
+  <a href="#" target="_blank" rel="noopener" class="bt-row" id="btReadcv">
+    <span>Read.cv</span>
+    <span class="bt-action"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9"/><polyline points="10 2 14 2 14 6"/><line x1="14" y1="2" x2="8" y2="8"/></svg></span>
+  </a>
+  <a href="#" download class="bt-row" id="btCv">
+    <span>Download CV</span>
+    <span class="bt-action"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="2" x2="8" y2="11"/><polyline points="4 8 8 12 12 8"/><line x1="2" y1="14" x2="14" y2="14"/></svg></span>
+  </a>
+</div>
 
 <!-- Tag tooltip (shared) -->
 <div class="tag-tip" id="tagTip" aria-hidden="true"></div>
@@ -1951,7 +1994,7 @@
     </h1>
 
     <p class="hero-tagline" id="heroTag" data-i18n="hero-tagline">
-      Bram van Zwolle — Full-Stack Developer &amp; Product Owner.
+      Bram van Zwolle —<br>Full-Stack Developer &amp; Product Owner.
     </p>
   </div>
 
@@ -2164,7 +2207,7 @@
     <div class="stack">
       <div class="stack-header">
         <span class="sec-label">Stack</span>
-        <h2 class="stack-title">The tools I reach for <em>without thinking.</em></h2>
+        <h2 class="stack-title" data-i18n="stack-title">The tools I reach for <em>without thinking.</em></h2>
       </div>
       <div class="tech-grid" id="techGrid">
         <div class="tech-cart" style="--level:95%">
@@ -2334,26 +2377,11 @@ window.addEventListener('load', () => {
     .to('.hero h1 .row:nth-child(2) .word', { y: 0, duration: 1.2 }, 0.35)
     .to('.hero h1 .row:nth-child(3) .word', { y: 0, duration: 1.2, stagger: 0.04 }, 0.6)
     .to('#heroUnderline', { width: '42%', duration: 1.4, ease: 'expo.out' }, 0.9)
-    .to('#heroTag', { y: 0, opacity: 1, duration: 1 }, 1.1)
-    .to('#heroCode', { y: 0, opacity: 1, duration: 0.9, ease: 'power2.out' }, 1.35);
-
-  // About pullquote line reveal
-  gsap.to('#pullquote .reveal > span', {
-    y: 0, duration: 1.1, ease: 'power3.out', stagger: 0.08,
-    scrollTrigger: { trigger: '#pullquote', start: 'top 75%' }
-  });
+    .to('#heroTag', { y: 0, opacity: 1, duration: 1 }, 1.1);
 
   // About body paragraphs
   gsap.to('.about-body p', {
     y: 0, opacity: 1, duration: 0.9, ease: 'power2.out', stagger: 0.12,
-    scrollTrigger: { trigger: '.about-body', start: 'top 80%' }
-  });
-  gsap.to('.about-card', {
-    y: 0, opacity: 1, duration: 0.9, ease: 'power2.out', delay: 0.3,
-    scrollTrigger: { trigger: '.about-body', start: 'top 80%' }
-  });
-  gsap.to('.commit-log', {
-    y: 0, opacity: 1, duration: 0.9, ease: 'power2.out', delay: 0.22,
     scrollTrigger: { trigger: '.about-body', start: 'top 80%' }
   });
 
@@ -2409,7 +2437,7 @@ const i18n = {
   en: {
     'nav-about':'About','nav-work':'Work',
     'hero-w1':'Built','hero-w2':'with','hero-w3':'<em>precision.</em>','hero-w3b':'','hero-w4':'Shipped','hero-w5':'clean.',
-    'hero-tagline':'Bram van Zwolle — Full-Stack Developer &amp; Product Owner.',
+    'hero-tagline':'Bram van Zwolle —<br>Full-Stack Developer &amp; Product Owner.',
     'hero-curr-label':'Currently','hero-curr-val':'200 OK — working at Sibi','hero-scroll':'Scroll',
     'about-label':'Profile — a short interview',
     'about-p1':'I\'ve spent a decade shipping SaaS: as the engineer who wrote the code, and as the product owner who decided it was good enough to leave my hands. <strong style="color:var(--ink);font-weight:500;">10+ years building products from zero to production.</strong> Both roles taught me the same lesson — <strong style="color:var(--ink);font-weight:500;">restraint is a feature</strong>. Most products fail because they keep adding. Mine don\'t.',
@@ -2421,6 +2449,7 @@ const i18n = {
     'pullquote-2':'A product should feel <em>inevitable</em> —',
     'pullquote-3':'as if it couldn\'t have been made any other way.',
     'work-h2':'Three products, <em>built to last</em> — each shipped, each still earning its keep.',
+    'stack-title':'The tools I reach for <em>without thinking.</em>',
     'work-hint':'Select case studies · 2021 → 2026 · Full list on request',
     'proj1-desc':'A quiet tool for architecture studios: proposal drafting, time, and invoicing under a single, opinionated spine. No plugins, no modules — one way to do it, done well.',
     'proj2-desc':'Scheduling for independent clinics that refuses to feel like medical software. Two screens, nine shortcuts, zero settings. Practitioners moved from twenty-minute bookings to four.',
@@ -2463,7 +2492,7 @@ const i18n = {
   nl: {
     'nav-about':'Over','nav-work':'Werk',
     'hero-w1':'Code','hero-w2':'schrijven','hero-w3':'<em>én</em>','hero-w3b':'scope&nbsp;bewaken.','hero-w4':'','hero-w5':'',
-    'hero-tagline':'Bram van Zwolle — Full-Stack Developer &amp; Product Owner.',
+    'hero-tagline':'Bram van Zwolle —<br>Full-Stack Developer &amp; Product Owner.',
     'hero-curr-label':'Momenteel','hero-curr-val':'200 OK — werkzaam bij Sibi','hero-scroll':'Scroll',
     'about-label':'Profiel — een korte introductie',
     'about-p1':'Ik lever al tien jaar SaaS op: als de engineer die de code schrijft, en als de product owner die beslist dat het goed genoeg is. <strong style="color:var(--ink);font-weight:500;">10+ jaar producten bouwen van nul tot productie.</strong> Beide rollen leerden me dezelfde les — <strong style="color:var(--ink);font-weight:500;">terughoudendheid is een feature</strong>. De meeste producten mislukken omdat ze blijven toevoegen. De mijne niet.',
@@ -2475,6 +2504,7 @@ const i18n = {
     'pullquote-2':'Een product moet <em>onvermijdelijk</em> aanvoelen —',
     'pullquote-3':'alsof het op geen andere manier gemaakt had kunnen worden.',
     'work-h2':'Drie producten, <em>gebouwd om te blijven</em> — elk opgeleverd, elk verdient nog steeds zijn plek.',
+    'stack-title':'De tools die ik pak <em>zonder na te denken.</em>',
     'work-hint':'Geselecteerde case studies · 2021 → 2026 · Volledige lijst op aanvraag',
     'proj1-desc':'Een rustig gereedschap voor architectuurbureaus: offerte, urenregistratie en facturatie onder één eigenzinnige ruggengraat. Geen plugins, geen modules — één manier, goed gedaan.',
     'proj2-desc':'Planning voor zelfstandige klinieken die weigert aan te voelen als medische software. Twee schermen, negen sneltoetsen, nul instellingen. Praktijken gingen van twintig minuten boeken naar vier.',
@@ -2887,21 +2917,41 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
   });
 })();
 
-/* --- 8. Brand name tooltip --- */
+/* --- 8. Brand name dropdown --- */
 (() => {
-  const brand = document.getElementById('brandName');
-  const tip = document.getElementById('brandTip');
-  if (!brand || !tip) return;
-  const show = () => {
-    const r = brand.getBoundingClientRect();
+  const mark  = document.querySelector('.topbar .mark');
+  const tip   = document.getElementById('brandTip');
+  if (!mark || !tip) return;
+  let open = false;
+  const position = () => {
+    const r = mark.getBoundingClientRect();
     tip.style.left = r.left + 'px';
-    tip.style.top  = (r.bottom + 10) + 'px';
-    tip.classList.add('visible');
-    tip.setAttribute('aria-hidden','false');
+    tip.style.top  = (r.bottom + 8) + 'px';
   };
-  const hide = () => { tip.classList.remove('visible'); tip.setAttribute('aria-hidden','true'); };
-  brand.addEventListener('mouseenter', show);
-  brand.addEventListener('mouseleave', hide);
+  const show = () => { position(); open = true; tip.classList.add('visible'); tip.setAttribute('aria-hidden','false'); };
+  const hide = () => { open = false; tip.classList.remove('visible'); tip.setAttribute('aria-hidden','true'); };
+  const toggle = () => open ? hide() : show();
+  const isTouch = () => window.matchMedia('(hover:none)').matches;
+  // Desktop: hover
+  mark.addEventListener('mouseenter', () => { if (!isTouch()) show(); });
+  mark.addEventListener('mouseleave', (e) => { if (!isTouch() && !tip.contains(e.relatedTarget)) hide(); });
+  tip.addEventListener('mouseleave',  (e) => { if (!isTouch() && !mark.contains(e.relatedTarget)) hide(); });
+  // Both: click/tap toggle
+  mark.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+  document.addEventListener('click', (e) => { if (open && !tip.contains(e.target) && !mark.contains(e.target)) hide(); });
+
+  // Email copy with feedback
+  const btnEmail = document.getElementById('btEmail');
+  const btnEmailAction = document.getElementById('btEmailAction');
+  if (btnEmail) {
+    btnEmail.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(btnEmail.dataset.email).then(() => {
+        btnEmailAction.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#e8962a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 8 6 12 14 4"/></svg>';
+        setTimeout(() => { btnEmailAction.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M11 5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2"/></svg>'; }, 2000);
+      });
+    });
+  }
 })();
 
 /* --- 9. Uptime counter (About) --- */
@@ -2988,6 +3038,24 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
 })();
 
 
+</script>
+
+<div id="markHint" aria-hidden="true" style="position:fixed;z-index:999;pointer-events:none;opacity:0;color:#e8962a;filter:drop-shadow(0 0 8px rgba(232,150,42,0.6));">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.21 0-.62-.38-1.16-.91-1.41z"/></svg>
+</div>
+
+<script>
+(() => {
+  const hint   = document.getElementById('markHint');
+  const nameEl = document.getElementById('brandName');
+  if (!hint || !nameEl) return;
+  setTimeout(() => {
+    const r = nameEl.getBoundingClientRect();
+    hint.style.left = (r.left + r.width / 2 - 14) + 'px';
+    hint.style.top  = (r.top  + r.height / 2 - 4) + 'px';
+    hint.style.animation = 'hint-tap 2.4s ease 0s forwards';
+  }, 2500);
+})();
 </script>
 </body>
 </html>
