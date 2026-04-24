@@ -739,7 +739,7 @@
   }
   .hero-meta .col{display:flex;flex-direction:column;gap:6px}
   .hero-meta .val{color:var(--ink-dim);letter-spacing:.12em;text-transform:none;font-size:13px;font-family:'Lora',serif;font-style:italic;}
-  .hero-meta .scroll{display:flex;align-items:center;gap:12px;}
+  .hero-meta .scroll{display:flex;align-items:center;gap:12px;margin-left:auto;}
   .hero-meta .scroll .bar{width:1px;height:46px;background:var(--rule);position:relative;overflow:hidden;}
   .hero-meta .scroll .bar::after{
     content:"";position:absolute;top:-46px;left:0;width:1px;height:46px;
@@ -1159,34 +1159,49 @@
     position:relative;
   }
   .credentials{ margin-top:80px; }
-  .cred-list{ border-top:1px solid var(--rule-2); margin-top:28px; }
-  .cred-item{
-    display:flex; align-items:center; gap:24px;
-    padding:16px 0; border-bottom:1px solid var(--rule-2);
+  .cred-cards{
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:20px; margin-top:28px;
   }
-  .cred-item .cred-num{
+  @media(max-width:600px){ .cred-cards{ grid-template-columns:1fr; } }
+  .cred-card{
+    position:relative;
+    border:1px solid rgba(232,150,42,.2);
+    padding:36px 32px;
+    background:linear-gradient(135deg,rgba(232,150,42,.05) 0%,transparent 55%);
+    display:flex; flex-direction:column; gap:10px;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .cred-card:hover{ border-color:rgba(232,150,42,.5); background:linear-gradient(135deg,rgba(232,150,42,.09) 0%,transparent 55%); }
+  .cred-card::before{
+    content:''; position:absolute; top:0; left:0;
+    width:3px; height:100%; background:var(--amber);
+  }
+  .cred-card .cc-badge{
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.22em; text-transform:uppercase;
-    color:var(--amber); min-width:56px;
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--amber);
   }
-  .cred-item .cred-title{
+  .cred-card .cc-title{
     font-family:'Space Grotesk',sans-serif;
-    font-size:15px; color:var(--ink); flex:1; letter-spacing:-.01em;
+    font-size:clamp(18px,1.8vw,24px); color:var(--ink);
+    letter-spacing:-.02em; line-height:1.15; margin-top:4px;
   }
-  .cred-item .cred-issuer{
+  .cred-card .cc-issuer{
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--ink-mute);
+    font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-mute); margin-top:auto; padding-top:24px;
   }
-  .cred-item .cred-verify{
+  .cred-card .cc-verify{
+    display:inline-block; align-self:flex-start;
     font-family:'JetBrains Mono',ui-monospace,monospace;
     font-size:10px; letter-spacing:.16em; text-transform:uppercase;
     color:var(--amber); text-decoration:none;
     border:1px solid rgba(232,150,42,.35);
-    padding:6px 14px; white-space:nowrap;
+    padding:8px 18px; margin-top:8px; white-space:nowrap;
     transition:background .2s ease, color .2s ease, border-color .2s ease;
   }
-  .cred-item .cred-verify:hover{ background:var(--amber); color:#0d0b08; border-color:var(--amber); }
+  .cred-card .cc-verify:hover{ background:var(--amber); color:#0d0b08; border-color:var(--amber); }
   .stack{ margin-top:140px; }
   .stack-header{
     display:flex; flex-direction:column;
@@ -1258,7 +1273,7 @@
     border-radius:1px; overflow:hidden;
   }
   .tech-cart .fill{
-    position:absolute; left:var(--start,0%); right:0; top:0; bottom:0;
+    position:absolute; left:0; right:auto; width:var(--level,0%); top:0; bottom:0;
     background: linear-gradient(90deg, var(--amber) 0%, var(--amber-2) 100%);
     transform-origin:left; transform:scaleX(0);
     transition:transform 1.1s cubic-bezier(.2,.8,.2,1);
@@ -1860,10 +1875,6 @@
   </div>
 
   <div class="hero-meta">
-    <div class="col">
-      <span data-i18n="hero-curr-label">Currently</span>
-      <span class="val status-200"><span class="g-dot"></span><span data-i18n="hero-curr-val">200 OK — working at Sibi</span></span>
-    </div>
     <div class="scroll">
       <span data-i18n="hero-scroll">Scroll</span>
       <span class="bar"></span>
@@ -2073,18 +2084,18 @@
 
     <div class="credentials">
       <span class="sec-label">Credentials</span>
-      <div class="cred-list">
-        <div class="cred-item">
-          <span class="cred-num">PSPO I</span>
-          <span class="cred-title">Professional Scrum Product Owner</span>
-          <span class="cred-issuer">scrum.org</span>
-          <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cred-verify" data-hoverable>Verify ↗</a>
+      <div class="cred-cards">
+        <div class="cred-card">
+          <span class="cc-badge">PSPO I</span>
+          <div class="cc-title">Professional Scrum<br>Product Owner</div>
+          <span class="cc-issuer">Scrum.org</span>
+          <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cc-verify" data-hoverable>Verify ↗</a>
         </div>
-        <div class="cred-item">
-          <span class="cred-num">PSPO II</span>
-          <span class="cred-title">Professional Scrum Product Owner</span>
-          <span class="cred-issuer">scrum.org</span>
-          <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cred-verify" data-hoverable>Verify ↗</a>
+        <div class="cred-card">
+          <span class="cc-badge">PSPO II</span>
+          <div class="cc-title">Professional Scrum<br>Product Owner</div>
+          <span class="cc-issuer">Scrum.org</span>
+          <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cc-verify" data-hoverable>Verify ↗</a>
         </div>
       </div>
     </div>
@@ -2095,83 +2106,83 @@
         <h2 class="stack-title">The tools I reach for <em>without thinking.</em></h2>
       </div>
       <div class="tech-grid" id="techGrid">
-        <div class="tech-cart" style="--start:4%">
+        <div class="tech-cart" style="--level:95%">
           <div class="cart-top"><span class="glyph">Lv</span><span class="idx">№ 01</span></div>
           <div class="name">Laravel</div>
           <div class="role">Where I learned to ship. Still my scalpel for CRUD-heavy product work.</div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
-            <div class="years"><span><b>2015</b> · first line</span><span>today</span></div>
+            <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Backend</span><span>PHP 8 · Livewire</span></div>
         </div>
-        <div class="tech-cart" style="--start:22%">
+        <div class="tech-cart" style="--level:90%">
           <div class="cart-top"><span class="glyph">Ts</span><span class="idx">№ 02</span></div>
           <div class="name">TypeScript</div>
           <div class="role">The contract I write with my future self. Every project, no exceptions.</div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
-            <div class="years"><span><b>2018</b> · migrated in</span><span>today</span></div>
+            <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Language</span><span>Everywhere</span></div>
         </div>
-        <div class="tech-cart" style="--start:32%">
+        <div class="tech-cart" style="--level:85%">
           <div class="cart-top"><span class="glyph">Re</span><span class="idx">№ 03</span></div>
           <div class="name">React</div>
           <div class="role">Default interface layer. Used carefully — state is a liability, not a feature.</div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
-            <div class="years"><span><b>2019</b> · adopted</span><span>today</span></div>
+            <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Frontend</span><span>Remix · Next</span></div>
         </div>
-        <div class="tech-cart" style="--start:62%">
+        <div class="tech-cart" style="--level:50%">
           <div class="cart-top"><span class="glyph">Rs</span><span class="idx">№ 04</span></div>
           <div class="name">Rust</div>
           <div class="role">For the parts where the user can feel every millisecond. Ledgerknife's engine.</div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
-            <div class="years"><span><b>2022</b> · picked up</span><span>today</span></div>
+            <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Systems</span><span>WASM · Tauri</span></div>
         </div>
-        <div class="tech-cart" style="--start:10%">
+        <div class="tech-cart" style="--level:88%">
           <div class="cart-top"><span class="glyph">Pg</span><span class="idx">№ 05</span></div>
           <div class="name">Postgres</div>
           <div class="role">The only database I trust. Schemas are opinions; mine are opinionated.</div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
-            <div class="years"><span><b>2016</b> · settled on</span><span>today</span></div>
+            <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Data</span><span>SQL · Drizzle</span></div>
         </div>
-        <div class="tech-cart" style="--start:32%">
+        <div class="tech-cart" style="--level:72%">
           <div class="cart-top"><span class="glyph">Go</span><span class="idx">№ 06</span></div>
           <div class="name">Go</div>
           <div class="role">When the service needs to be boring, fast, and stay up. Halfbeat's backbone.</div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
-            <div class="years"><span><b>2019</b> · first service</span><span>today</span></div>
+            <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Backend</span><span>APIs · Workers</span></div>
         </div>
-        <div class="tech-cart" style="--start:46%">
+        <div class="tech-cart" style="--level:65%">
           <div class="cart-top"><span class="glyph">Sv</span><span class="idx">№ 07</span></div>
           <div class="name">Svelte</div>
           <div class="role">When React is too much. The interface disappears and the product speaks.</div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
-            <div class="years"><span><b>2021</b> · shipped with</span><span>today</span></div>
+            <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Frontend</span><span>Kit · Runes</span></div>
         </div>
-        <div class="tech-cart" style="--start:16%">
+        <div class="tech-cart" style="--level:75%">
           <div class="cart-top"><span class="glyph">Aw</span><span class="idx">№ 08</span></div>
           <div class="name">AWS</div>
           <div class="role">Infra without adventure. Boring, predictable, mostly invisible — as it should be.</div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
-            <div class="years"><span><b>2017</b> · first deploy</span><span>today</span></div>
+            <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Infra</span><span>ECS · RDS · S3</span></div>
         </div>
