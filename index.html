@@ -528,7 +528,7 @@
 
   /* ---------- Hero ---------- */
   .hero{
-    min-height:100vh;
+    min-height:100svh;
     padding:140px 80px 160px;
     display:flex;flex-direction:column;justify-content:center;
     position:relative;
@@ -1381,7 +1381,7 @@
   }
   .contact .email .line{display:block;white-space:nowrap;}
   @media (max-width:900px){
-    .contact .email{font-size:clamp(36px,9vw,52px);white-space:normal;word-break:break-word;}
+    .contact .email{font-size:clamp(26px,7vw,52px);white-space:normal;word-break:break-word;}
     .contact .email .line{white-space:normal;}
   }
   .contact .email:hover{color:var(--amber);}
@@ -1707,6 +1707,7 @@
     /* Tighter padding */
     section { padding:80px 20px; }
     .hero { padding:90px 20px 80px; }
+    .hero-meta { bottom: max(60px, env(safe-area-inset-bottom) + 40px); }
     .contact .kicker { font-size:clamp(28px,8vw,40px); }
 
     /* Hero heading: flow words naturally, no awkward single-word rows */
