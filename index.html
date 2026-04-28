@@ -200,6 +200,7 @@
     display:flex;align-items:center;gap:10px;color:var(--ink);
     font-weight:500;cursor:pointer;position:relative;
   }
+  @media (min-width:721px){ .topbar .mark{ cursor:default; } }
   @keyframes hint-tap{
     0%   { opacity:0;   transform:translateY(12px); }
     18%  { opacity:1;   transform:translateY(12px); }
@@ -1613,6 +1614,7 @@
     box-shadow:0 8px 28px rgba(0,0,0,.6);
   }
   .brand-tip.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  @media (min-width:721px){ .brand-tip{ display:none; } }
   .bt-row{
     display:flex; justify-content:space-between; align-items:center;
     padding:11px 14px;
@@ -1806,9 +1808,9 @@
 <!-- Terminal boot loader -->
 <div class="boot" id="bootLoader" aria-hidden="true">
   <div class="boot-inner">
-    <div class="boot-line"><span class="boot-prompt">&gt;</span> initializing bram.exe</div>
-    <div class="boot-line"><span class="boot-prompt">&gt;</span> loading portfolio<span class="boot-dots"></span></div>
-    <div class="boot-line boot-done"><span class="boot-prompt">&gt;</span> done. <span class="boot-check">&#10003;</span></div>
+    <div class="boot-line"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-init">initializing bram.exe</span></div>
+    <div class="boot-line"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-loading">loading portfolio</span><span class="boot-dots"></span></div>
+    <div class="boot-line boot-done"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-done">done.</span> <span class="boot-check">&#10003;</span></div>
   </div>
 </div>
 
@@ -1823,14 +1825,14 @@
   <div class="cp-modal" role="dialog" aria-label="Command palette">
     <div class="cp-head">
       <span class="cp-prompt">&gt;</span>
-      <input type="text" id="cpInput" class="cp-input" placeholder="Type a command…" autocomplete="off" spellcheck="false">
+      <input type="text" id="cpInput" class="cp-input" placeholder="Typ een commando…" data-i18n-placeholder="cp-placeholder" autocomplete="off" spellcheck="false">
       <span class="cp-hint">ESC</span>
     </div>
     <ul class="cp-list" id="cpList" role="listbox"></ul>
     <div class="cp-foot">
-      <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
-      <span><kbd>↵</kbd> select</span>
-      <span><kbd>esc</kbd> close</span>
+      <span><kbd>↑</kbd><kbd>↓</kbd> <span data-i18n="cp-hint-nav">navigeren</span></span>
+      <span><kbd>↵</kbd> <span data-i18n="cp-hint-sel">selecteer</span></span>
+      <span><kbd>esc</kbd> <span data-i18n="cp-hint-esc">sluit</span></span>
     </div>
   </div>
 </div>
@@ -1904,7 +1906,7 @@
     <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="6.5" cy="6.5" r="5.5"/><line x1="10.5" y1="10.5" x2="14.5" y2="14.5"/>
     </svg>
-    <span class="cp-trigger-label">Search</span>
+    <span class="cp-trigger-label" data-i18n="ui-search">Search</span>
     <span class="cp-trigger-kbd" id="cpTriggerKbd">⌘K</span>
   </button>
   <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"><span class="nt-open">Menu</span><span class="nt-close">Close</span></button>
@@ -1919,7 +1921,7 @@
     </button>
     <div class="settings-dropdown" id="settingsDropdown">
       <div class="sd-group">
-        <span class="sd-label">Language</span>
+        <span class="sd-label" data-i18n="ui-language">Language</span>
         <div class="sd-options">
           <button class="sd-opt active" data-lang="nl" id="sdNl">NL</button>
           <span class="sd-sep">·</span>
@@ -1928,11 +1930,11 @@
       </div>
       <div class="sd-divider"></div>
       <div class="sd-group">
-        <span class="sd-label">Theme</span>
+        <span class="sd-label" data-i18n="ui-theme">Theme</span>
         <div class="sd-options">
-          <button class="sd-opt active" data-theme="dark" id="sdDark">Dark</button>
+          <button class="sd-opt active" data-theme="dark" id="sdDark" data-i18n="ui-dark">Dark</button>
           <span class="sd-sep">·</span>
-          <button class="sd-opt" data-theme="light" id="sdLight">Light</button>
+          <button class="sd-opt" data-theme="light" id="sdLight" data-i18n="ui-light">Light</button>
         </div>
       </div>
     </div>
@@ -2487,6 +2489,13 @@ const i18n = {
     'contact-based-note':'Available across Europe. Timezone: CET. Travel possible for the right engagement.',
     'footer-built':'Built with precision. Committed to main.',
     'sec-0':'00 / Index','sec-1':'01 / About','sec-2':'02 / Work','sec-3':'03 / Expertise','sec-4':'04 / Contact',
+    'boot-init':'initializing bram.exe','boot-loading':'loading portfolio','boot-done':'done.',
+    'ui-search':'Search','ui-language':'Language','ui-theme':'Theme','ui-dark':'Dark','ui-light':'Light',
+    'cp-placeholder':'Type a command…',
+    'cp-hint-nav':'navigate','cp-hint-sel':'select','cp-hint-esc':'close',
+    'cp-nav-index':'Go to Index','cp-nav-about':'Go to About','cp-nav-work':'Go to Work',
+    'cp-nav-expertise':'Go to Expertise','cp-nav-contact':'Go to Contact',
+    'cp-email':'Copy email','cp-cv':'Download CV',
   },
   nl: {
     'nav-about':'Over','nav-work':'Werk',
@@ -2542,6 +2551,13 @@ const i18n = {
     'contact-based-note':'Beschikbaar door heel Europa. Tijdzone: CET. Reizen mogelijk voor de juiste opdracht.',
     'footer-built':'Gebouwd met precisie. Gecommit naar main.',
     'sec-0':'00 / Index','sec-1':'01 / Over','sec-2':'02 / Werk','sec-3':'03 / Expertise','sec-4':'04 / Contact',
+    'boot-init':'bram.exe initialiseren','boot-loading':'portfolio laden','boot-done':'klaar.',
+    'ui-search':'Zoeken','ui-language':'Taal','ui-theme':'Thema','ui-dark':'Donker','ui-light':'Licht',
+    'cp-placeholder':'Typ een commando…',
+    'cp-hint-nav':'navigeren','cp-hint-sel':'selecteer','cp-hint-esc':'sluit',
+    'cp-nav-index':'Ga naar Index','cp-nav-about':'Ga naar Over','cp-nav-work':'Ga naar Werk',
+    'cp-nav-expertise':'Ga naar Expertise','cp-nav-contact':'Ga naar Contact',
+    'cp-email':'E-mail kopiëren','cp-cv':'CV downloaden',
   }
 };
 
@@ -2554,6 +2570,10 @@ function applyLang(lang) {
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n;
     if (i18n[lang][key] !== undefined) el.innerHTML = i18n[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const key = el.dataset.i18nPlaceholder;
+    if (i18n[lang][key] !== undefined) el.placeholder = i18n[lang][key];
   });
   const btn = document.getElementById('langToggle');
   if (btn) {
@@ -2774,19 +2794,23 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
   };
 
   const mod = /Mac|iPhone|iPod|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘' : 'Ctrl';
-  const cmds = [
-    { id:'index',      ico:'→', label:'Navigate to Index',      desc:mod+' 0', run:()=>scrollToSel('#hero') },
-    { id:'about',      ico:'→', label:'Navigate to About',      desc:mod+' 1', run:()=>scrollToSel('#about') },
-    { id:'work',       ico:'→', label:'Navigate to Work',       desc:mod+' 2', run:()=>scrollToSel('#work') },
-    { id:'expertise',  ico:'→', label:'Navigate to Expertise',  desc:mod+' 3', run:()=>scrollToSel('#expertise') },
-    { id:'contact',    ico:'→', label:'Navigate to Contact',    desc:mod+' 4', run:()=>scrollToSel('#contact') },
-    { id:'github',     ico:'↗', label:'Open GitHub',            desc:'github.com', run:()=>window.open('#','_blank') },
-    { id:'linkedin',   ico:'↗', label:'Open LinkedIn',          desc:'linkedin.com', run:()=>window.open('#','_blank') },
-    { id:'email',      ico:'✎', label:'Copy email',             desc:'bram@vanzwolle.net', run:copyEmail },
-    { id:'cv',         ico:'↓', label:'Download CV',            desc:'pdf', run:()=>{} }
-  ];
+  const getCmds = () => {
+    const t = (key) => (i18n[currentLang] && i18n[currentLang][key]) || (i18n.en && i18n.en[key]) || key;
+    return [
+      { id:'index',      ico:'→', label:t('cp-nav-index'),     desc:mod+' 0', run:()=>scrollToSel('#hero') },
+      { id:'about',      ico:'→', label:t('cp-nav-about'),     desc:mod+' 1', run:()=>scrollToSel('#about') },
+      { id:'work',       ico:'→', label:t('cp-nav-work'),      desc:mod+' 2', run:()=>scrollToSel('#work') },
+      { id:'expertise',  ico:'→', label:t('cp-nav-expertise'), desc:mod+' 3', run:()=>scrollToSel('#expertise') },
+      { id:'contact',    ico:'→', label:t('cp-nav-contact'),   desc:mod+' 4', run:()=>scrollToSel('#contact') },
+      { id:'github',     ico:'↗', label:'Open GitHub',         desc:'github.com', run:()=>window.open('https://github.com/Bramvzw','_blank') },
+      { id:'linkedin',   ico:'↗', label:'Open LinkedIn',       desc:'linkedin.com', run:()=>window.open('#','_blank') },
+      { id:'readcv',     ico:'↗', label:'Open Read.CV',        desc:'read.cv', run:()=>window.open('#','_blank') },
+      { id:'email',      ico:'✎', label:t('cp-email'),         desc:'bram@vanzwolle.net', run:copyEmail },
+      { id:'cv',         ico:'↓', label:t('cp-cv'),            desc:'pdf', run:()=>{} }
+    ];
+  };
 
-  let filtered = cmds;
+  let filtered = getCmds();
   let active = 0;
 
   const render = () => {
@@ -2808,6 +2832,7 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
   };
 
   const filter = (q) => {
+    const cmds = getCmds();
     q = q.trim().toLowerCase();
     filtered = q ? cmds.filter(c => (c.label+' '+c.id+' '+c.desc).toLowerCase().includes(q)) : cmds;
     active = 0;
@@ -2922,19 +2947,20 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
   const tip   = document.getElementById('brandTip');
   if (!mark || !tip) return;
   let open = false;
+  let locked = false;
   const position = () => {
     const r = mark.getBoundingClientRect();
     tip.style.left = r.left + 'px';
     tip.style.top  = (r.bottom + 8) + 'px';
   };
-  const show = () => { position(); open = true; tip.classList.add('visible'); tip.setAttribute('aria-hidden','false'); };
-  const hide = () => { open = false; tip.classList.remove('visible'); tip.setAttribute('aria-hidden','true'); };
-  const toggle = () => open ? hide() : show();
+  const show = () => { if (window.innerWidth > 720) return; position(); open = true; tip.classList.add('visible'); tip.setAttribute('aria-hidden','false'); };
+  const hide = () => { open = false; locked = false; tip.classList.remove('visible'); tip.setAttribute('aria-hidden','true'); };
+  const toggle = () => { if (open) { hide(); } else { show(); locked = true; } };
   const isTouch = () => window.matchMedia('(hover:none)').matches;
-  // Desktop: hover
-  mark.addEventListener('mouseenter', () => { if (!isTouch()) show(); });
-  mark.addEventListener('mouseleave', (e) => { if (!isTouch() && !tip.contains(e.relatedTarget)) hide(); });
-  tip.addEventListener('mouseleave',  (e) => { if (!isTouch() && !mark.contains(e.relatedTarget)) hide(); });
+  // Desktop: hover (only when not locked open by click)
+  mark.addEventListener('mouseenter', () => { if (!isTouch() && !locked) show(); });
+  mark.addEventListener('mouseleave', (e) => { if (!isTouch() && !locked && !tip.contains(e.relatedTarget)) hide(); });
+  tip.addEventListener('mouseleave',  (e) => { if (!isTouch() && !locked && !mark.contains(e.relatedTarget)) hide(); });
   // Both: click/tap toggle
   mark.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
   document.addEventListener('click', (e) => { if (open && !tip.contains(e.target) && !mark.contains(e.target)) hide(); });
@@ -3047,7 +3073,7 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
 (() => {
   const hint   = document.getElementById('markHint');
   const nameEl = document.getElementById('brandName');
-  if (!hint || !nameEl) return;
+  if (!hint || !nameEl || window.innerWidth > 720) return;
   setTimeout(() => {
     const r = nameEl.getBoundingClientRect();
     hint.style.left = (r.left + r.width / 2 - 14) + 'px';
