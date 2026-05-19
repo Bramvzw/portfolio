@@ -2155,6 +2155,48 @@
       <span class="label">Ledgerknife · ledger view</span>
     </div>
   </article>
+
+  <article class="project from-right" data-dir="right">
+    <div class="body">
+      <div class="index" data-i18n="p4-index">Project 04 — Closed Beta</div>
+      <h3>Skylanders Tracker <span class="year"> / 2026</span></h3>
+      <p class="desc" data-i18n="proj4-desc">Een AI-gedreven jachtveld voor verzamelaars. Marktplaats en Vinted worden continu uitgekamd, elke listing door Claude beoordeeld op figuur, conditie en prijs. Van scraper tot Android — gebouwd om te laten zien dat de hele stack thuiswoont in één hoofd.</p>
+      <div class="tags">
+        <span class="tag" data-lines="~38,500 lines written">Laravel</span><span class="tag" data-lines="~21,400 lines written">React Native</span><span class="tag" data-lines="prompts + pipelines">Claude</span><span class="tag" data-lines="single source of truth">Postgres</span>
+      </div>
+      <div class="meta">
+        <div><span data-i18n="meta-role">Role</span><span class="v" data-i18n="p4-role-v">Solo engineer</span></div>
+        <div><span data-i18n="meta-users">Users</span><span class="v" data-i18n="p4-users-v">Backend + mobile</span></div>
+        <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p4-status-v">Closed beta on Play</span></div>
+      </div>
+      <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-skylanders">
+        <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
+      </button>
+      <div class="case-study" id="case-skylanders" data-open="false">
+        <dl>
+          <dt data-i18n="case-problem">Problem</dt><dd data-i18n="p4-problem">Skylanders is een afgesloten franchise — geen nieuwe figuren sinds 2017. Verzamelaars scrollen elke dag handmatig door honderden Marktplaats- en Vinted-listings om te zien of een lot de moeite waard is.</dd>
+          <dt data-i18n="case-solution">Solution</dt><dd data-i18n="p4-solution">Laravel-backend met rate-limited scrapers en een Claude-pipeline die elke listing scoort op figuur, conditie en prijs. React Native app op Expo voor offline-first collectiebeheer met per-lot cost-breakdown. Postgres als single source of truth, alles op Coolify.</dd>
+          <dt data-i18n="case-result">Result</dt><dd data-i18n="p4-result">Closed beta op Google Play met de <em>volledige stack — scraper, AI, mobile —</em> in één hoofd. APK <a href="https://github.com/Bramvzw/skylanders-tracker-releases/releases/latest/download/skylanders-tracker.apk" target="_blank" rel="noopener">direct te downloaden</a>; mail voor toegang tot de Play-beta.</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="ratio">4 : 3 · product</div>
+      <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+      <div class="mockup-ui">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div class="body b">
+          <div class="cell accent"><span class="ln l1"></span><span class="ln l2"></span></div>
+          <div class="cell"><span class="ln l1"></span><span class="ln l3"></span></div>
+          <div class="cell"><span class="ln l1"></span><span class="ln l2"></span></div>
+          <div class="cell accent"><span class="ln l1"></span></div>
+          <div class="cell"><span class="ln l1"></span><span class="ln l2"></span><span class="ln l3"></span></div>
+          <div class="cell"><span class="ln l1"></span></div>
+        </div>
+      </div>
+      <span class="label">Skylanders Tracker · deal feed</span>
+    </div>
+  </article>
 </section>
 
 <!-- 4. EXPERTISE -->
@@ -2449,7 +2491,7 @@ const i18n = {
     'pullquote-1':'I don\'t believe in software that apologises.',
     'pullquote-2':'A product should feel <em>inevitable</em> —',
     'pullquote-3':'as if it couldn\'t have been made any other way.',
-    'work-h2':'Three products, <em>built to last</em> — each shipped, each still earning its keep.',
+    'work-h2':'Four products, <em>built to last</em> — each shipped, each still earning its keep.',
     'stack-title':'The tools I reach for <em>without thinking.</em>',
     'work-hint':'Select case studies · 2021 → 2026 · Full list on request',
     'proj1-desc':'A quiet tool for architecture studios: proposal drafting, time, and invoicing under a single, opinionated spine. No plugins, no modules — one way to do it, done well.',
@@ -2470,6 +2512,12 @@ const i18n = {
     'p3-problem':'Solo founders were stuck between spreadsheets that break and accounting apps that overwhelm.',
     'p3-solution':'A local-first finance workspace with spreadsheet speed and accountant rigor — every line a shortcut away.',
     'p3-result':'Private beta with <em>80 founders</em>; median session saves 40 min over prior stack.',
+    'p4-index':'Project 04 — Closed Beta',
+    'proj4-desc':'An AI-driven hunting ground for collectors. Marktplaats and Vinted are continuously combed, every listing scored by Claude on figure, condition, and price. From scraper to Android — built to show the whole stack fits in one head.',
+    'p4-role-v':'Solo engineer','p4-users-v':'Backend + mobile','p4-status-v':'Closed beta on Play',
+    'p4-problem':'Skylanders is a sunsetted franchise — no new figures since 2017. Collectors scroll through hundreds of Marktplaats and Vinted listings every day to spot a lot worth bidding on.',
+    'p4-solution':'Laravel backend with rate-limited scrapers and a Claude pipeline that scores every listing on figure, condition, and price. React Native app on Expo for offline-first collection tracking with per-lot cost breakdown. Postgres as single source of truth, deployed on Coolify.',
+    'p4-result':'Closed beta on Google Play with the <em>full stack — scraper, AI, mobile —</em> in one head. APK <a href="https://github.com/Bramvzw/skylanders-tracker-releases/releases/latest/download/skylanders-tracker.apk" target="_blank" rel="noopener">available directly</a>; email for Play beta access.',
     'exp-label':'Working principles',
     'exp-h2':'Not a skills bar. <em>A position</em> on how software should be made.',
     'exp-p':'These are the things I\'ll argue about at dinner. They\'ve shaped every product I\'ve shipped, and every one I\'ve walked away from. Read them as beliefs, not services.',
@@ -2511,7 +2559,7 @@ const i18n = {
     'pullquote-1':'Ik geloof niet in software die zich verontschuldigt.',
     'pullquote-2':'Een product moet <em>onvermijdelijk</em> aanvoelen —',
     'pullquote-3':'alsof het op geen andere manier gemaakt had kunnen worden.',
-    'work-h2':'Drie producten, <em>gebouwd om te blijven</em> — elk opgeleverd, elk verdient nog steeds zijn plek.',
+    'work-h2':'Vier producten, <em>gebouwd om te blijven</em> — elk opgeleverd, elk verdient nog steeds zijn plek.',
     'stack-title':'De tools die ik pak <em>zonder na te denken.</em>',
     'work-hint':'Geselecteerde case studies · 2021 → 2026 · Volledige lijst op aanvraag',
     'proj1-desc':'Een rustig gereedschap voor architectuurbureaus: offerte, urenregistratie en facturatie onder één eigenzinnige ruggengraat. Geen plugins, geen modules — één manier, goed gedaan.',
@@ -2532,6 +2580,12 @@ const i18n = {
     'p3-problem':'Solo-founders zaten gevangen tussen spreadsheets die breken en boekhoudapps die overweldigen.',
     'p3-solution':'Een local-first financiële werkruimte met spreadsheetsnelheid en accountantsnauwkeurigheid — elke regel een sneltoets.',
     'p3-result':'Privébeta met <em>80 founders</em>; mediaansessie bespaart 40 min ten opzichte van eerdere stack.',
+    'p4-index':'Project 04 — Closed Beta',
+    'proj4-desc':'Een AI-gedreven jachtveld voor verzamelaars. Marktplaats en Vinted worden continu uitgekamd, elke listing door Claude beoordeeld op figuur, conditie en prijs. Van scraper tot Android — gebouwd om te laten zien dat de hele stack thuiswoont in één hoofd.',
+    'p4-role-v':'Solo engineer','p4-users-v':'Backend + mobile','p4-status-v':'Gesloten beta op Play',
+    'p4-problem':'Skylanders is een afgesloten franchise — geen nieuwe figuren sinds 2017. Verzamelaars scrollen elke dag handmatig door honderden Marktplaats- en Vinted-listings om te zien of een lot de moeite waard is.',
+    'p4-solution':'Laravel-backend met rate-limited scrapers en een Claude-pipeline die elke listing scoort op figuur, conditie en prijs. React Native app op Expo voor offline-first collectiebeheer met per-lot cost-breakdown. Postgres als single source of truth, alles op Coolify.',
+    'p4-result':'Closed beta op Google Play met de <em>volledige stack — scraper, AI, mobile —</em> in één hoofd. APK <a href="https://github.com/Bramvzw/skylanders-tracker-releases/releases/latest/download/skylanders-tracker.apk" target="_blank" rel="noopener">direct te downloaden</a>; mail voor toegang tot de Play-beta.',
     'exp-label':'Werkprincipes',
     'exp-h2':'Geen vaardighedenbalk. <em>Een standpunt</em> over hoe software gemaakt moet worden.',
     'exp-p':'Dit zijn de dingen waar ik aan tafel over debatteer. Ze hebben elk product dat ik heb opgeleverd gevormd, en elk product waar ik van weg ben gelopen. Lees ze als overtuigingen, niet als diensten.',
