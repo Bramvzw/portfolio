@@ -1079,9 +1079,11 @@
     opacity:1;
     margin-top:20px;
   }
+  .mockup-col{
+    display:flex;flex-direction:column;gap:18px;min-width:0;max-width:100%;
+  }
   .case-ctas{
     display:grid;grid-template-columns:1fr 1fr;gap:10px;
-    margin-top:18px;
   }
   @media (max-width:560px){
     .case-ctas{grid-template-columns:1fr;}
@@ -1820,7 +1822,8 @@
     .project .index  { order:1; }
     .project h3      { order:2; font-size:clamp(24px,7vw,32px); }
     .project .desc   { order:3; font-size:15px; line-height:1.6; margin-top:16px; }
-    .project .mockup { order:4; height:150px; position:relative; margin:16px 0; width:100%; }
+    .project .mockup-col { order:4; width:100%; margin:16px 0; }
+    .project .mockup { height:150px; position:relative; width:100%; margin:0; }
     .project .mockup-ui { inset:24px 20px; }
     .project .tags   { order:5; justify-content:center; width:100%; align-self:stretch; }
     .project .tag    { padding:6px 10px; font-size:10px; }
@@ -2096,43 +2099,45 @@
           <dt data-i18n="case-solution">Solution</dt><dd data-i18n="p4-solution">Laravel-backend met rate-limited scrapers en een Claude-pipeline die elke listing scoort op figuur, conditie en prijs. React Native app op Expo voor offline-first collectiebeheer met per-lot cost-breakdown. Postgres als single source of truth, alles op Coolify.</dd>
           <dt data-i18n="case-result">Result</dt><dd data-i18n="p4-result">Closed beta op Google Play met de <em>volledige stack — scraper, AI, mobile —</em> in één hoofd. Mail voor toegang tot de Play-beta, of download de APK direct.</dd>
         </dl>
-        <div class="case-ctas">
-          <a class="case-cta" href="mailto:bram@vanzwolle.net?subject=Skylanders%20Tracker%20%E2%80%94%20Play%20beta%20toegang" data-hoverable>
-            <span class="case-cta-icon" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </span>
-            <span class="case-cta-text">
-              <span class="case-cta-label" data-i18n="cta-play">Open op Google Play</span>
-              <span class="case-cta-sub" data-i18n="cta-play-sub">Closed beta · op aanvraag</span>
-            </span>
-          </a>
-          <a class="case-cta" href="https://github.com/Bramvzw/skylanders-tracker-releases/releases/latest/download/skylanders-tracker.apk" target="_blank" rel="noopener" download data-hoverable>
-            <span class="case-cta-icon" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="16"/><polyline points="6 11 12 17 18 11"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
-            </span>
-            <span class="case-cta-text">
-              <span class="case-cta-label" data-i18n="cta-apk">Download APK direct</span>
-              <span class="case-cta-sub" data-i18n="cta-apk-sub">Laatste release · GitHub</span>
-            </span>
-          </a>
-        </div>
       </div>
     </div>
-    <div class="mockup">
-      <div class="ratio">4 : 3 · product</div>
-      <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
-      <div class="mockup-ui">
-        <div class="bar"><i></i><i></i><i></i></div>
-        <div class="body b">
-          <div class="cell accent"><span class="ln l1"></span><span class="ln l2"></span></div>
-          <div class="cell"><span class="ln l1"></span><span class="ln l3"></span></div>
-          <div class="cell"><span class="ln l1"></span><span class="ln l2"></span></div>
-          <div class="cell accent"><span class="ln l1"></span></div>
-          <div class="cell"><span class="ln l1"></span><span class="ln l2"></span><span class="ln l3"></span></div>
-          <div class="cell"><span class="ln l1"></span></div>
+    <div class="mockup-col">
+      <div class="mockup">
+        <div class="ratio">4 : 3 · product</div>
+        <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+        <div class="mockup-ui">
+          <div class="bar"><i></i><i></i><i></i></div>
+          <div class="body b">
+            <div class="cell accent"><span class="ln l1"></span><span class="ln l2"></span></div>
+            <div class="cell"><span class="ln l1"></span><span class="ln l3"></span></div>
+            <div class="cell"><span class="ln l1"></span><span class="ln l2"></span></div>
+            <div class="cell accent"><span class="ln l1"></span></div>
+            <div class="cell"><span class="ln l1"></span><span class="ln l2"></span><span class="ln l3"></span></div>
+            <div class="cell"><span class="ln l1"></span></div>
+          </div>
         </div>
+        <span class="label">Skylanders Tracker · deal feed</span>
       </div>
-      <span class="label">Skylanders Tracker · deal feed</span>
+      <div class="case-ctas">
+        <a class="case-cta" href="mailto:bram@vanzwolle.net?subject=Skylanders%20Tracker%20%E2%80%94%20Play%20beta%20toegang" data-hoverable>
+          <span class="case-cta-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </span>
+          <span class="case-cta-text">
+            <span class="case-cta-label" data-i18n="cta-play">Open op Google Play</span>
+            <span class="case-cta-sub" data-i18n="cta-play-sub">Closed beta · op aanvraag</span>
+          </span>
+        </a>
+        <a class="case-cta" href="https://github.com/Bramvzw/skylanders-tracker-releases/releases/latest/download/skylanders-tracker.apk" target="_blank" rel="noopener" download data-hoverable>
+          <span class="case-cta-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="16"/><polyline points="6 11 12 17 18 11"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+          </span>
+          <span class="case-cta-text">
+            <span class="case-cta-label" data-i18n="cta-apk">Download APK direct</span>
+            <span class="case-cta-sub" data-i18n="cta-apk-sub">Laatste release · GitHub</span>
+          </span>
+        </a>
+      </div>
     </div>
   </article>
 </section>
