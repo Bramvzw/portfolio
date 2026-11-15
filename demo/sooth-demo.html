@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sooth — Terminal Demo</title>
+<meta name="description" content="Geanimeerde terminal-demo van sooth met echte output: een flaky test aantonen met run-history en --verify.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --amber: #E8962A; --ink: #efe8dc; --term-bg: #0b0a08;
+    --t-text: #cfc6b6; --t-dim: #7d7568; --t-ok: #7fc96d; --t-bad: #e06c5a;
+    --term-font: 12px; --controls-h: 150px;
+  }
+  html, body { height: 100%; overflow: hidden; background: transparent; font-family: 'Lora', Georgia, serif; color: var(--ink); -webkit-font-smoothing: antialiased; cursor: none; }
+  .cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); will-change: transform, width, height; }
+  .cursor-dot { width: 8px; height: 8px; background: var(--amber); z-index: 9999; transition: width .25s cubic-bezier(.2,.8,.2,1), height .25s cubic-bezier(.2,.8,.2,1), opacity .2s ease; }
+  .cursor-ring { width: 34px; height: 34px; border: 1px solid rgba(232,150,42,.35); z-index: 9998; transition: width .3s cubic-bezier(.2,.8,.2,1), height .3s cubic-bezier(.2,.8,.2,1), border-color .25s ease, opacity .2s ease; }
+  .cursor-dot.hov { width: 0; height: 0; }
+  .cursor-ring.hov { width: 56px; height: 56px; border-color: rgba(232,150,42,.85); background: rgba(232,150,42,.08); }
+  @media (hover: none), (max-width: 560px) { .cursor-dot, .cursor-ring { display: none; } html, body { cursor: auto; } }
+
+  #stage { width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: stretch; padding: 4px 2px 6px; }
+  #term { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; background: var(--term-bg); border: 1px solid rgba(255,255,255,.10); box-shadow: 0 30px 60px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(232,150,42,.06); overflow: hidden; cursor: none; }
+  .term-bar { flex: 0 0 auto; height: 30px; display: flex; align-items: center; gap: 6px; padding: 0 12px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .term-bar i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.14); display: inline-block; }
+  .term-bar i:first-child { background: var(--amber); }
+  .term-bar span { margin-left: 10px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--t-dim); }
+  #screen { flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 16px 18px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: var(--term-font); line-height: 1.7; color: var(--t-text); display: flex; flex-direction: column; justify-content: flex-end; }
+  .ln { white-space: pre-wrap; overflow-wrap: anywhere; min-height: 1.7em; }
+  .ln.ind { padding-left: 4ch; text-indent: -2ch; }
+  .ln.gap { min-height: .6em; }
+  .t-dim { color: var(--t-dim); } .t-prompt { color: var(--amber); } .t-ok { color: var(--t-ok); }
+  .t-bad { color: var(--t-bad); } .t-warn { color: var(--amber); } .t-cmd { color: var(--ink); }
+  .caret { display: inline-block; width: .6em; height: 1.1em; vertical-align: -0.18em; background: var(--t-dim); margin-left: 1px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  #under { flex: 0 0 var(--controls-h); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
+  #caption-area { text-align: center; min-height: 62px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 12px; max-width: 520px; }
+  .caption-eyebrow { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 2.4px; color: var(--amber); opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .35s ease; }
+  .caption-main { font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--ink); text-wrap: balance; opacity: 0; transform: translateY(6px); transition: opacity .35s ease .08s, transform .35s ease .08s; }
+  .caption-eyebrow.show, .caption-main.show { opacity: 1; transform: translateY(0); }
+
+  #progress-bar { width: min(300px, 80%); height: 3px; background: rgba(255,255,255,.08); border-radius: 3px; margin-top: 12px; position: relative; cursor: none; touch-action: none; }
+  #progress-bar::before { content: ''; position: absolute; left: 0; right: 0; top: -10px; bottom: -10px; }
+  #progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--amber), #f4b85f); border-radius: 3px; pointer-events: none; }
+  #progress-thumb { position: absolute; top: 50%; left: 0%; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.55), 0 0 0 2px rgba(232,150,42,.55); transform: translate(-50%, -50%); opacity: 0; transition: opacity .2s ease, transform .15s ease; pointer-events: none; }
+  #progress-bar:hover #progress-thumb, #progress-bar.scrubbing #progress-thumb { opacity: 1; }
+  #progress-bar.scrubbing #progress-thumb { transform: translate(-50%, -50%) scale(1.15); }
+  #controls { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+  #play-toggle { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(232,150,42,.30); background: rgba(232,150,42,.10); color: var(--amber); display: flex; align-items: center; justify-content: center; cursor: none; padding: 0; transition: background .2s ease, border-color .2s ease, transform .15s ease; -webkit-tap-highlight-color: transparent; }
+  #play-toggle:hover { background: rgba(232,150,42,.18); border-color: rgba(232,150,42,.5); }
+  #play-toggle:active { transform: scale(.92); }
+  #play-toggle:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  #play-toggle svg { width: 16px; height: 16px; fill: currentColor; }
+  #beat-dots { display: flex; gap: 5px; align-items: center; }
+  .beat-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.15); transition: background .3s ease, transform .3s ease; }
+  .beat-dot.active { background: var(--amber); transform: scale(1.3); }
+  @media (max-width: 560px) { :root { --term-font: 10.5px; --controls-h: 160px; } #screen { padding: 12px; } .caption-main { font-size: 15px; } }
+  @media (prefers-reduced-motion: reduce) { .caret { animation: none; } .caption-eyebrow, .caption-main { transition: none; } }
+</style>
+</head>
+<body>
+<div class="cursor-ring" id="cring"></div>
+<div class="cursor-dot" id="cdot"></div>
+<div id="stage">
+  <div id="term" role="img" aria-label="Terminal met echte output van sooth op een PHPUnit-project">
+    <div class="term-bar"><i></i><i></i><i></i><span>~/demo-project — zsh</span></div>
+    <div id="screen"></div>
+  </div>
+  <div id="under">
+    <div id="caption-area" aria-live="polite">
+      <div class="caption-eyebrow" id="cap-eyebrow"></div>
+      <div class="caption-main" id="cap-main"></div>
+    </div>
+    <div id="progress-bar"><div id="progress-fill"></div><div id="progress-thumb"></div></div>
+    <div id="controls">
+      <button id="play-toggle" type="button" aria-label="Pauzeren"></button>
+      <div id="beat-dots"></div>
+    </div>
+  </div>
+</div>
+<script>
+'use strict';
+/* Every output line is copied verbatim from real sooth 0.1.0 runs on a small PHPUnit
+   project (5 passing tests, 1 random flaky test, 1 broken test). Only PHPUnit's own
+   output is cut, shown as "…". */
+const CMD_RUN    = 'sooth run --preset phpunit -- vendor/bin/phpunit';
+const CMD_VERIFY = 'sooth run --verify --preset phpunit -- vendor/bin/phpunit';
+const L = (...segs) => ({ segs });
+const I = (...segs) => ({ segs, cls: 'ind' });
+const beats = [
+  { at: 0, eyebrow: 'Eerste run', caption: 'sooth draait je eigen testcommando en leest het rapport. Eén test faalt.', cmd: CMD_RUN, out: [
+    L(['t-dim', '…']),
+    L(['', 'tests: 6 total — '], ['t-ok', '5 passed'], ['', ', '], ['t-bad', '1 failed'], ['', ', 0 errors, 0 skipped']),
+    L(['', '1 failure — 1 new']),
+    I(['t-bad', '✗ '], ['', 'Tests.MailTest::test_receipt_subject '], ['t-dim', '— new (nothing in history)']),
+    L(['', 'result: '], ['t-bad', '✗ FAILED'], ['t-dim', ' — 1 of 1 runs failed (56.37ms total)']),
+  ]},
+  { at: 6500, eyebrow: 'Geschiedenis', caption: 'Elke run komt in een lokaal logbestand. Na een paar runs op dezelfde commit is test_ships aantoonbaar flaky.', cmd: CMD_RUN, out: [
+    L(['t-dim', '…']),
+    L(['', 'tests: 6 total — '], ['t-ok', '4 passed'], ['', ', '], ['t-bad', '2 failed'], ['', ', 0 errors, 0 skipped']),
+    L(['', '2 failures — 1 known flake, 1 regression']),
+    I(['t-bad', '▼ '], ['', 'Tests.MailTest::test_receipt_subject '], ['t-dim', '— failing since abdeb31 (the last 6 observed runs)']),
+    I(['t-warn', '~ '], ['', 'Tests.OrderTest::test_ships '], ['t-dim', '— '], ['t-warn', 'known flake'], ['t-dim', ' (3 of 6 in history, 50%)']),
+    L(['', 'result: '], ['t-bad', '✗ FAILED'], ['t-dim', ' — 1 of 1 runs failed (52.15ms total)']),
+  ]},
+  { at: 14000, eyebrow: '--verify', caption: 'Met --verify draait sooth alleen de gefaalde tests opnieuw. De mailtest is echt kapot, test_ships niet.', cmd: CMD_VERIFY, out: [
+    L(['t-dim', '…']),
+    L(['', '2 failures — 1 known flake, 1 regression']),
+    I(['t-bad', '▼ '], ['', 'Tests.MailTest::test_receipt_subject '], ['t-dim', '— '], ['t-bad', 'real'], ['t-dim', ' (reproduced on re-run), failing since abdeb31 (the last 9 observed runs)']),
+    I(['t-warn', '~ '], ['', 'Tests.OrderTest::test_ships '], ['t-dim', '— '], ['t-warn', 'flaky or order-dependent'], ['t-dim', ' (passed on re-run in isolation), known flake (4 of 9 in history, 44%)']),
+    L(['', 'result: '], ['t-bad', '✗ FAILED'], ['t-dim', ' — 1 of 1 runs failed (50.25ms total)']),
+  ]},
+  { at: 22500, eyebrow: 'Exitcode', caption: 'De exitcode blijft wat je testrunner zei. sooth legt een fout uit, maar verbergt hem niet.', keep: true, cmd: 'echo $?', out: [
+    L(['t-bad', '1']),
+  ]},
+  { at: 27000, eyebrow: 'sooth history', caption: 'Wat sooth tot nu toe weet, zonder iets te draaien. Geen server, geen account.', cmd: 'sooth history', out: [
+    L(['', 'flaky per history (mixed outcomes on one commit):']),
+    I(['', '1. '], ['t-warn', '~ '], ['', 'Tests.OrderTest::test_ships '], ['t-dim', 'failed 4 of 9 observed runs (44%)']),
+    L(['', 'failing since a commit boundary:']),
+    I(['t-bad', '▼ '], ['', 'Tests.MailTest::test_receipt_subject '], ['t-dim', '(since abdeb31, failed the last 9 observed runs)']),
+    L(['t-dim', 'history now holds 54 observations']),
+  ]},
+];
+const TOTAL = 34000;
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const screenEl = document.getElementById('screen');
+const capEye = document.getElementById('cap-eyebrow');
+const capMain = document.getElementById('cap-main');
+const fill = document.getElementById('progress-fill');
+const thumb = document.getElementById('progress-thumb');
+const dotsWrap = document.getElementById('beat-dots');
+const dots = beats.map(() => { const d = document.createElement('div'); d.className = 'beat-dot'; dotsWrap.appendChild(d); return d; });
+
+function lineEl(line) {
+  const el = document.createElement('div');
+  el.className = 'ln' + (line.cls ? ' ' + line.cls : '');
+  line.segs.forEach(([cls, text]) => { const s = document.createElement('span'); if (cls) s.className = cls; s.textContent = text; el.appendChild(s); });
+  return el;
+}
+function promptLine(text) {
+  const el = document.createElement('div');
+  el.className = 'ln';
+  el.innerHTML = '<span class="t-prompt">$ </span><span class="t-cmd"></span><span class="caret"></span>';
+  el.querySelector('.t-cmd').textContent = text || '';
+  return el;
+}
+function gap() { const el = document.createElement('div'); el.className = 'ln gap'; return el; }
+function trimScreen() { while (screenEl.children.length > 40) screenEl.removeChild(screenEl.firstChild); }
+function setCaption(eyebrow, main) {
+  capEye.classList.remove('show'); capMain.classList.remove('show');
+  setTimeout(() => { capEye.textContent = eyebrow; capMain.textContent = main; capEye.classList.add('show'); capMain.classList.add('show'); }, reduceMotion ? 0 : 160);
+}
+
+let renderToken = 0;
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+function clearCarets() { screenEl.querySelectorAll('.caret').forEach(c => c.remove()); }
+function renderInstant(beat) {
+  const p = promptLine(beat.cmd); p.querySelector('.caret').remove(); screenEl.appendChild(p);
+  beat.out.forEach(l => screenEl.appendChild(lineEl(l)));
+}
+async function renderBeat(idx, animate) {
+  const token = ++renderToken;
+  const beat = beats[idx];
+  const alive = () => token === renderToken;
+  screenEl.innerHTML = '';
+  if (beat.keep) { renderInstant(beats[idx - 1]); screenEl.appendChild(gap()); }
+  setCaption(beat.eyebrow, beat.caption);
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  if (!animate || reduceMotion) { renderInstant(beat); screenEl.appendChild(promptLine('')); return; }
+  const p = promptLine(''); screenEl.appendChild(p);
+  const cmdEl = p.querySelector('.t-cmd');
+  await wait(450);
+  for (const ch of beat.cmd) { if (!alive()) return; cmdEl.textContent += ch; await wait(22 + Math.random() * 26); }
+  await wait(350);
+  if (!alive()) return;
+  clearCarets();
+  for (const line of beat.out) { if (!alive()) return; screenEl.appendChild(lineEl(line)); trimScreen(); await wait(170); }
+  if (!alive()) return;
+  screenEl.appendChild(promptLine(''));
+}
+
+let elapsed = 0, lastNow = null, currentBeat = -1, paused = false, seeking = false;
+function updateProgress() { const pct = Math.min(100, (elapsed / TOTAL) * 100); fill.style.width = pct + '%'; thumb.style.left = pct + '%'; }
+function tick(now) {
+  if (lastNow === null) lastNow = now;
+  const delta = now - lastNow; lastNow = now;
+  if (!paused && !seeking) elapsed += delta;
+  for (let i = 0; i < beats.length; i++) if (elapsed >= beats[i].at && currentBeat < i) { currentBeat = i; renderBeat(i, true); }
+  updateProgress();
+  if (elapsed >= TOTAL && !seeking) { elapsed = 0; currentBeat = -1; }
+  requestAnimationFrame(tick);
+}
+function seekTo(fraction) {
+  fraction = Math.max(0, Math.min(1, fraction));
+  elapsed = Math.min(fraction * TOTAL, TOTAL - 50);
+  let idx = 0;
+  for (let i = 0; i < beats.length; i++) if (elapsed >= beats[i].at) idx = i;
+  if (idx !== currentBeat) { currentBeat = idx; renderBeat(idx, false); }
+  updateProgress();
+}
+
+const PAUSE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>';
+const PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+const playToggle = document.getElementById('play-toggle');
+function setPaused(p) { paused = p; playToggle.innerHTML = paused ? PLAY_ICON : PAUSE_ICON; playToggle.setAttribute('aria-label', paused ? 'Afspelen' : 'Pauzeren'); }
+playToggle.addEventListener('click', (e) => { e.stopPropagation(); setPaused(!paused); });
+document.getElementById('term').addEventListener('click', () => setPaused(!paused));
+
+const progressBar = document.getElementById('progress-bar');
+const seekFromClientX = (x) => { const r = progressBar.getBoundingClientRect(); seekTo((x - r.left) / r.width); };
+progressBar.addEventListener('pointerdown', (e) => { e.preventDefault(); seeking = true; progressBar.classList.add('scrubbing'); try { progressBar.setPointerCapture(e.pointerId); } catch (_) {} seekFromClientX(e.clientX); });
+progressBar.addEventListener('pointermove', (e) => { if (seeking) seekFromClientX(e.clientX); });
+const endScrub = () => { if (!seeking) return; seeking = false; progressBar.classList.remove('scrubbing'); };
+progressBar.addEventListener('pointerup', endScrub);
+progressBar.addEventListener('pointercancel', endScrub);
+
+(() => {
+  if (window.matchMedia('(hover: none)').matches) return;
+  const dot = document.getElementById('cdot'), ring = document.getElementById('cring');
+  let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y, tx = x, ty = y;
+  window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; });
+  const loop = () => { x += (tx - x) * 0.9; y += (ty - y) * 0.9; rx += (tx - rx) * 0.18; ry += (ty - ry) * 0.18;
+    dot.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%)`; ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`; requestAnimationFrame(loop); };
+  loop();
+  const hovSel = '#term, #progress-bar, #play-toggle';
+  document.addEventListener('mouseover', (e) => { if (e.target.closest(hovSel)) { dot.classList.add('hov'); ring.classList.add('hov'); } });
+  document.addEventListener('mouseout', (e) => { if (e.target.closest(hovSel)) { dot.classList.remove('hov'); ring.classList.remove('hov'); } });
+  document.addEventListener('mouseleave', () => { dot.style.opacity = 0; ring.style.opacity = 0; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = 1; ring.style.opacity = 1; });
+})();
+
+playToggle.innerHTML = PAUSE_ICON;
+const qBeat = new URLSearchParams(location.search).get('beat');
+if (qBeat !== null) { setPaused(true); seekTo(beats[Math.min(beats.length - 1, +qBeat)].at / TOTAL + 0.001); }
+else if (reduceMotion) { setPaused(true); seekTo(beats[2].at / TOTAL + 0.001); }
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

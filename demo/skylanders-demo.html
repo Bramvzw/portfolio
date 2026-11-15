@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skylanders Tracker — App Demo</title>
+<meta name="description" content="Live animated demo: complete Skylanders flip lifecycle — spot, buy, relist and sell — in a premium 3D phone mockup with real app screenshots.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #060d18;
+    --accent:   #38BDF8;
+    --green:    #34D399;
+    --red:      #EF4444;
+    --amber:    #E8962A;
+    --text:     #EAF1FB;
+    --muted:    #8198B5;
+    --phone-w:  300px;
+    --phone-h:  640px;
+    --phone-scale: 0.82;
+    --radius:   42px;
+    /* 1080×2400 image: crop ~3.5% from top to hide status bar */
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    cursor: none;
+  }
+
+  /* Portfolio-matched custom cursor (amber dot + ring) so the cursor keeps
+     the site's style while hovering the embedded demo. */
+  .cursor-dot {
+    position: fixed; top: 0; left: 0;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber);
+    pointer-events: none; z-index: 9999;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: width .25s cubic-bezier(.2,.8,.2,1), height .25s cubic-bezier(.2,.8,.2,1), background .25s ease, opacity .2s ease;
+    will-change: transform, width, height;
+  }
+  .cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid rgba(232,150,42,.35);
+    pointer-events: none; z-index: 9998;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: width .3s cubic-bezier(.2,.8,.2,1), height .3s cubic-bezier(.2,.8,.2,1), border-color .25s ease, opacity .2s ease;
+    will-change: transform, width, height;
+  }
+  .cursor-dot.hov { width: 0; height: 0; }
+  .cursor-ring.hov { width: 56px; height: 56px; border-color: rgba(232,150,42,.85); background: rgba(232,150,42,.08); }
+  @media (hover: none), (max-width: 560px) {
+    .cursor-dot, .cursor-ring { display: none; }
+    html, body { cursor: auto; }
+  }
+
+  /* ── Stage ──
+     Default (narrow / mobile): phone on top, narration below.
+     Wide (≥560px, e.g. embedded beside the project copy): narration sits
+     to the LEFT of the phone, on a fully transparent background. */
+  #stage {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  /* Narration (caption) and the scrubber/controls block move independently:
+     on mobile they stack under the phone; on wide the caption sits beside
+     the phone and the scrubber + controls sit directly UNDER the phone. */
+  #side {
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #phone-scene { order: 1; }
+  #under {
+    order: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: var(--phone-w);
+  }
+
+  @media (min-width: 560px) {
+    /* Phone on the left; narration top-right (centred, comfortably wide) with
+       the scrubber, play button and dots stacked centred beneath it. */
+    #stage {
+      --phone-scale: 0.84;
+      display: grid;
+      grid-template-columns: auto minmax(230px, 285px);
+      grid-template-rows: auto auto;
+      column-gap: 24px;
+      row-gap: 16px;
+      align-content: center;
+      justify-content: center;
+    }
+    #phone-scene { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
+    #side  { grid-column: 2; grid-row: 1; align-self: end;   width: 100%; }
+    #under { grid-column: 2; grid-row: 2; align-self: start; width: 100%; align-items: center; }
+    #caption-area {
+      text-align: center;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      margin-top: 0;
+      padding: 0;
+      min-height: auto;
+      max-width: none;
+    }
+    .caption-eyebrow { font-size: 11px; letter-spacing: 2.6px; }
+    .caption-main { font-size: 19px; line-height: 1.42; }
+    #progress-bar { width: 100%; margin-top: 0; }
+    #beat-dots, #controls { margin-top: 0; align-self: center; }
+  }
+
+  /* ── Phone scene (perspective wrapper) ── */
+  #phone-scene {
+    flex-shrink: 0;
+    width:  calc(var(--phone-w) * var(--phone-scale));
+    height: calc(var(--phone-h) * var(--phone-scale));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1600px;
+  }
+
+  #phone {
+    width: var(--phone-w);
+    height: var(--phone-h);
+    position: relative;
+    /* Straight-on (front-facing); a whisper of rotateX gives depth without
+       turning the device left/right. Scaled uniformly so all px-positioned
+       overlays scale with it and stay aligned. */
+    transform: rotateX(3deg) scale(var(--phone-scale));
+    transform-origin: center center;
+    transform-style: preserve-3d;
+    flex-shrink: 0;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #phone { animation: none; transform: none; }
+    #phone-scene { perspective: none; }
+  }
+
+  /* Bezel */
+  #phone-bezel {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    background: linear-gradient(145deg, #2a3d60 0%, #111c34 40%, #0d1628 70%, #1a2540 100%);
+    box-shadow:
+      /* bevel — top catch-light, bottom/side depth */
+      inset 0 1.5px 0 rgba(255,255,255,.18),
+      inset 0 -1.5px 0 rgba(0,0,0,.55),
+      inset 1.5px 0 0 rgba(255,255,255,.10),
+      inset -1.5px 0 0 rgba(0,0,0,.45),
+      /* thin outer rim so the edge reads as a real device */
+      0 0 0 1px rgba(255,255,255,.05),
+      /* soft ambient depth (subtle, neutral — no heavy cast) */
+      0 18px 44px rgba(0,0,0,.42),
+      0 5px 14px rgba(0,0,0,.32);
+  }
+
+  /* Screen cutout */
+  #phone-screen {
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    right: 8px;
+    bottom: 10px;
+    border-radius: calc(var(--radius) - 8px);
+    background: #0a1322;
+    overflow: hidden;
+  }
+
+  /* Glass gloss */
+  #phone-gloss {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    background: linear-gradient(
+      120deg,
+      rgba(255,255,255,.10) 0%,
+      rgba(255,255,255,.04) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Dynamic island / notch */
+  #dynamic-island {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 72px;
+    height: 20px;
+    background: #000;
+    border-radius: 10px;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  /* Floor shadow */
+  #phone-shadow {
+    display: none;
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%) rotateX(90deg);
+    width: 240px;
+    height: 40px;
+    background: radial-gradient(ellipse, rgba(0,0,0,.55) 0%, transparent 70%);
+    filter: blur(8px);
+  }
+
+  /* ── Screens container ── */
+  #screens {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: calc(var(--radius) - 8px);
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1);
+    will-change: opacity, transform;
+  }
+  .screen.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .screen.exit-left {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  /* The screenshot image fills the entire phone screen.
+     1080×2400 originals. Shift up 3.5% to crop status bar. */
+  .screen-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center calc(0% - 3.5%);
+    display: block;
+  }
+
+  /* Chat screens are shown at natural cover-fit (NO zoom) so the whole
+     conversation stays on-screen. The synthetic amber "Vinted session
+     expired" banner is hidden by a dark patch that reads as spacing
+     between the item card and the message thread. */
+  .chat-banner-patch {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 20.0%;
+    height: 7.6%;
+    background: #0c1320;
+    z-index: 12;
+    pointer-events: none;
+  }
+
+  /* ── Overlay layer ── */
+  .screen-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* ── Swipe finger gesture ── */
+  #finger {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.85) 0%, rgba(255,255,255,.55) 60%, rgba(255,255,255,.25) 100%);
+    box-shadow:
+      0 2px 10px rgba(0,0,0,.45),
+      0 0 0 2px rgba(255,255,255,.2);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 40;
+    transform: translate(-50%, -50%);
+    will-change: opacity, left, top;
+  }
+
+  /* Finger trail */
+  .finger-trail {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 39;
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+
+  /* ── Swipe card overlay ──
+     Background: spyro-feed.png (single Spyro card at top), card at
+     phone-screen y 176–248px. */
+  #card-highlight {
+    position: absolute;
+    top: 176px;
+    left: 2px;
+    right: 2px;
+    height: 72px;
+    border: 1.5px solid rgba(56,189,248,0);
+    border-radius: 6px;
+    box-shadow: 0 0 0 0 rgba(56,189,248,0);
+    pointer-events: none;
+    z-index: 18;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  #card-highlight.glow {
+    border-color: rgba(56,189,248,.55);
+    box-shadow: 0 0 10px rgba(56,189,248,.2), inset 0 0 6px rgba(56,189,248,.06);
+  }
+
+  #swipe-card-overlay {
+    position: absolute;
+    top: 176px;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background-image: url('assets/spyro-feed.png');
+    background-size: 284px auto;
+    background-position: 0px -176px;
+    background-repeat: no-repeat;
+    border-radius: 3px;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 19;
+    transform: translateX(0px) rotate(0deg);
+    opacity: 1;
+    will-change: transform, opacity;
+  }
+
+  #swipe-action-bg {
+    position: absolute;
+    top: 176px;
+    left: 0;
+    right: 0;
+    height: 72px;
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 18;
+    overflow: hidden;
+  }
+
+  #dismiss-strip {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(239,68,68,.9) 40%, rgba(239,68,68,.95) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    opacity: 0;
+  }
+  #dismiss-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0,0,0,.6);
+    letter-spacing: .5px;
+    opacity: 0;
+  }
+
+  #approve-strip {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(270deg, transparent 0%, rgba(52,211,153,.9) 40%, rgba(52,211,153,.95) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 10px;
+    opacity: 0;
+  }
+  #approve-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0,0,0,.6);
+    letter-spacing: .5px;
+    opacity: 0;
+  }
+
+  #swipe-approve-strip {
+    position: absolute;
+    inset: 0;
+    right: 0;
+    width: 0;
+    background: linear-gradient(270deg, rgba(52,211,153,.95) 0%, rgba(52,211,153,.5) 55%, transparent 100%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    overflow: hidden;
+  }
+  #swipe-approve-check {
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    opacity: 0;
+    transition: opacity .15s ease;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0,0,0,.7);
+    letter-spacing: .5px;
+  }
+
+  /* Screen glow flashes */
+  .screen-flash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 30;
+    opacity: 0;
+    border-radius: calc(var(--radius) - 8px);
+  }
+  .screen-flash.green {
+    background: radial-gradient(ellipse at 50% 40%, rgba(52,211,153,.3) 0%, transparent 65%);
+  }
+  .screen-flash.red-flash {
+    background: radial-gradient(ellipse at 50% 40%, rgba(239,68,68,.25) 0%, transparent 65%);
+  }
+  .screen-flash.pulse {
+    animation: screenFlashPulse .55s ease forwards;
+  }
+  @keyframes screenFlashPulse {
+    0%   { opacity: 0; }
+    25%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── Generic highlight band — sweeps attention over a content row ── */
+  .hl-band {
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(56,189,248,.10) 8%,
+      rgba(52,211,153,.22) 30%,
+      rgba(52,211,153,.22) 70%,
+      rgba(56,189,248,.10) 92%,
+      transparent 100%
+    );
+    border-top:    1px solid rgba(52,211,153,.25);
+    border-bottom: 1px solid rgba(52,211,153,.25);
+    border-radius: 3px;
+  }
+  .hl-band.pulse { animation: bandPulse 2.0s ease forwards; }
+  @keyframes bandPulse {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    68%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Soft left-aligned pulse for chat message / offer bubbles */
+  .msg-glow {
+    position: absolute;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    background: linear-gradient(90deg, rgba(56,189,248,.20) 0%, rgba(56,189,248,.06) 70%, transparent 100%);
+    border-radius: 12px;
+  }
+  .msg-glow.pulse { animation: msgGlowPulse 1.6s ease forwards; }
+  @keyframes msgGlowPulse {
+    0%   { opacity: 0; }
+    22%  { opacity: 1; }
+    68%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Profile P&L glow pulse */
+  #pl-pulse {
+    position: absolute;
+    top: 30%;
+    left: 4%;
+    right: 4%;
+    height: 22%;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    background: radial-gradient(ellipse at 30% 40%, rgba(52,211,153,.25) 0%, transparent 70%);
+    border-radius: 12px;
+  }
+  #pl-pulse.pulse { animation: plPulse 1.8s ease forwards; }
+  @keyframes plPulse {
+    0%   { opacity: 0; }
+    15%  { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── Feed beat: Vinted scan animation ── */
+  #vinted-scan-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 25;
+    opacity: 0;
+  }
+  #vinted-scan-overlay.active { opacity: 1; }
+
+  /* Dim layer under the scan pill */
+  #scan-dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(6,13,24,.45);
+    opacity: 0;
+  }
+  #vinted-scan-overlay.active #scan-dim {
+    animation: scanDim 2.6s ease forwards;
+  }
+  @keyframes scanDim {
+    0%   { opacity: 0; }
+    14%  { opacity: 1; }
+    66%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Opaque cover hiding the Spyro deal card UNTIL the scan completes —
+     the deal only "appears" after Vinted is searched. Matches feed bg. */
+  #scan-card-cover {
+    position: absolute;
+    top: 170px;
+    left: 0;
+    right: 0;
+    height: 82px;
+    background: #0b1322;
+    opacity: 1;
+    z-index: 24;
+  }
+  #vinted-scan-overlay.active #scan-card-cover {
+    animation: scanCardReveal 2.6s ease forwards;
+  }
+  @keyframes scanCardReveal {
+    0%   { opacity: 1; }
+    66%  { opacity: 1; }   /* covered while the beam sweeps (~1.7s) */
+    80%  { opacity: 0; }   /* fade out → deal appears */
+    100% { opacity: 0; }
+  }
+
+  /* Sweeping cyan scan beam */
+  #scan-beam {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(56,189,248,.15) 10%,
+      rgba(56,189,248,.85) 40%,
+      rgba(56,189,248,1)   50%,
+      rgba(56,189,248,.85) 60%,
+      rgba(56,189,248,.15) 90%,
+      transparent 100%
+    );
+    box-shadow: 0 0 10px 3px rgba(56,189,248,.4), 0 0 30px 8px rgba(56,189,248,.15);
+    top: -4px;
+    opacity: 0;
+    z-index: 25;
+  }
+  #vinted-scan-overlay.active #scan-beam {
+    animation: scanBeamSweep 1.7s cubic-bezier(.4,0,.6,1) forwards;
+  }
+  @keyframes scanBeamSweep {
+    0%   { top: -4px;   opacity: 0; }
+    5%   { top: 0px;    opacity: 1; }
+    80%  { top: 100%;   opacity: 1; }
+    100% { top: 100%;   opacity: 0; }
+  }
+
+  /* "Vinted doorzoeken…" pill */
+  #scan-pill {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.85);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px 6px 10px;
+    background: rgba(6,13,24,.88);
+    border: 1px solid rgba(56,189,248,.6);
+    border-radius: 20px;
+    opacity: 0;
+    white-space: nowrap;
+    box-shadow: 0 0 20px rgba(56,189,248,.2);
+    z-index: 26;
+  }
+  #vinted-scan-overlay.active #scan-pill {
+    animation: scanPillAppear 2.6s ease forwards;
+  }
+  @keyframes scanPillAppear {
+    0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.85); }
+    10%  { opacity: 1; transform: translate(-50%,-50%) scale(1);    }
+    64%  { opacity: 1; transform: translate(-50%,-50%) scale(1);    }
+    78%  { opacity: 0; transform: translate(-50%,-50%) scale(0.92); }
+    100% { opacity: 0; transform: translate(-50%,-50%) scale(0.92); }
+  }
+  #scan-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #38BDF8;
+    flex-shrink: 0;
+    animation: scanDotPulse 0.9s ease-in-out infinite;
+  }
+  @keyframes scanDotPulse {
+    0%,100% { opacity: 1;   transform: scale(1);    }
+    50%     { opacity: .4;  transform: scale(0.7);  }
+  }
+  #scan-pill-text {
+    font-size: 10px;
+    font-weight: 700;
+    color: #38BDF8;
+    letter-spacing: .4px;
+  }
+
+  /* Card "found" pop-glow as the deal appears */
+  #card-found-glow {
+    position: absolute;
+    top: 173px;
+    left: 2px;
+    right: 2px;
+    height: 75px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(56,189,248,0);
+    box-shadow: 0 0 0 0 rgba(56,189,248,0);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 26;
+  }
+  #vinted-scan-overlay.active #card-found-glow {
+    animation: cardFoundPop 1.1s ease forwards;
+    animation-delay: 1.95s;
+  }
+  @keyframes cardFoundPop {
+    0%   { opacity: 0; border-color: rgba(56,189,248,0);    box-shadow: 0 0 0px  0px rgba(56,189,248,0);    }
+    20%  { opacity: 1; border-color: rgba(56,189,248,.9);   box-shadow: 0 0 16px 4px rgba(56,189,248,.45); }
+    55%  { opacity: 1; border-color: rgba(56,189,248,.65);  box-shadow: 0 0 10px 2px rgba(56,189,248,.25); }
+    100% { opacity: 0; border-color: rgba(56,189,248,0);    box-shadow: 0 0 0px  0px rgba(56,189,248,0);    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #vinted-scan-overlay { display: none; }
+  }
+
+  /* ── Match beat: AI-pick glow ring around first suggestion card ── */
+  #ai-pick-glow {
+    position: absolute;
+    top: 271px;
+    left: 6px;
+    right: 6px;
+    height: 37px;
+    border-radius: 7px;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    border: 1.5px solid rgba(56,189,248,0);
+    box-shadow: 0 0 0 0 rgba(56,189,248,0);
+  }
+  #ai-pick-glow.pulse { animation: aiPickGlow 2.0s ease forwards; }
+  @keyframes aiPickGlow {
+    0%   { opacity: 0; border-color: rgba(56,189,248,0);   box-shadow: 0 0 0px  0px rgba(56,189,248,0);   }
+    18%  { opacity: 1; border-color: rgba(56,189,248,.75); box-shadow: 0 0 12px 3px  rgba(56,189,248,.35); }
+    55%  { opacity: 1; border-color: rgba(56,189,248,.60); box-shadow: 0 0 10px 2px  rgba(56,189,248,.25); }
+    72%  { opacity: 1; border-color: rgba(56,189,248,.80); box-shadow: 0 0 16px 4px  rgba(56,189,248,.40); }
+    100% { opacity: 0; border-color: rgba(56,189,248,0);   box-shadow: 0 0 0px  0px rgba(56,189,248,0);   }
+  }
+
+  /* ── Prices beat: highlight glow band over the bottom €92 row ── */
+  #prices-row-glow {
+    position: absolute;
+    top: 460px;
+    left: 0;
+    right: 0;
+    height: 42px;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(56,189,248,.10) 8%,
+      rgba(52,211,153,.22) 30%,
+      rgba(52,211,153,.22) 70%,
+      rgba(56,189,248,.10) 92%,
+      transparent 100%
+    );
+    border-top:    1px solid rgba(52,211,153,.25);
+    border-bottom: 1px solid rgba(52,211,153,.25);
+    border-radius: 3px;
+  }
+  #prices-row-glow.pulse { animation: pricesRowGlow 2.2s ease forwards; }
+  @keyframes pricesRowGlow {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    65%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── Caption area ── */
+  #caption-area {
+    text-align: center;
+    min-height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 24px;
+    margin-top: 14px;
+    max-width: 360px;
+  }
+
+  .caption-eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2.4px;
+    color: var(--amber);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .caption-main {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #efe8dc; /* portfolio --ink */
+    letter-spacing: 0;
+    line-height: 1.4;
+    text-wrap: balance;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .35s ease .08s, transform .35s ease .08s;
+  }
+  .caption-eyebrow.show, .caption-main.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Progress bar ── */
+  #progress-bar {
+    width: var(--phone-w);
+    height: 3px;
+    background: rgba(255,255,255,.08);
+    border-radius: 3px;
+    margin-top: 12px;
+    position: relative;
+    cursor: none;
+    touch-action: none;
+  }
+  #progress-bar::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: -10px; bottom: -10px;
+  }
+  #progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber), #f4b85f);
+    border-radius: 3px;
+    width: 0%;
+    transition: width .3s linear;
+    pointer-events: none;
+  }
+  #progress-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,.55), 0 0 0 2px rgba(232,150,42,.55);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity .2s ease, transform .15s ease;
+    pointer-events: none;
+  }
+  #progress-bar:hover #progress-thumb,
+  #progress-bar.scrubbing #progress-thumb { opacity: 1; }
+  #progress-bar.scrubbing #progress-thumb { transform: translate(-50%, -50%) scale(1.15); }
+  #progress-bar.scrubbing #progress-fill { transition: none; }
+
+  /* Beat dots — 11 beats */
+  #beat-dots {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+    align-items: center;
+  }
+  .beat-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    transition: background .3s ease, transform .3s ease;
+  }
+  .beat-dot.active {
+    background: var(--amber);
+    transform: scale(1.3);
+  }
+
+  /* ── Play / pause control ── */
+  #controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  #play-toggle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(232,150,42,.30);
+    background: rgba(232,150,42,.10);
+    color: var(--amber);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: none;
+    padding: 0;
+    transition: background .2s ease, border-color .2s ease, transform .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #play-toggle:hover {
+    background: rgba(232,150,42,.18);
+    border-color: rgba(232,150,42,.5);
+  }
+  #play-toggle:active { transform: scale(.92); }
+  #play-toggle:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+  }
+  #play-toggle svg { width: 16px; height: 16px; fill: currentColor; }
+  #phone { cursor: none; }
+
+  /* ── Responsive ── */
+  @media (max-width: 400px) {
+    :root { --phone-w: 270px; --phone-h: 570px; --radius: 36px; --phone-scale: 0.86; }
+    #phone { animation: none; transform: scale(var(--phone-scale)); }
+    #phone-scene { perspective: none; }
+  }
+  @media (max-height: 520px) {
+    :root { --phone-w: 270px; --phone-h: 560px; }
+    #caption-area { min-height: 42px; margin-top: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="cursor-ring" id="cring"></div>
+<div class="cursor-dot" id="cdot"></div>
+<div id="stage">
+
+  <div id="phone-scene">
+    <div id="phone">
+      <div id="phone-shadow"></div>
+      <div id="phone-bezel"></div>
+
+      <div id="phone-screen">
+        <!-- Dynamic island overlay — sits on top of screenshots -->
+        <div id="dynamic-island"></div>
+
+        <!-- Screens: real app screenshots -->
+        <div id="screens">
+
+          <!-- Beat 1: Deal feed — Vinted is scanned, the Spyro deal appears AFTER the scan -->
+          <div class="screen" id="screen-feed">
+            <img class="screen-img" src="assets/spyro-feed.png" alt="Spyro deal in feed" draggable="false">
+            <div class="screen-overlay">
+              <div id="vinted-scan-overlay">
+                <div id="scan-dim"></div>
+                <div id="scan-card-cover"></div>
+                <div id="scan-beam"></div>
+                <div id="scan-pill">
+                  <span id="scan-pill-dot"></span>
+                  <span id="scan-pill-text">Vinted doorzoeken…</span>
+                </div>
+                <div id="card-found-glow"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Beat 2: AI image-match — untitled listing, AI identifies Spyro from the photo -->
+          <div class="screen" id="screen-match">
+            <img class="screen-img" src="assets/spyro-match.png" alt="AI image match suggests Spyro" draggable="false">
+            <div class="screen-overlay">
+              <div id="ai-pick-glow"></div>
+            </div>
+          </div>
+
+          <!-- Beat 3: Deal detail — Vinted tag, ask vs market value -->
+          <div class="screen" id="screen-detail">
+            <img class="screen-img" src="assets/spyro-detail.png" alt="Spyro deal detail" draggable="false">
+            <div class="screen-overlay"></div>
+          </div>
+
+          <!-- Beat 4: Live price list — market value €92, source of the margin -->
+          <div class="screen" id="screen-prices">
+            <img class="screen-img" src="assets/spyro-prices.png" alt="Live price list" draggable="false">
+            <div class="screen-overlay">
+              <div id="prices-row-glow"></div>
+            </div>
+          </div>
+
+          <!-- Beat 5: Swipe — feed background, Spyro card does Phase A (dismiss) then Phase B (approve) -->
+          <div class="screen" id="screen-swipe">
+            <img class="screen-img" src="assets/spyro-feed.png" alt="Deals feed" draggable="false">
+            <div class="screen-overlay" id="swipe-overlay">
+              <div id="swipe-action-bg">
+                <div id="dismiss-strip"><div id="dismiss-label">✗ Dismiss</div></div>
+                <div id="approve-strip"><div id="approve-label">✓ Approve</div></div>
+              </div>
+              <div id="card-highlight"></div>
+              <div id="swipe-card-overlay">
+                <div id="swipe-approve-strip">
+                  <div id="swipe-approve-check">✓ BEWAARD</div>
+                </div>
+              </div>
+            </div>
+            <div class="screen-flash green" id="swipe-flash"></div>
+            <div class="screen-flash red-flash" id="swipe-flash-red"></div>
+          </div>
+
+          <!-- Beat 6: BUY chat — negotiate with the seller, buy for €24 -->
+          <div class="screen" id="screen-chatbuy">
+            <img class="screen-img" src="assets/spyro-chat-buy.png" alt="Buy negotiation chat" draggable="false">
+            <div class="screen-overlay">
+              <div class="chat-banner-patch"></div>
+              <div class="msg-glow" id="buychat-glow" style="top:36%;height:8.5%;left:3%;right:42%;"></div>
+            </div>
+          </div>
+
+          <!-- Beat 7: GEKOCHT — item owned, €24 paid, €92 market (+283%) -->
+          <div class="screen" id="screen-item-owned">
+            <img class="screen-img" src="assets/spyro-item-owned.png" alt="Spyro owned in collection" draggable="false">
+            <div class="screen-overlay">
+              <div class="hl-band" id="owned-glow" style="top:58%;height:9%;"></div>
+            </div>
+          </div>
+
+          <!-- Beat 8: TE KOOP — relisted, ask €95 (+€71) -->
+          <div class="screen" id="screen-item-selling">
+            <img class="screen-img" src="assets/spyro-item-selling.png" alt="Spyro relisted for sale" draggable="false">
+            <div class="screen-overlay">
+              <div class="hl-band" id="selling-glow" style="top:57%;height:11%;"></div>
+            </div>
+          </div>
+
+          <!-- Beat 9: BOD ONTVANGEN — buyer offers €90, accepted -->
+          <div class="screen" id="screen-chatsell">
+            <img class="screen-img" src="assets/spyro-chat-sell.png" alt="Sell negotiation chat with offer" draggable="false">
+            <div class="screen-overlay">
+              <div class="chat-banner-patch"></div>
+              <div class="msg-glow" id="sellchat-glow" style="top:49%;height:9%;left:3%;right:38%;"></div>
+            </div>
+          </div>
+
+          <!-- Beat 10: VERKOCHT — sold for €90, +€66 profit -->
+          <div class="screen" id="screen-item-sold">
+            <img class="screen-img" src="assets/spyro-item-sold.png" alt="Spyro sold" draggable="false">
+            <div class="screen-overlay">
+              <div class="hl-band" id="sold-glow" style="top:79%;height:13.5%;"></div>
+            </div>
+          </div>
+
+          <!-- Beat 11: Portfolio P&L — €531 profit, ROI 188%, best flip Spyro -->
+          <div class="screen" id="screen-profile">
+            <img class="screen-img" src="assets/spyro-profile.png" alt="Profile P&L" draggable="false">
+            <div class="screen-overlay">
+              <div id="pl-pulse"></div>
+            </div>
+          </div>
+
+        </div><!-- /screens -->
+
+        <div class="screen-flash green" id="global-flash" style="z-index:45;border-radius:calc(var(--radius) - 8px);position:absolute;inset:0;pointer-events:none;opacity:0;"></div>
+
+      </div><!-- /phone-screen -->
+
+      <div id="phone-gloss"></div>
+
+      <div id="finger"></div>
+      <div class="finger-trail" id="trail-1"></div>
+      <div class="finger-trail" id="trail-2"></div>
+      <div class="finger-trail" id="trail-3"></div>
+
+    </div><!-- /phone -->
+  </div><!-- /phone-scene -->
+
+  <!-- Narration — beside the phone (wide) or under it (mobile) -->
+  <div id="side">
+    <div id="caption-area">
+      <div class="caption-eyebrow" id="cap-eyebrow">AUTOMATISCH VAN VINTED</div>
+      <div class="caption-main"    id="cap-main">Elke ~15 min scant de app Vinted op nieuwe deals</div>
+    </div>
+  </div><!-- /side -->
+
+  <!-- Scrubber + controls — directly under the phone -->
+  <div id="under">
+    <!-- Progress -->
+    <div id="progress-bar"><div id="progress-fill"></div><div id="progress-thumb"></div></div>
+
+    <!-- Play / pause (icon only) -->
+    <div id="controls">
+      <button id="play-toggle" type="button" aria-label="Pauzeren"></button>
+    </div>
+
+    <!-- 11 beat dots -->
+    <div id="beat-dots">
+      <div class="beat-dot active" id="dot-0"></div>
+      <div class="beat-dot" id="dot-1"></div>
+      <div class="beat-dot" id="dot-2"></div>
+      <div class="beat-dot" id="dot-3"></div>
+      <div class="beat-dot" id="dot-4"></div>
+      <div class="beat-dot" id="dot-5"></div>
+      <div class="beat-dot" id="dot-6"></div>
+      <div class="beat-dot" id="dot-7"></div>
+      <div class="beat-dot" id="dot-8"></div>
+      <div class="beat-dot" id="dot-9"></div>
+      <div class="beat-dot" id="dot-10"></div>
+    </div>
+  </div><!-- /under -->
+
+</div><!-- /stage -->
+
+<script>
+'use strict';
+
+// ── State ──────────────────────────────────────────────────────────
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const TOTAL      = 50000; // 50s loop
+const NUM_BEATS  = 11;
+
+const screens = {
+  feed:        document.getElementById('screen-feed'),
+  match:       document.getElementById('screen-match'),
+  detail:      document.getElementById('screen-detail'),
+  prices:      document.getElementById('screen-prices'),
+  swipe:       document.getElementById('screen-swipe'),
+  chatbuy:     document.getElementById('screen-chatbuy'),
+  itemowned:   document.getElementById('screen-item-owned'),
+  itemselling: document.getElementById('screen-item-selling'),
+  chatsell:    document.getElementById('screen-chatsell'),
+  itemsold:    document.getElementById('screen-item-sold'),
+  profile:     document.getElementById('screen-profile'),
+};
+
+const capEyebrow = document.getElementById('cap-eyebrow');
+const capMain    = document.getElementById('cap-main');
+const finger     = document.getElementById('finger');
+const trails     = [
+  document.getElementById('trail-1'),
+  document.getElementById('trail-2'),
+  document.getElementById('trail-3'),
+];
+
+let activeScreenId = null;
+let currentBeat    = -1;
+let rafHandle      = null;
+let elapsed        = 0;     // accumulated, pause-aware clock (ms)
+let lastNow        = null;  // last RAF timestamp
+let paused         = false;
+let seeking        = false; // true while the user is scrubbing the bar
+
+// ── Caption ────────────────────────────────────────────────────────
+function setCaption(eyebrow, main) {
+  capEyebrow.classList.remove('show');
+  capMain.classList.remove('show');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    capEyebrow.textContent = eyebrow;
+    capMain.textContent    = main;
+    capEyebrow.classList.add('show');
+    capMain.classList.add('show');
+  }));
+}
+
+// ── Screen transitions ─────────────────────────────────────────────
+function showScreen(id) {
+  if (activeScreenId === id) return;
+  const prev = activeScreenId ? screens[activeScreenId] : null;
+  const next = screens[id];
+
+  if (prev) {
+    prev.classList.remove('active');
+    prev.classList.add('exit-left');
+    setTimeout(() => prev.classList.remove('exit-left'), 500);
+  }
+  if (next) {
+    next.style.transform = 'translateX(20px)';
+    void next.offsetWidth;
+    next.classList.add('active');
+    requestAnimationFrame(() => { next.style.transform = ''; });
+  }
+  activeScreenId = id;
+}
+
+// ── Progress / dots ────────────────────────────────────────────────
+function updateProgress(beatIdx, progress) {
+  const pct = ((beatIdx + progress) / NUM_BEATS) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-thumb').style.left = pct + '%';
+  for (let i = 0; i < NUM_BEATS; i++) {
+    const dot = document.getElementById('dot-' + i);
+    if (dot) dot.classList.toggle('active', i === beatIdx);
+  }
+}
+
+// ── Flash / pulse helper ───────────────────────────────────────────
+function pulse(el, delay) {
+  if (!el) return;
+  el.classList.remove('pulse');
+  void el.offsetWidth;
+  setTimeout(() => el.classList.add('pulse'), delay || 0);
+}
+function flashEl(el, cls) {
+  const c = cls || 'pulse';
+  el.classList.remove(c);
+  void el.offsetWidth;
+  el.classList.add(c);
+  setTimeout(() => el.classList.remove(c), 800);
+}
+
+// ── Swipe gesture — Phase A: left (dismiss), Phase B: right (approve) ──
+function animateSwipeGesture() {
+  if (reduceMotion) return;
+
+  const cardEl        = document.getElementById('swipe-card-overlay');
+  const approveStrip  = document.getElementById('swipe-approve-strip');
+  const approveCheck  = document.getElementById('swipe-approve-check');
+  const highlight     = document.getElementById('card-highlight');
+  const dismissStrip  = document.getElementById('dismiss-strip');
+  const dismissLabel  = document.getElementById('dismiss-label');
+  const approveEl     = document.getElementById('approve-strip');
+  const approveLabel  = document.getElementById('approve-label');
+  const flashGreen    = document.getElementById('swipe-flash');
+
+  cardEl.style.transition       = 'none';
+  cardEl.style.transform        = 'translateX(0px) rotate(0deg)';
+  cardEl.style.opacity          = '1';
+  approveStrip.style.width      = '0px';
+  approveCheck.style.opacity    = '0';
+  dismissStrip.style.opacity    = '0';
+  dismissLabel.style.opacity    = '0';
+  approveEl.style.opacity       = '0';
+  approveLabel.style.opacity    = '0';
+  highlight.classList.remove('glow');
+
+  const startX = 88;
+  const startY = 222;
+
+  finger.style.cssText = `left:${startX}px; top:${startY}px; opacity:0; transition:none;`;
+  trails.forEach(t => {
+    t.style.opacity = '0';
+    t.style.left    = startX + 'px';
+    t.style.top     = startY + 'px';
+  });
+
+  setTimeout(() => {
+    highlight.classList.add('glow');
+    setTimeout(() => highlight.classList.remove('glow'), 350);
+  }, 120);
+
+  const PHASE_A_DIST     = -70;
+  const PHASE_A_DUR      = 600;
+  const PHASE_A_HOLD     = 500;
+  const PHASE_A_BACK_DUR = 400;
+
+  let phaseAStartMs = null;
+  function phaseASlide(now) {
+    if (!phaseAStartMs) phaseAStartMs = now;
+    const t    = Math.min(1, (now - phaseAStartMs) / PHASE_A_DUR);
+    const ease = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+    const dx   = ease * PHASE_A_DIST;
+
+    const absProgress = Math.abs(dx) / Math.abs(PHASE_A_DIST);
+    dismissStrip.style.opacity = String(Math.min(1, absProgress * 2));
+    dismissLabel.style.opacity = String(Math.min(1, (absProgress - 0.4) / 0.3));
+
+    const fx = startX + dx * 0.6;
+    finger.style.left    = fx + 'px';
+    finger.style.top     = startY + 'px';
+    finger.style.opacity = t < 0.07 ? String(t / 0.07)
+                         : t > 0.85 ? String((1-t) / 0.15)
+                         : '1';
+
+    cardEl.style.transform = `translateX(${dx}px) rotate(${dx * 0.03}deg)`;
+
+    if (t < 1) requestAnimationFrame(phaseASlide);
+    else setTimeout(phaseASpringBack, PHASE_A_HOLD);
+  }
+
+  let phaseABackStartMs = null;
+  function phaseASpringBack(now) {
+    if (!now) now = performance.now();
+    if (!phaseABackStartMs) phaseABackStartMs = now;
+    const t    = Math.min(1, (now - phaseABackStartMs) / PHASE_A_BACK_DUR);
+    const ease = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+    const dx   = PHASE_A_DIST * (1 - ease);
+
+    dismissStrip.style.opacity = String((1 - ease));
+    dismissLabel.style.opacity = String(Math.max(0, (1 - ease) - 0.3));
+    finger.style.opacity = String(Math.max(0, 1 - t * 2));
+    cardEl.style.transform = `translateX(${dx}px) rotate(${dx * 0.03}deg)`;
+
+    if (t < 1) requestAnimationFrame(phaseASpringBack);
+    else {
+      cardEl.style.transform = 'translateX(0px) rotate(0deg)';
+      dismissStrip.style.opacity = '0';
+      dismissLabel.style.opacity = '0';
+      finger.style.opacity = '0';
+      trails.forEach(tr => { tr.style.opacity = '0'; });
+      setTimeout(startPhaseB, 350);
+    }
+  }
+
+  const PHASE_B_DIST = 200;
+  const PHASE_B_DUR  = 750;
+  function startPhaseB() {
+    finger.style.cssText = `left:${startX}px; top:${startY}px; opacity:0; transition:none;`;
+    trails.forEach(t => {
+      t.style.opacity = '0';
+      t.style.left    = startX + 'px';
+      t.style.top     = startY + 'px';
+    });
+
+    let phaseBStartMs = null;
+    const posHistory  = [];
+    function phaseBStep(now) {
+      if (!phaseBStartMs) phaseBStartMs = now;
+      const t    = Math.min(1, (now - phaseBStartMs) / PHASE_B_DUR);
+      const ease = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+      const dx   = ease * PHASE_B_DIST;
+      const dy   = -ease * 12;
+      const rot  = ease * 6;
+
+      const fx = startX + dx;
+      const fy = startY + dy;
+      finger.style.left    = fx + 'px';
+      finger.style.top     = fy + 'px';
+      finger.style.opacity = t < 0.07 ? String(t / 0.07)
+                           : t > 0.80 ? String((1-t) / 0.20)
+                           : '1';
+
+      cardEl.style.transform = `translateX(${dx}px) rotate(${rot}deg)`;
+      if (t > 0.60) cardEl.style.opacity = String(1 - (t - 0.60) / 0.40);
+
+      const progress = dx / PHASE_B_DIST;
+      approveEl.style.opacity    = String(Math.min(1, progress * 2));
+      approveLabel.style.opacity = String(Math.min(1, (progress - 0.3) / 0.35));
+
+      posHistory.push({ x: fx, y: fy });
+      if (posHistory.length > 60) posHistory.shift();
+      const lags = [16, 28, 42];
+      trails.forEach((trail, i) => {
+        const idx = posHistory.length - 1 - lags[i];
+        if (idx >= 0) {
+          trail.style.left    = posHistory[idx].x + 'px';
+          trail.style.top     = posHistory[idx].y + 'px';
+          trail.style.opacity = String(Math.max(0, parseFloat(finger.style.opacity) * (0.4 - i*0.1)));
+        }
+      });
+
+      if (t < 1) requestAnimationFrame(phaseBStep);
+      else {
+        finger.style.opacity = '0';
+        trails.forEach(tr => { tr.style.opacity = '0'; });
+        flashEl(flashGreen);
+        cardEl.style.opacity = '0';
+        setTimeout(() => {
+          approveEl.style.opacity    = '0';
+          approveLabel.style.opacity = '0';
+        }, 600);
+      }
+    }
+    setTimeout(() => requestAnimationFrame(phaseBStep), 200);
+  }
+
+  setTimeout(() => requestAnimationFrame(phaseASlide), 300);
+}
+
+// ── Beat functions ─────────────────────────────────────────────────
+
+// Beat 1: Deal feed — scan Vinted, the deal appears AFTER the scan
+function beatFeed() {
+  showScreen('feed');
+  setCaption('AUTOMATISCH VAN VINTED', 'Elke ~15 min scant de app Vinted op nieuwe deals');
+  if (reduceMotion) return;
+  const overlay = document.getElementById('vinted-scan-overlay');
+  overlay.classList.remove('active');
+  void overlay.offsetWidth;
+  setTimeout(() => overlay.classList.add('active'), 200);
+}
+
+// Beat 2: AI image-match — no title, AI identifies the figure from the photo
+function beatMatch() {
+  showScreen('match');
+  setCaption('AI-BEELDHERKENNING', 'Geen titel? AI herkent Spyro aan de foto — 71% zeker');
+  pulse(document.getElementById('ai-pick-glow'), 300);
+}
+
+// Beat 3: Deal detail — Vinted tag, ask vs market value
+function beatDetail() {
+  showScreen('detail');
+  setCaption('DEAL-ANALYSE', 'Vraagprijs €24 tegenover €92 marktwaarde — +€68 marge');
+}
+
+// Beat 4: Live price list — market value €92, source of the margin
+function beatPrices() {
+  showScreen('prices');
+  setCaption('LIVE PRIJSLIJST', 'Die €92 komt uit een prijslijst die continu wordt ververst');
+  pulse(document.getElementById('prices-row-glow'), 350);
+}
+
+// Beat 5: Swipe triage — Phase A (dismiss) then Phase B (approve)
+function beatSwipe() {
+  const cardEl       = document.getElementById('swipe-card-overlay');
+  const approveStrip = document.getElementById('swipe-approve-strip');
+  const highlight    = document.getElementById('card-highlight');
+  const dismissStrip = document.getElementById('dismiss-strip');
+  const dismissLabel = document.getElementById('dismiss-label');
+  const approveEl    = document.getElementById('approve-strip');
+  const approveLabel = document.getElementById('approve-label');
+
+  cardEl.style.transition        = 'none';
+  cardEl.style.transform         = 'translateX(0px) rotate(0deg)';
+  cardEl.style.opacity           = '1';
+  approveStrip.style.width       = '0px';
+  approveStrip.style.opacity     = '1';
+  approveStrip.style.transition  = 'none';
+  document.getElementById('swipe-approve-check').style.opacity = '0';
+  dismissStrip.style.opacity     = '0';
+  dismissLabel.style.opacity     = '0';
+  approveEl.style.opacity        = '0';
+  approveLabel.style.opacity     = '0';
+  highlight.classList.remove('glow');
+
+  showScreen('swipe');
+  setCaption('SNEL TRIËREN', 'Veeg deals weg of bewaar ze met één beweging');
+  animateSwipeGesture();
+}
+
+// Beat 6: BUY chat — negotiate with the seller and buy for €24
+function beatBuyChat() {
+  showScreen('chatbuy');
+  setCaption('ONDERHANDELEN', 'Chat met de verkoper en koop de Spyro voor €24');
+  pulse(document.getElementById('buychat-glow'), 600);
+}
+
+// Beat 7: GEKOCHT — item owned, €24 paid, €92 market (+283%)
+function beatOwned() {
+  showScreen('itemowned');
+  setCaption('GEKOCHT', 'Nu in je collectie — €24 betaald, €92 waard (+283%)');
+  pulse(document.getElementById('owned-glow'), 400);
+}
+
+// Beat 8: TE KOOP — relisted on Vinted, ask €95 (+€71)
+function beatSelling() {
+  showScreen('itemselling');
+  setCaption('WEER TE KOOP', 'Direct relisten op Vinted — vraagprijs €95 (+€71)');
+  pulse(document.getElementById('selling-glow'), 400);
+}
+
+// Beat 9: BOD ONTVANGEN — buyer offers €90, accepted with one tap
+function beatSellChat() {
+  showScreen('chatsell');
+  setCaption('BOD ONTVANGEN', 'Een koper biedt €90 — geaccepteerd met één tik');
+  pulse(document.getElementById('sellchat-glow'), 600);
+}
+
+// Beat 10: VERKOCHT — sold for €90, +€66 profit
+function beatSold() {
+  showScreen('itemsold');
+  setCaption('VERKOCHT', 'Geflipt voor €90 — €66 winst op één figuur');
+  pulse(document.getElementById('sold-glow'), 400);
+}
+
+// Beat 11: Portfolio P&L — €531 profit, ROI 188%, best flip Spyro
+function beatPortfolio() {
+  showScreen('profile');
+  setCaption('PORTFOLIO', 'Alles bij elkaar: €531 winst · ROI 188% · top-flip Spyro');
+  pulse(document.getElementById('pl-pulse'), 300);
+}
+
+// ── Beat timeline ──────────────────────────────────────────────────
+const beats = [
+  { at:     0, fn: beatFeed      }, // feed + Vinted scan (deal appears after)
+  { at:  5000, fn: beatMatch     }, // AI image-match
+  { at:  9200, fn: beatDetail    }, // deal detail
+  { at: 13200, fn: beatPrices    }, // live price list
+  { at: 17400, fn: beatSwipe     }, // swipe triage (two phases)
+  { at: 22200, fn: beatBuyChat   }, // buy negotiation
+  { at: 27200, fn: beatOwned     }, // owned in collection
+  { at: 31200, fn: beatSelling   }, // relisted for sale
+  { at: 35400, fn: beatSellChat  }, // offer received
+  { at: 40800, fn: beatSold      }, // sold, profit
+  { at: 45000, fn: beatPortfolio }, // portfolio P&L (then loop)
+];
+
+// ── Timeline engine ────────────────────────────────────────────────
+function resetAll() {
+  Object.values(screens).forEach(s => {
+    s.classList.remove('active', 'exit-left');
+    s.style.transform = '';
+  });
+  activeScreenId = null;
+
+  // Reset overlays / pulses
+  ['pl-pulse','ai-pick-glow','prices-row-glow','owned-glow','selling-glow',
+   'sold-glow','buychat-glow','sellchat-glow'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('pulse');
+  });
+  document.getElementById('vinted-scan-overlay').classList.remove('active');
+
+  // Reset swipe card
+  const cardEl = document.getElementById('swipe-card-overlay');
+  cardEl.style.transition = 'none';
+  cardEl.style.transform  = 'translateX(0px) rotate(0deg)';
+  cardEl.style.opacity    = '1';
+  document.getElementById('card-highlight').classList.remove('glow');
+  const approveStrip = document.getElementById('swipe-approve-strip');
+  approveStrip.style.width      = '0px';
+  approveStrip.style.opacity    = '1';
+  approveStrip.style.transition = 'none';
+  document.getElementById('swipe-approve-check').style.opacity = '0';
+  document.getElementById('dismiss-strip').style.opacity  = '0';
+  document.getElementById('dismiss-label').style.opacity  = '0';
+  document.getElementById('approve-strip').style.opacity  = '0';
+  document.getElementById('approve-label').style.opacity  = '0';
+
+  finger.style.opacity = '0';
+  trails.forEach(t => { t.style.opacity = '0'; });
+}
+
+function tick(now) {
+  if (lastNow === null) lastNow = now;
+  const delta = now - lastNow;
+  lastNow = now;
+
+  if (!paused && !seeking) elapsed += delta;
+
+  for (let i = 0; i < beats.length; i++) {
+    if (elapsed >= beats[i].at && currentBeat < i) {
+      currentBeat = i;
+      beats[i].fn();
+    }
+  }
+
+  if (currentBeat >= 0) {
+    const beatStart = beats[currentBeat].at;
+    const beatEnd   = currentBeat + 1 < beats.length ? beats[currentBeat + 1].at : TOTAL;
+    const prog      = Math.min(1, (elapsed - beatStart) / (beatEnd - beatStart));
+    updateProgress(currentBeat, prog);
+  }
+
+  if (elapsed >= TOTAL && !seeking) {
+    resetAll();
+    elapsed     = 0;
+    currentBeat = -1;
+  }
+
+  rafHandle = requestAnimationFrame(tick);
+}
+
+// ── Scrub / seek ───────────────────────────────────────────────────
+function seekTo(fraction) {
+  fraction = Math.max(0, Math.min(1, fraction));
+  elapsed  = Math.min(fraction * TOTAL, TOTAL - 50);
+
+  let idx = 0;
+  for (let i = 0; i < beats.length; i++) {
+    if (elapsed >= beats[i].at) idx = i;
+  }
+
+  if (idx !== currentBeat) {
+    resetAll();
+    currentBeat = idx;
+    beats[idx].fn();
+  }
+
+  const beatStart = beats[idx].at;
+  const beatEnd   = idx + 1 < beats.length ? beats[idx + 1].at : TOTAL;
+  const prog      = Math.min(1, (elapsed - beatStart) / (beatEnd - beatStart));
+  updateProgress(idx, prog);
+}
+
+function runTimeline() {
+  if (rafHandle) cancelAnimationFrame(rafHandle);
+  resetAll();
+  elapsed     = 0;
+  lastNow     = null;
+  currentBeat = -1;
+  rafHandle   = requestAnimationFrame(tick);
+}
+
+// ── Play / pause control ───────────────────────────────────────────
+const PAUSE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>';
+const PLAY_ICON  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+const playToggle = document.getElementById('play-toggle');
+const phoneEl    = document.getElementById('phone');
+
+function setPaused(p) {
+  paused = p;
+  playToggle.innerHTML = paused ? PLAY_ICON : PAUSE_ICON;
+  playToggle.setAttribute('aria-label', paused ? 'Afspelen' : 'Pauzeren');
+}
+
+playToggle.innerHTML = PAUSE_ICON;
+playToggle.addEventListener('click', (e) => { e.stopPropagation(); setPaused(!paused); });
+phoneEl.addEventListener('click', () => setPaused(!paused));
+
+// ── Scrub bar drag-to-seek ─────────────────────────────────────────
+const progressBar = document.getElementById('progress-bar');
+
+function seekFromClientX(clientX) {
+  const rect = progressBar.getBoundingClientRect();
+  seekTo((clientX - rect.left) / rect.width);
+}
+
+progressBar.addEventListener('pointerdown', (e) => {
+  e.preventDefault();
+  seeking = true;
+  progressBar.classList.add('scrubbing');
+  try { progressBar.setPointerCapture(e.pointerId); } catch (_) {}
+  seekFromClientX(e.clientX);
+});
+progressBar.addEventListener('pointermove', (e) => {
+  if (seeking) seekFromClientX(e.clientX);
+});
+function endScrub() {
+  if (!seeking) return;
+  seeking = false;
+  progressBar.classList.remove('scrubbing');
+}
+progressBar.addEventListener('pointerup', endScrub);
+progressBar.addEventListener('pointercancel', endScrub);
+
+// ── Portfolio-matched custom cursor (amber dot + ring) ─────────────
+(() => {
+  if (window.matchMedia('(hover: none)').matches) return;
+  const dot  = document.getElementById('cdot');
+  const ring = document.getElementById('cring');
+  if (!dot || !ring) return;
+  let x = innerWidth/2, y = innerHeight/2, rx = x, ry = y, tx = x, ty = y;
+  window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; });
+  const loop = () => {
+    x  += (tx - x)  * 0.9;
+    y  += (ty - y)  * 0.9;
+    rx += (tx - rx) * 0.18;
+    ry += (ty - ry) * 0.18;
+    dot.style.transform  = `translate(${x}px,${y}px) translate(-50%,-50%)`;
+    ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  };
+  loop();
+  const hovSel = '#phone, #progress-bar, #play-toggle';
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest(hovSel)) { dot.classList.add('hov'); ring.classList.add('hov'); }
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest(hovSel)) { dot.classList.remove('hov'); ring.classList.remove('hov'); }
+  });
+  document.addEventListener('mouseleave', () => { dot.style.opacity = 0; ring.style.opacity = 0; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = 1; ring.style.opacity = 1; });
+})();
+
+// Preload images before starting
+const imgPaths = [
+  'assets/spyro-feed.png', 'assets/spyro-match.png', 'assets/spyro-detail.png',
+  'assets/spyro-prices.png', 'assets/spyro-chat-buy.png', 'assets/spyro-item-owned.png',
+  'assets/spyro-item-selling.png', 'assets/spyro-chat-sell.png', 'assets/spyro-item-sold.png',
+  'assets/spyro-profile.png',
+];
+let loaded = 0;
+imgPaths.forEach(src => {
+  const img = new Image();
+  img.onload = img.onerror = () => { if (++loaded === imgPaths.length) runTimeline(); };
+  img.src = src;
+});
+setTimeout(() => { if (loaded < imgPaths.length) runTimeline(); }, 800);
+</script>
+</body>
+</html>

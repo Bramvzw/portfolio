@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Home Hub — Demo</title>
+<meta name="description" content="Geanimeerde rondleiding door Smart Home Hub met echte screenshots: briefing, dashboard, agenda, weekmenu, prijzen en filmtips.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --amber: #E8962A;
+    --ink:   #efe8dc;
+    --frame-w: min(620px, calc(100vw - 16px));
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Lora', Georgia, serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    cursor: none;
+  }
+
+  /* Portfolio-matched custom cursor (amber dot + ring) */
+  .cursor-dot {
+    position: fixed; top: 0; left: 0;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber);
+    pointer-events: none; z-index: 9999;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: width .25s cubic-bezier(.2,.8,.2,1), height .25s cubic-bezier(.2,.8,.2,1), opacity .2s ease;
+    will-change: transform;
+  }
+  .cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid rgba(232,150,42,.35);
+    pointer-events: none; z-index: 9998;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: width .3s cubic-bezier(.2,.8,.2,1), height .3s cubic-bezier(.2,.8,.2,1), border-color .25s ease, opacity .2s ease;
+    will-change: transform;
+  }
+  .cursor-dot.hov { width: 0; height: 0; }
+  .cursor-ring.hov { width: 56px; height: 56px; border-color: rgba(232,150,42,.85); background: rgba(232,150,42,.08); }
+  @media (hover: none), (max-width: 560px) {
+    .cursor-dot, .cursor-ring { display: none; }
+    html, body { cursor: auto; }
+  }
+
+  /* ── Stage: browser frame on top, narration + controls underneath ── */
+  #stage {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* ── Browser frame ── */
+  #browser {
+    width: var(--frame-w);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 8px;
+    background: #0e0d0c;
+    overflow: hidden;
+    box-shadow: 0 30px 60px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(232,150,42,.06);
+    cursor: none;
+    flex-shrink: 0;
+  }
+  #bar {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    background: #141210;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  #bar i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.14); display: inline-block; }
+  #bar i:first-child { background: var(--amber); }
+  #url {
+    margin-left: 10px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: #8a8275;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity .25s ease;
+  }
+  #url.swap { opacity: 0; }
+
+  #viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0e0f12;
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .55s ease;
+  }
+  .screen.active { opacity: 1; }
+  .canvas {
+    position: absolute;
+    inset: 0;
+    transform: scale(1);
+    transform-origin: 50% 50%;
+  }
+  .canvas img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+  }
+
+  /* Amber highlight around the relevant part of a screen */
+  .glow {
+    position: absolute;
+    border-radius: 6px;
+    border: 1.5px solid rgba(232,150,42,0);
+    box-shadow: 0 0 0 0 rgba(232,150,42,0);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .glow.pulse { animation: glowPulse 2.6s ease forwards; }
+  @keyframes glowPulse {
+    0%   { opacity: 0; border-color: rgba(232,150,42,0);   box-shadow: 0 0 0 0 rgba(232,150,42,0); }
+    20%  { opacity: 1; border-color: rgba(232,150,42,.85); box-shadow: 0 0 18px 3px rgba(232,150,42,.35); }
+    65%  { opacity: 1; border-color: rgba(232,150,42,.65); box-shadow: 0 0 12px 2px rgba(232,150,42,.22); }
+    100% { opacity: 0; border-color: rgba(232,150,42,0);   box-shadow: 0 0 0 0 rgba(232,150,42,0); }
+  }
+
+  /* ── Narration ── */
+  #caption-area {
+    width: var(--frame-w);
+    text-align: center;
+    min-height: 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    margin-top: 14px;
+    padding: 0 8px;
+  }
+  .caption-eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2.4px;
+    color: var(--amber);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .caption-main {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.4;
+    max-width: 480px;
+    text-wrap: balance;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .35s ease .08s, transform .35s ease .08s;
+  }
+  .caption-eyebrow.show, .caption-main.show { opacity: 1; transform: translateY(0); }
+
+  /* ── Scrubber + controls ── */
+  #under {
+    width: min(var(--frame-w), 420px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  #progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,.08);
+    border-radius: 3px;
+    position: relative;
+    cursor: none;
+    touch-action: none;
+  }
+  #progress-bar::before { content: ''; position: absolute; left: 0; right: 0; top: -10px; bottom: -10px; }
+  #progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber), #f4b85f);
+    border-radius: 3px;
+    width: 0%;
+    pointer-events: none;
+  }
+  #progress-thumb {
+    position: absolute; top: 50%; left: 0%;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,.55), 0 0 0 2px rgba(232,150,42,.55);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity .2s ease, transform .15s ease;
+    pointer-events: none;
+  }
+  #progress-bar:hover #progress-thumb, #progress-bar.scrubbing #progress-thumb { opacity: 1; }
+  #progress-bar.scrubbing #progress-thumb { transform: translate(-50%, -50%) scale(1.15); }
+
+  #controls-row { display: flex; align-items: center; gap: 14px; }
+  #play-toggle {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1px solid rgba(232,150,42,.30);
+    background: rgba(232,150,42,.10);
+    color: var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    cursor: none; padding: 0;
+    transition: background .2s ease, border-color .2s ease, transform .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #play-toggle:hover { background: rgba(232,150,42,.18); border-color: rgba(232,150,42,.5); }
+  #play-toggle:active { transform: scale(.92); }
+  #play-toggle:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  #play-toggle svg { width: 14px; height: 14px; fill: currentColor; }
+
+  #beat-dots { display: flex; gap: 6px; align-items: center; }
+  .beat-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    transition: background .3s ease, transform .3s ease;
+  }
+  .beat-dot.active { background: var(--amber); transform: scale(1.3); }
+
+  @media (max-width: 480px) {
+    .caption-main { font-size: 14.5px; }
+    #caption-area { margin-top: 12px; min-height: 58px; }
+    #bar { height: 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .canvas { transition: none !important; transform: none !important; }
+    .screen { transition: none; }
+    .glow.pulse { animation: none; opacity: 1; border-color: rgba(232,150,42,.7); }
+  }
+</style>
+</head>
+<body>
+<div class="cursor-ring" id="cring"></div>
+<div class="cursor-dot" id="cdot"></div>
+
+<div id="stage">
+  <div id="browser">
+    <div id="bar"><i></i><i></i><i></i><span id="url">hub.local/briefing</span></div>
+    <div id="viewport">
+      <!-- Glow coordinates are percentages of the 2880×1800 screenshot -->
+      <div class="screen" id="screen-0">
+        <div class="canvas">
+          <img src="assets/shh-briefing.jpg" alt="Dagelijkse briefing" draggable="false">
+          <div class="glow" style="left:20.4%;top:19.6%;width:76.9%;height:29.2%"></div>
+        </div>
+      </div>
+      <div class="screen" id="screen-1">
+        <div class="canvas">
+          <img src="assets/shh-dashboard.jpg" alt="Dashboard met modules" draggable="false">
+          <div class="glow" style="left:19%;top:32.8%;width:79.8%;height:57.3%"></div>
+        </div>
+      </div>
+      <div class="screen" id="screen-2">
+        <div class="canvas">
+          <img src="assets/shh-calendar.jpg" alt="Agenda uit Google Calendar" draggable="false">
+          <div class="glow" style="left:31.9%;top:31.8%;width:53.9%;height:28.2%"></div>
+        </div>
+      </div>
+      <div class="screen" id="screen-3">
+        <div class="canvas">
+          <img src="assets/shh-recipes.jpg" alt="Weekmenu op basis van aanbiedingen" draggable="false">
+          <div class="glow" style="left:20.5%;top:33.2%;width:37.9%;height:34.2%"></div>
+        </div>
+      </div>
+      <div class="screen" id="screen-4">
+        <div class="canvas">
+          <img src="assets/shh-deals.jpg" alt="Prijzen volgen" draggable="false">
+          <div class="glow" style="left:20.5%;top:25.1%;width:76.7%;height:29%"></div>
+        </div>
+      </div>
+      <div class="screen" id="screen-5">
+        <div class="canvas">
+          <img src="assets/shh-entertainment.jpg" alt="Filmtips op basis van een smaakprofiel" draggable="false">
+          <div class="glow" style="left:20.5%;top:32.2%;width:53%;height:48%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="caption-area">
+    <div class="caption-eyebrow" id="cap-eyebrow"></div>
+    <div class="caption-main" id="cap-main"></div>
+  </div>
+
+  <div id="under">
+    <div id="progress-bar"><div id="progress-fill"></div><div id="progress-thumb"></div></div>
+    <div id="controls-row">
+      <button id="play-toggle" type="button" aria-label="Pauzeren"></button>
+      <div id="beat-dots"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Beats ───────────────────────────────────────────────────────────
+// zoom: target scale at the end of the beat; origin: focus point (% of screenshot)
+const BEAT_MS = 4800;
+const beats = [
+  { url: 'hub.local/briefing',      eyebrow: 'Ochtendbriefing', origin: '58% 34%', zoom: 1.10,
+    text: 'Elke ochtend schrijft Claude een korte briefing uit het weer, de agenda, taken en het nieuws.' },
+  { url: 'hub.local',               eyebrow: 'Dashboard',       origin: '58% 55%', zoom: 1.06,
+    text: 'Elke module heeft een eigen tegel, van weer en Spotify tot de 3D-printer.' },
+  { url: 'hub.local/calendar',      eyebrow: 'Agenda',          origin: '58% 45%', zoom: 1.12,
+    text: 'De agenda komt live uit Google Calendar, met de komende zeven dagen onder elkaar.' },
+  { url: 'hub.local/recipes',       eyebrow: 'Weekmenu',        origin: '40% 50%', zoom: 1.12,
+    text: 'Uit de aanbiedingen van Albert Heijn en Lidl komt een weekmenu, met wat je per recept bespaart.' },
+  { url: 'hub.local/deals',         eyebrow: 'Prijzen volgen',  origin: '58% 40%', zoom: 1.10,
+    text: 'Producten op mijn verlanglijst worden gevolgd. Zakt de prijs, dan krijg ik een melding.' },
+  { url: 'hub.local/entertainment', eyebrow: 'Films',           origin: '47% 56%', zoom: 1.08,
+    text: 'Filmtips op basis van mijn smaakprofiel, met per film waarom hij past.' },
+];
+const NUM_BEATS = beats.length;
+const TOTAL = NUM_BEATS * BEAT_MS;
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const screens  = beats.map((_, i) => document.getElementById('screen-' + i));
+const canvases = screens.map(s => s.querySelector('.canvas'));
+const glows    = screens.map(s => s.querySelector('.glow'));
+const urlEl    = document.getElementById('url');
+const capEyebrow = document.getElementById('cap-eyebrow');
+const capMain    = document.getElementById('cap-main');
+const dotsEl     = document.getElementById('beat-dots');
+for (let i = 0; i < NUM_BEATS; i++) {
+  const d = document.createElement('div');
+  d.className = 'beat-dot'; d.id = 'dot-' + i;
+  dotsEl.appendChild(d);
+}
+
+let elapsed = 0, lastNow = null, currentBeat = -1, paused = false, seeking = false, rafHandle = null;
+
+function setCaption(eyebrow, main) {
+  capEyebrow.classList.remove('show');
+  capMain.classList.remove('show');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    capEyebrow.textContent = eyebrow;
+    capMain.textContent    = main;
+    capEyebrow.classList.add('show');
+    capMain.classList.add('show');
+  }));
+}
+
+function setUrl(u) {
+  urlEl.classList.add('swap');
+  setTimeout(() => { urlEl.textContent = u; urlEl.classList.remove('swap'); }, 200);
+}
+
+// Start a beat; `into` = ms already elapsed inside it (for seeking)
+function playBeat(i, into) {
+  const b = beats[i];
+  screens.forEach((s, j) => s.classList.toggle('active', j === i));
+  setUrl(b.url);
+  setCaption(b.eyebrow, b.text);
+
+  const c = canvases[i];
+  c.style.transformOrigin = b.origin;
+  if (!reduceMotion) {
+    // restart the slow zoom from where it would be at `into`
+    const remaining = Math.max(0, BEAT_MS - into);
+    const startScale = 1 + (b.zoom - 1) * (into / BEAT_MS);
+    c.style.transition = 'none';
+    c.style.transform  = `scale(${startScale})`;
+    void c.offsetWidth;
+    c.style.transition = paused ? 'none' : `transform ${remaining}ms cubic-bezier(.25,.1,.25,1)`;
+    if (!paused) c.style.transform = `scale(${b.zoom})`;
+  }
+
+  const g = glows[i];
+  g.classList.remove('pulse');
+  void g.offsetWidth;
+  if (into < 1500) setTimeout(() => g.classList.add('pulse'), Math.max(0, 600 - into));
+}
+
+function resetAll() {
+  canvases.forEach(c => { c.style.transition = 'none'; c.style.transform = 'scale(1)'; });
+  glows.forEach(g => g.classList.remove('pulse'));
+}
+
+function updateProgress(beatIdx, progress) {
+  const pct = ((beatIdx + progress) / NUM_BEATS) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-thumb').style.left = pct + '%';
+  for (let i = 0; i < NUM_BEATS; i++) {
+    document.getElementById('dot-' + i).classList.toggle('active', i === beatIdx);
+  }
+}
+
+function tick(now) {
+  if (lastNow === null) lastNow = now;
+  const delta = now - lastNow;
+  lastNow = now;
+  if (!paused && !seeking) elapsed += delta;
+
+  if (elapsed >= TOTAL && !seeking) {
+    resetAll();
+    elapsed = 0;
+    currentBeat = -1;
+  }
+
+  const idx = Math.min(NUM_BEATS - 1, Math.floor(elapsed / BEAT_MS));
+  if (idx !== currentBeat) {
+    currentBeat = idx;
+    playBeat(idx, elapsed - idx * BEAT_MS);
+  }
+  updateProgress(idx, (elapsed - idx * BEAT_MS) / BEAT_MS);
+
+  rafHandle = requestAnimationFrame(tick);
+}
+
+function seekTo(fraction) {
+  fraction = Math.max(0, Math.min(1, fraction));
+  elapsed = Math.min(fraction * TOTAL, TOTAL - 50);
+  const idx = Math.min(NUM_BEATS - 1, Math.floor(elapsed / BEAT_MS));
+  currentBeat = idx;
+  playBeat(idx, elapsed - idx * BEAT_MS);
+  updateProgress(idx, (elapsed - idx * BEAT_MS) / BEAT_MS);
+}
+
+function runTimeline() {
+  if (rafHandle) cancelAnimationFrame(rafHandle);
+  resetAll();
+  elapsed = 0; lastNow = null; currentBeat = -1;
+  rafHandle = requestAnimationFrame(tick);
+}
+
+// ── Play / pause ───────────────────────────────────────────────────
+const PAUSE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>';
+const PLAY_ICON  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+const playToggle = document.getElementById('play-toggle');
+
+function setPaused(p) {
+  paused = p;
+  playToggle.innerHTML = paused ? PLAY_ICON : PAUSE_ICON;
+  playToggle.setAttribute('aria-label', paused ? 'Afspelen' : 'Pauzeren');
+  if (currentBeat >= 0) {
+    const c = canvases[currentBeat];
+    if (paused) {
+      // freeze the zoom where it is
+      const m = getComputedStyle(c).transform;
+      c.style.transition = 'none';
+      c.style.transform = m === 'none' ? '' : m;
+    } else {
+      playBeat(currentBeat, elapsed - currentBeat * BEAT_MS);
+    }
+  }
+}
+playToggle.innerHTML = PAUSE_ICON;
+playToggle.addEventListener('click', (e) => { e.stopPropagation(); setPaused(!paused); });
+document.getElementById('browser').addEventListener('click', () => setPaused(!paused));
+
+// ── Scrub bar ──────────────────────────────────────────────────────
+const progressBar = document.getElementById('progress-bar');
+function seekFromClientX(x) {
+  const r = progressBar.getBoundingClientRect();
+  seekTo((x - r.left) / r.width);
+}
+progressBar.addEventListener('pointerdown', (e) => {
+  e.preventDefault();
+  seeking = true;
+  progressBar.classList.add('scrubbing');
+  try { progressBar.setPointerCapture(e.pointerId); } catch (_) {}
+  seekFromClientX(e.clientX);
+});
+progressBar.addEventListener('pointermove', (e) => { if (seeking) seekFromClientX(e.clientX); });
+function endScrub() {
+  if (!seeking) return;
+  seeking = false;
+  progressBar.classList.remove('scrubbing');
+  if (currentBeat >= 0) playBeat(currentBeat, elapsed - currentBeat * BEAT_MS);
+}
+progressBar.addEventListener('pointerup', endScrub);
+progressBar.addEventListener('pointercancel', endScrub);
+
+// ── Custom cursor ──────────────────────────────────────────────────
+(() => {
+  if (window.matchMedia('(hover: none)').matches) return;
+  const dot = document.getElementById('cdot'), ring = document.getElementById('cring');
+  let x = innerWidth/2, y = innerHeight/2, rx = x, ry = y, tx = x, ty = y;
+  window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; });
+  const loop = () => {
+    x += (tx - x) * 0.9; y += (ty - y) * 0.9;
+    rx += (tx - rx) * 0.18; ry += (ty - ry) * 0.18;
+    dot.style.transform  = `translate(${x}px,${y}px) translate(-50%,-50%)`;
+    ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  };
+  loop();
+  const hovSel = '#browser, #progress-bar, #play-toggle';
+  document.addEventListener('mouseover', (e) => { if (e.target.closest(hovSel)) { dot.classList.add('hov'); ring.classList.add('hov'); } });
+  document.addEventListener('mouseout',  (e) => { if (e.target.closest(hovSel)) { dot.classList.remove('hov'); ring.classList.remove('hov'); } });
+  document.addEventListener('mouseleave', () => { dot.style.opacity = 0; ring.style.opacity = 0; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = 1; ring.style.opacity = 1; });
+})();
+
+// ── Preload, then start ────────────────────────────────────────────
+const imgs = Array.from(document.querySelectorAll('.canvas img'));
+let loaded = 0;
+let started = false;
+const start = () => { if (!started) { started = true; runTimeline(); } };
+imgs.forEach(img => {
+  if (img.complete) { if (++loaded === imgs.length) start(); return; }
+  img.addEventListener('load',  () => { if (++loaded === imgs.length) start(); });
+  img.addEventListener('error', () => { if (++loaded === imgs.length) start(); });
+});
+setTimeout(start, 1200);
+</script>
+</body>
+</html>
