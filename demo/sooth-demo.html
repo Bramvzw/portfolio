@@ -61,7 +61,26 @@
   .beat-dot.active { background: var(--amber); transform: scale(1.3); }
   @media (max-width: 560px) { :root { --term-font: 10.5px; --controls-h: 160px; } #screen { padding: 12px; } .caption-main { font-size: 15px; } }
   @media (prefers-reduced-motion: reduce) { .caret { animation: none; } .caption-eyebrow, .caption-main { transition: none; } }
+
+  /* Light theme of the page that embeds this demo: dark text for the caption and the controls.
+     The device itself (phone, browser, terminal) stays dark. */
+  html.light .caption-eyebrow { color: #7d430a; }
+  html.light .caption-main { color: #2b2218; }
+  html.light #progress-bar { background: rgba(43,34,24,.14); }
+  html.light #progress-thumb { background: #2b2218; }
+  html.light .beat-dot { background: rgba(43,34,24,.22); }
+  html.light .beat-dot.active { background: #a85f12; }
+  html.light #play-toggle { color: #7d430a; border-color: rgba(125,67,10,.45); background: rgba(125,67,10,.08); }
+  html.light #play-toggle:hover { background: rgba(125,67,10,.16); border-color: rgba(125,67,10,.6); }
 </style>
+<script>
+/* The theme follows the page that embeds this demo: ?theme=light when it loads, a message when it switches. */
+(function () {
+  var set = function (t) { document.documentElement.classList.toggle('light', t === 'light'); };
+  try { set(new URLSearchParams(location.search).get('theme')); } catch (e) {}
+  window.addEventListener('message', function (e) { var d = e.data; if (d && d.type === 'portfolio-theme') set(d.theme); });
+})();
+</script>
 </head>
 <body>
 <div class="cursor-ring" id="cring"></div>
@@ -85,9 +104,11 @@
 </div>
 <script>
 'use strict';
-/* Every output line is copied verbatim from real sooth 0.1.0 runs on a small PHPUnit
-   project (5 passing tests, 1 random flaky test, 1 broken test). Only PHPUnit's own
-   output is cut, shown as "…". */
+/* Every output line is copied verbatim, colours included, from real sooth 0.3.4 runs on a
+   small PHPUnit project: four steady tests, one test that fails at random, and one test that
+   the latest commit (9cc8049) broke; the commit before it was green three times. Between the
+   first and the second step three more runs happened, before the third one more. Only
+   PHPUnit's own output is cut, shown as "…". */
 const CMD_RUN    = 'sooth run --preset phpunit -- vendor/bin/phpunit';
 const CMD_VERIFY = 'sooth run --verify --preset phpunit -- vendor/bin/phpunit';
 const L = (...segs) => ({ segs });
@@ -95,35 +116,39 @@ const I = (...segs) => ({ segs, cls: 'ind' });
 const beats = [
   { at: 0, eyebrow: 'Eerste run', caption: 'sooth draait je eigen testcommando en leest het rapport. Eén test faalt.', cmd: CMD_RUN, out: [
     L(['t-dim', '…']),
-    L(['', 'tests: 6 total — '], ['t-ok', '5 passed'], ['', ', '], ['t-bad', '1 failed'], ['', ', 0 errors, 0 skipped']),
-    L(['', '1 failure — 1 new']),
-    I(['t-bad', '✗ '], ['', 'Tests.MailTest::test_receipt_subject '], ['t-dim', '— new (nothing in history)']),
-    L(['', 'result: '], ['t-bad', '✗ FAILED'], ['t-dim', ' — 1 of 1 runs failed (56.37ms total)']),
+    L(["", "run 1/1: "], ["t-bad", "runner exit=1"], ["", " (92.31ms)"]),
+    L(["", "tests: 6 total — "], ["t-ok", "5 passed"], ["", ", "], ["t-bad", "1 failed"], ["", ", 0 errors, 0 skipped"]),
+    L(["t-bad", "1 failure — 1 new"]),
+    I(["t-bad", "✗"], ["", " "], ["t-dim", "Tests."], ["", "MailTest::test_receipt_subject — "], ["t-bad", "new (nothing in history)"]),
+    L(["t-bad", "result: ✗ FAILED — 1 of 1 runs failed (92.31ms total)"]),
   ]},
-  { at: 6500, eyebrow: 'Geschiedenis', caption: 'Elke run komt in een lokaal logbestand. Na een paar runs op dezelfde commit is test_ships aantoonbaar flaky.', cmd: CMD_RUN, out: [
+  { at: 6500, eyebrow: 'Geschiedenis', caption: 'Elke run komt in een lokaal logbestand. Na een paar runs is test_ships aantoonbaar flaky, en de mailtest faalt sinds commit 9cc8049.', cmd: CMD_RUN, out: [
     L(['t-dim', '…']),
-    L(['', 'tests: 6 total — '], ['t-ok', '4 passed'], ['', ', '], ['t-bad', '2 failed'], ['', ', 0 errors, 0 skipped']),
-    L(['', '2 failures — 1 known flake, 1 regression']),
-    I(['t-bad', '▼ '], ['', 'Tests.MailTest::test_receipt_subject '], ['t-dim', '— failing since abdeb31 (the last 6 observed runs)']),
-    I(['t-warn', '~ '], ['', 'Tests.OrderTest::test_ships '], ['t-dim', '— '], ['t-warn', 'known flake'], ['t-dim', ' (3 of 6 in history, 50%)']),
-    L(['', 'result: '], ['t-bad', '✗ FAILED'], ['t-dim', ' — 1 of 1 runs failed (52.15ms total)']),
+    L(["", "run 1/1: "], ["t-bad", "runner exit=1"], ["", " (90.36ms)"]),
+    L(["", "tests: 6 total — "], ["t-ok", "4 passed"], ["", ", "], ["t-bad", "2 failed"], ["", ", 0 errors, 0 skipped"]),
+    L(["t-bad", "2 failures — 1 known flake, 1 regression"]),
+    I(["t-bad", "▼"], ["", " "], ["t-dim", "Tests."], ["", "MailTest::test_receipt_subject — "], ["t-bad", "failing since 9cc8049 (the last 5 observed runs)"]),
+    I(["t-warn", "~"], ["", " "], ["t-dim", "Tests."], ["", "OrderTest::test_ships — "], ["t-warn", "known flake (3 of 8 in history, 38%)"]),
+    L(["t-bad", "result: ✗ FAILED — 1 of 1 runs failed (90.36ms total)"]),
   ]},
   { at: 14000, eyebrow: '--verify', caption: 'Met --verify draait sooth alleen de gefaalde tests opnieuw. De mailtest is echt kapot, test_ships niet.', cmd: CMD_VERIFY, out: [
     L(['t-dim', '…']),
-    L(['', '2 failures — 1 known flake, 1 regression']),
-    I(['t-bad', '▼ '], ['', 'Tests.MailTest::test_receipt_subject '], ['t-dim', '— '], ['t-bad', 'real'], ['t-dim', ' (reproduced on re-run), failing since abdeb31 (the last 9 observed runs)']),
-    I(['t-warn', '~ '], ['', 'Tests.OrderTest::test_ships '], ['t-dim', '— '], ['t-warn', 'flaky or order-dependent'], ['t-dim', ' (passed on re-run in isolation), known flake (4 of 9 in history, 44%)']),
-    L(['', 'result: '], ['t-bad', '✗ FAILED'], ['t-dim', ' — 1 of 1 runs failed (50.25ms total)']),
+    L(["", "run 1/1: "], ["t-bad", "runner exit=1"], ["", " (90.38ms)"]),
+    L(["", "tests: 6 total — "], ["t-ok", "4 passed"], ["", ", "], ["t-bad", "2 failed"], ["", ", 0 errors, 0 skipped"]),
+    L(["t-bad", "2 failures — 1 known flake, 1 regression"]),
+    I(["t-bad", "▼"], ["", " "], ["t-dim", "Tests."], ["", "MailTest::test_receipt_subject — "], ["t-bad", "real (reproduced on re-run)"], ["", ", "], ["t-bad", "failing since 9cc8049 (the last 7 observed runs)"]),
+    I(["t-warn", "~"], ["", " "], ["t-dim", "Tests."], ["", "OrderTest::test_ships — "], ["t-warn", "flaky or order-dependent (passed on re-run in isolation)"], ["", ", "], ["t-warn", "known flake (4 of 10 in history, 40%)"]),
+    L(["t-bad", "result: ✗ FAILED — 1 of 1 runs failed (90.38ms total)"]),
   ]},
   { at: 22500, eyebrow: 'Exitcode', caption: 'De exitcode blijft wat je testrunner zei. sooth legt een fout uit, maar verbergt hem niet.', keep: true, cmd: 'echo $?', out: [
     L(['t-bad', '1']),
   ]},
   { at: 27000, eyebrow: 'sooth history', caption: 'Wat sooth tot nu toe weet, zonder iets te draaien. Geen server, geen account.', cmd: 'sooth history', out: [
-    L(['', 'flaky per history (mixed outcomes on one commit):']),
-    I(['', '1. '], ['t-warn', '~ '], ['', 'Tests.OrderTest::test_ships '], ['t-dim', 'failed 4 of 9 observed runs (44%)']),
-    L(['', 'failing since a commit boundary:']),
-    I(['t-bad', '▼ '], ['', 'Tests.MailTest::test_receipt_subject '], ['t-dim', '(since abdeb31, failed the last 9 observed runs)']),
-    L(['t-dim', 'history now holds 54 observations']),
+    L(["t-bad", "flaky per history (mixed outcomes on one commit):"]),
+    I(["", "1. "], ["t-warn", "~"], ["", " "], ["t-dim", "Tests."], ["", "OrderTest::test_ships "], ["t-bad", "failed 4 of 10 observed runs (40%)"]),
+    L(["t-bad", "failing since a commit boundary:"]),
+    I(["t-bad", "▼"], ["", " "], ["t-dim", "Tests."], ["", "MailTest::test_receipt_subject "], ["t-dim", "(since 9cc8049, failed the last 7 observed runs)"]),
+    L(["", "history now holds 60 observations"]),
   ]},
 ];
 const TOTAL = 34000;

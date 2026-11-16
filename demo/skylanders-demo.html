@@ -328,7 +328,7 @@
   }
 
   /* ── Swipe card overlay ──
-     Background: spyro-feed.png (single Spyro card at top), card at
+     Background: spyro-feed.webp (single Spyro card at top), card at
      phone-screen y 176–248px. */
   #card-highlight {
     position: absolute;
@@ -354,7 +354,7 @@
     left: 0;
     right: 0;
     height: 72px;
-    background-image: url('assets/spyro-feed.png');
+    background-image: url('assets/spyro-feed.webp');
     background-size: 284px auto;
     background-position: 0px -176px;
     background-repeat: no-repeat;
@@ -889,7 +889,26 @@
     :root { --phone-w: 270px; --phone-h: 560px; }
     #caption-area { min-height: 42px; margin-top: 8px; }
   }
+
+  /* Light theme of the page that embeds this demo: dark text for the caption and the controls.
+     The device itself (phone, browser, terminal) stays dark. */
+  html.light .caption-eyebrow { color: #7d430a; }
+  html.light .caption-main { color: #2b2218; }
+  html.light #progress-bar { background: rgba(43,34,24,.14); }
+  html.light #progress-thumb { background: #2b2218; }
+  html.light .beat-dot { background: rgba(43,34,24,.22); }
+  html.light .beat-dot.active { background: #a85f12; }
+  html.light #play-toggle { color: #7d430a; border-color: rgba(125,67,10,.45); background: rgba(125,67,10,.08); }
+  html.light #play-toggle:hover { background: rgba(125,67,10,.16); border-color: rgba(125,67,10,.6); }
 </style>
+<script>
+/* The theme follows the page that embeds this demo: ?theme=light when it loads, a message when it switches. */
+(function () {
+  var set = function (t) { document.documentElement.classList.toggle('light', t === 'light'); };
+  try { set(new URLSearchParams(location.search).get('theme')); } catch (e) {}
+  window.addEventListener('message', function (e) { var d = e.data; if (d && d.type === 'portfolio-theme') set(d.theme); });
+})();
+</script>
 </head>
 <body>
 <div class="cursor-ring" id="cring"></div>
@@ -910,7 +929,7 @@
 
           <!-- Beat 1: Deal feed — Vinted is scanned, the Spyro deal appears AFTER the scan -->
           <div class="screen" id="screen-feed">
-            <img class="screen-img" src="assets/spyro-feed.png" alt="Spyro deal in feed" draggable="false">
+            <img class="screen-img" src="assets/spyro-feed.webp" alt="Spyro deal in feed" draggable="false">
             <div class="screen-overlay">
               <div id="vinted-scan-overlay">
                 <div id="scan-dim"></div>
@@ -927,7 +946,7 @@
 
           <!-- Beat 2: AI image-match — untitled listing, AI identifies Spyro from the photo -->
           <div class="screen" id="screen-match">
-            <img class="screen-img" src="assets/spyro-match.png" alt="AI image match suggests Spyro" draggable="false">
+            <img class="screen-img" src="assets/spyro-match.webp" alt="AI image match suggests Spyro" draggable="false">
             <div class="screen-overlay">
               <div id="ai-pick-glow"></div>
             </div>
@@ -935,13 +954,13 @@
 
           <!-- Beat 3: Deal detail — Vinted tag, ask vs market value -->
           <div class="screen" id="screen-detail">
-            <img class="screen-img" src="assets/spyro-detail.png" alt="Spyro deal detail" draggable="false">
+            <img class="screen-img" src="assets/spyro-detail.webp" alt="Spyro deal detail" draggable="false">
             <div class="screen-overlay"></div>
           </div>
 
           <!-- Beat 4: Live price list — market value €92, source of the margin -->
           <div class="screen" id="screen-prices">
-            <img class="screen-img" src="assets/spyro-prices.png" alt="Live price list" draggable="false">
+            <img class="screen-img" src="assets/spyro-prices.webp" alt="Live price list" draggable="false">
             <div class="screen-overlay">
               <div id="prices-row-glow"></div>
             </div>
@@ -949,7 +968,7 @@
 
           <!-- Beat 5: Swipe — feed background, Spyro card does Phase A (dismiss) then Phase B (approve) -->
           <div class="screen" id="screen-swipe">
-            <img class="screen-img" src="assets/spyro-feed.png" alt="Deals feed" draggable="false">
+            <img class="screen-img" src="assets/spyro-feed.webp" alt="Deals feed" draggable="false">
             <div class="screen-overlay" id="swipe-overlay">
               <div id="swipe-action-bg">
                 <div id="dismiss-strip"><div id="dismiss-label">✗ Dismiss</div></div>
@@ -968,7 +987,7 @@
 
           <!-- Beat 6: BUY chat — negotiate with the seller, buy for €24 -->
           <div class="screen" id="screen-chatbuy">
-            <img class="screen-img" src="assets/spyro-chat-buy.png" alt="Buy negotiation chat" draggable="false">
+            <img class="screen-img" src="assets/spyro-chat-buy.webp" alt="Buy negotiation chat" draggable="false">
             <div class="screen-overlay">
               <div class="chat-banner-patch"></div>
               <div class="msg-glow" id="buychat-glow" style="top:36%;height:8.5%;left:3%;right:42%;"></div>
@@ -977,7 +996,7 @@
 
           <!-- Beat 7: GEKOCHT — item owned, €24 paid, €92 market (+283%) -->
           <div class="screen" id="screen-item-owned">
-            <img class="screen-img" src="assets/spyro-item-owned.png" alt="Spyro owned in collection" draggable="false">
+            <img class="screen-img" src="assets/spyro-item-owned.webp" alt="Spyro owned in collection" draggable="false">
             <div class="screen-overlay">
               <div class="hl-band" id="owned-glow" style="top:58%;height:9%;"></div>
             </div>
@@ -985,7 +1004,7 @@
 
           <!-- Beat 8: TE KOOP — relisted, ask €95 (+€71) -->
           <div class="screen" id="screen-item-selling">
-            <img class="screen-img" src="assets/spyro-item-selling.png" alt="Spyro relisted for sale" draggable="false">
+            <img class="screen-img" src="assets/spyro-item-selling.webp" alt="Spyro relisted for sale" draggable="false">
             <div class="screen-overlay">
               <div class="hl-band" id="selling-glow" style="top:57%;height:11%;"></div>
             </div>
@@ -993,7 +1012,7 @@
 
           <!-- Beat 9: BOD ONTVANGEN — buyer offers €90, accepted -->
           <div class="screen" id="screen-chatsell">
-            <img class="screen-img" src="assets/spyro-chat-sell.png" alt="Sell negotiation chat with offer" draggable="false">
+            <img class="screen-img" src="assets/spyro-chat-sell.webp" alt="Sell negotiation chat with offer" draggable="false">
             <div class="screen-overlay">
               <div class="chat-banner-patch"></div>
               <div class="msg-glow" id="sellchat-glow" style="top:49%;height:9%;left:3%;right:38%;"></div>
@@ -1002,7 +1021,7 @@
 
           <!-- Beat 10: VERKOCHT — sold for €90, +€66 profit -->
           <div class="screen" id="screen-item-sold">
-            <img class="screen-img" src="assets/spyro-item-sold.png" alt="Spyro sold" draggable="false">
+            <img class="screen-img" src="assets/spyro-item-sold.webp" alt="Spyro sold" draggable="false">
             <div class="screen-overlay">
               <div class="hl-band" id="sold-glow" style="top:79%;height:13.5%;"></div>
             </div>
@@ -1010,7 +1029,7 @@
 
           <!-- Beat 11: Portfolio P&L — €531 profit, ROI 188%, best flip Spyro -->
           <div class="screen" id="screen-profile">
-            <img class="screen-img" src="assets/spyro-profile.png" alt="Profile P&L" draggable="false">
+            <img class="screen-img" src="assets/spyro-profile.webp" alt="Profile P&L" draggable="false">
             <div class="screen-overlay">
               <div id="pl-pulse"></div>
             </div>
@@ -1612,10 +1631,10 @@ progressBar.addEventListener('pointercancel', endScrub);
 
 // Preload images before starting
 const imgPaths = [
-  'assets/spyro-feed.png', 'assets/spyro-match.png', 'assets/spyro-detail.png',
-  'assets/spyro-prices.png', 'assets/spyro-chat-buy.png', 'assets/spyro-item-owned.png',
-  'assets/spyro-item-selling.png', 'assets/spyro-chat-sell.png', 'assets/spyro-item-sold.png',
-  'assets/spyro-profile.png',
+  'assets/spyro-feed.webp', 'assets/spyro-match.webp', 'assets/spyro-detail.webp',
+  'assets/spyro-prices.webp', 'assets/spyro-chat-buy.webp', 'assets/spyro-item-owned.webp',
+  'assets/spyro-item-selling.webp', 'assets/spyro-chat-sell.webp', 'assets/spyro-item-sold.webp',
+  'assets/spyro-profile.webp',
 ];
 let loaded = 0;
 imgPaths.forEach(src => {

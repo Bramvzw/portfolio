@@ -257,7 +257,26 @@
     .screen { transition: none; }
     .glow.pulse { animation: none; opacity: 1; border-color: rgba(232,150,42,.7); }
   }
+
+  /* Light theme of the page that embeds this demo: dark text for the caption and the controls.
+     The device itself (phone, browser, terminal) stays dark. */
+  html.light .caption-eyebrow { color: #7d430a; }
+  html.light .caption-main { color: #2b2218; }
+  html.light #progress-bar { background: rgba(43,34,24,.14); }
+  html.light #progress-thumb { background: #2b2218; }
+  html.light .beat-dot { background: rgba(43,34,24,.22); }
+  html.light .beat-dot.active { background: #a85f12; }
+  html.light #play-toggle { color: #7d430a; border-color: rgba(125,67,10,.45); background: rgba(125,67,10,.08); }
+  html.light #play-toggle:hover { background: rgba(125,67,10,.16); border-color: rgba(125,67,10,.6); }
 </style>
+<script>
+/* The theme follows the page that embeds this demo: ?theme=light when it loads, a message when it switches. */
+(function () {
+  var set = function (t) { document.documentElement.classList.toggle('light', t === 'light'); };
+  try { set(new URLSearchParams(location.search).get('theme')); } catch (e) {}
+  window.addEventListener('message', function (e) { var d = e.data; if (d && d.type === 'portfolio-theme') set(d.theme); });
+})();
+</script>
 </head>
 <body>
 <div class="cursor-ring" id="cring"></div>
@@ -270,37 +289,37 @@
       <!-- Glow coordinates are percentages of the 2880×1800 screenshot -->
       <div class="screen" id="screen-0">
         <div class="canvas">
-          <img src="assets/shh-briefing.jpg" alt="Dagelijkse briefing" draggable="false">
+          <img src="assets/shh-briefing.webp" alt="Dagelijkse briefing" draggable="false">
           <div class="glow" style="left:20.4%;top:19.6%;width:76.9%;height:29.2%"></div>
         </div>
       </div>
       <div class="screen" id="screen-1">
         <div class="canvas">
-          <img src="assets/shh-dashboard.jpg" alt="Dashboard met modules" draggable="false">
+          <img src="assets/shh-dashboard.webp" alt="Dashboard met modules" draggable="false">
           <div class="glow" style="left:19%;top:32.8%;width:79.8%;height:57.3%"></div>
         </div>
       </div>
       <div class="screen" id="screen-2">
         <div class="canvas">
-          <img src="assets/shh-calendar.jpg" alt="Agenda uit Google Calendar" draggable="false">
+          <img src="assets/shh-calendar.webp" alt="Agenda uit Google Calendar" draggable="false">
           <div class="glow" style="left:31.9%;top:31.8%;width:53.9%;height:28.2%"></div>
         </div>
       </div>
       <div class="screen" id="screen-3">
         <div class="canvas">
-          <img src="assets/shh-recipes.jpg" alt="Weekmenu op basis van aanbiedingen" draggable="false">
+          <img src="assets/shh-recipes.webp" alt="Weekmenu op basis van aanbiedingen" draggable="false">
           <div class="glow" style="left:20.5%;top:33.2%;width:37.9%;height:34.2%"></div>
         </div>
       </div>
       <div class="screen" id="screen-4">
         <div class="canvas">
-          <img src="assets/shh-deals.jpg" alt="Prijzen volgen" draggable="false">
+          <img src="assets/shh-deals.webp" alt="Prijzen volgen" draggable="false">
           <div class="glow" style="left:20.5%;top:25.1%;width:76.7%;height:29%"></div>
         </div>
       </div>
       <div class="screen" id="screen-5">
         <div class="canvas">
-          <img src="assets/shh-entertainment.jpg" alt="Filmtips op basis van een smaakprofiel" draggable="false">
+          <img src="assets/shh-entertainment.webp" alt="Filmtips op basis van een smaakprofiel" draggable="false">
           <div class="glow" style="left:20.5%;top:32.2%;width:53%;height:48%"></div>
         </div>
       </div>

@@ -8,34 +8,47 @@
   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝
   hey, you found this. → bram@vanzwolle.net
 -->
-<html lang="en">
+<html lang="nl">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Bram van Zwolle — Full-Stack Developer & Product Owner</title>
-<meta name="description" content="Product owner and full-stack developer (Laravel/PHP, PSPO II) building SaaS for healthcare at Sibi. Based in Zwolle, NL." />
+<title>Bram van Zwolle — Product Owner & Software Engineer</title>
+<meta name="description" content="Product owner en software engineer (Laravel/PHP, PSPO II). Bouwt bij Sibi SaaS voor de zorg. Gevestigd in Zwolle." />
+<link rel="canonical" href="https://bramvzw.nl/" />
+<meta name="theme-color" content="#0d0b09" id="themeColor" />
 
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://bramvzw.nl/" />
-<meta property="og:title" content="Bram van Zwolle — Full-Stack Developer & Product Owner" />
-<meta property="og:description" content="Full-stack developer and product owner building SaaS products that don't need a manual. Based in Zwolle, NL." />
+<meta property="og:title" content="Bram van Zwolle — Product Owner & Software Engineer" />
+<meta property="og:description" content="Product owner en software engineer (Laravel/PHP, PSPO II). Bouwt bij Sibi SaaS voor de zorg. Gevestigd in Zwolle." />
 <meta property="og:image" content="https://bramvzw.nl/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:locale" content="en_GB" />
+<meta property="og:locale" content="nl_NL" />
+<meta property="og:locale:alternate" content="en_GB" />
 
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Bram van Zwolle — Full-Stack Developer & Product Owner" />
-<meta name="twitter:description" content="Full-stack developer and product owner building SaaS products that don't need a manual. Based in Zwolle, NL." />
+<meta name="twitter:title" content="Bram van Zwolle — Product Owner & Software Engineer" />
+<meta name="twitter:description" content="Product owner en software engineer (Laravel/PHP, PSPO II). Bouwt bij Sibi SaaS voor de zorg. Gevestigd in Zwolle." />
 <meta name="twitter:image" content="https://bramvzw.nl/og-image.png" />
 <link rel="icon" id="favicon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230d0b08'/><rect x='6' y='6' width='88' height='88' fill='none' stroke='%23E8962A' stroke-width='1.5'/><text x='10' y='72' font-family='Georgia,serif' font-size='56' font-weight='bold' fill='%23E8E0D0'>B</text><text x='47' y='67' font-family='Georgia,serif' font-size='18' font-style='italic' fill='%23E8962A'>v</text><text x='55' y='72' font-family='Georgia,serif' font-size='56' font-weight='bold' fill='%23E8E0D0'>Z</text></svg>">
 <script>
   (function(){
-    var t=localStorage.getItem('theme');
+    var d=document.documentElement;
+    // 'anim' gates every "hidden until animated" style, so without JavaScript the content is simply visible.
+    d.classList.add('anim');
+    // Play the boot sequence once per browser session.
+    try{ if(sessionStorage.getItem('booted')) d.classList.add('no-boot'); else sessionStorage.setItem('booted','1'); }catch(e){}
+    // The hero's shader is expected to start (desktop, pointer, motion allowed): the still drawing
+    // that stands in for it must not be fetched or shown first. The shader code drops this class
+    // again if it cannot start after all.
+    try{ if(matchMedia('(min-width:821px) and (hover:hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('shade-soon'); }catch(e){}
+    var t=null; try{ t=localStorage.getItem('theme'); }catch(e){}
     if(t==='light'){
       document.documentElement.classList.add('light');
+      document.getElementById('themeColor').setAttribute('content','#ebe2cc');
       document.getElementById('favicon').href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f5eedd'/><rect x='6' y='6' width='88' height='88' fill='none' stroke='%23b66a15' stroke-width='1.5'/><text x='10' y='72' font-family='Georgia,serif' font-size='56' font-weight='bold' fill='%231a1510'>B</text><text x='47' y='67' font-family='Georgia,serif' font-size='18' font-style='italic' fill='%23b66a15'>v</text><text x='55' y='72' font-family='Georgia,serif' font-size='56' font-weight='bold' fill='%231a1510'>Z</text></svg>";
     }
   })();
@@ -43,8 +56,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="assets/vendor/gsap.min.js"></script>
+<script defer src="assets/vendor/ScrollTrigger.min.js"></script>
+<noscript><style>
+  .boot,.cursor-ring,.cursor-dot{ display:none !important; }
+  body{ cursor:auto !important; }
+  #brandName::after{ content:"Bram van Zwolle"; }
+  .tech-cart .fill{ transform:scaleX(1) !important; }
+</style></noscript>
 <style>
   :root{
     --bg:        #0d0b09;
@@ -52,7 +71,7 @@
     --bg-3:      #16140f;
     --ink:       #efe8dc;
     --ink-dim:   #a59b88;
-    --ink-mute:  #6a6151;
+    --ink-mute:  #8f8572;
     --rule:      #2a2620;
     --rule-2:    #1d1a14;
     --amber:     #e8962a;
@@ -60,16 +79,17 @@
     --amber-soft: rgba(232,150,42,0.14);
   }
   html.light{
-    --bg:         #f5eedd;
-    --bg-2:       #efe6d0;
-    --bg-3:       #e8dcbf;
-    --bg-hi:      #faf4e6;
-    --ink:        #2b2218;
-    --ink-dim:    #5a4c3a;
-    --ink-mute:   #8d7d66;
-    --rule:       #c8b894;
-    --rule-2:     #dcceae;
-    --amber:      #b66a15;
+    --bg:         #ebe2cc;
+    --bg-2:       #e3d9c0;
+    --bg-3:       #dbcfb2;
+    --bg-hi:      #f3ecda;
+    --ink:        #241c13;
+    --ink-dim:    #473b2d;
+    --ink-mute:   #55493a;
+    --rule:       #a8966e;
+    --rule-2:     #c2b28c;
+    --amber:      #733c07;
+    --amber-display: #9c560f;   /* large display type only: brighter, needs 3:1 instead of 4.5:1 (keeps a margin over the colour washes) */
     --amber-2:    #d98628;
     --amber-soft: rgba(182,106,21,0.10);
     --go:         #5b8a6a;
@@ -192,9 +212,6 @@
     font-family:'Space Grotesk',sans-serif;
     font-size:12px;letter-spacing:.18em;text-transform:uppercase;
     color:var(--ink-dim);
-    background:linear-gradient(180deg, rgba(13,11,9,.92) 0%, rgba(13,11,9,.78) 70%, rgba(13,11,9,0) 100%);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
   .topbar .mark{
     display:flex;align-items:center;gap:10px;color:var(--ink);
@@ -234,7 +251,7 @@
     margin-left:6px;
     font-family:'JetBrains Mono', ui-monospace, monospace;
     color:var(--amber);
-    font-size:10px;
+    font-size:11px;
     letter-spacing:0; text-transform:none;
     background:rgba(232,150,42,0.10);
     border:1px solid rgba(232,150,42,0.3);
@@ -247,7 +264,7 @@
   .topbar nav a:hover::after{ opacity:1; transform:translateY(0); }
   @media (max-width:720px){ .topbar nav{display:none} .topbar{padding:18px 22px} }
 
-  .topbar-right{ display:flex; align-items:center; gap:12px; }
+  .topbar-right{ display:flex; align-items:center; gap:8px; }
 
   /* --- Search trigger pill --- */
   .cp-trigger{
@@ -273,29 +290,21 @@
   .cp-trigger:hover svg{ opacity:.75; }
   .cp-trigger-kbd{
     margin-left:2px;
-    font-size:10px; color:var(--amber);
+    font-size:11px; color:var(--amber);
     background:var(--amber-soft);
     border:1px solid rgba(232,150,42,0.28);
     border-radius:3px;
     padding:1px 5px;
     line-height:1.4;
   }
-  html.light .cp-trigger{ background:rgba(255,255,255,0.5); border-color:var(--rule); }
+  html.light .cp-trigger{ background:rgba(255,255,255,0.28); border-color:var(--rule); }
   html.light .cp-trigger:hover{ border-color:var(--amber); background:rgba(182,106,21,0.06); }
   @media (max-width:920px){ .cp-trigger .cp-trigger-label{ display:none; } }
   @media (max-width:720px){ .cp-trigger{ display:none; } }
 
   /* ---- Light mode: topbar ---- */
-  html.light .topbar{
-    background:linear-gradient(180deg, rgba(245,238,221,.96) 0%, rgba(245,238,221,.82) 70%, rgba(245,238,221,0) 100%);
-  }
-  html.light .topbar::after{
-    content:""; position:absolute; left:40px; right:40px; bottom:0;
-    height:1px;
-    background:linear-gradient(90deg, transparent, rgba(139,105,60,0.35) 20%, rgba(139,105,60,0.35) 80%, transparent);
-  }
   html.light .mobile-nav{
-    background:rgba(245,238,221,.98);
+    background:rgba(235,226,204,.98);
   }
 
   /* ---- Light mode: vignette ---- */
@@ -310,23 +319,38 @@
 
   /* ---- Light mode: hero ---- */
   html.light .hero{
-    background: linear-gradient(180deg, var(--bg-hi,#faf4e6) 0%, var(--bg) 45%, var(--bg-2) 100%);
+    background: linear-gradient(180deg, var(--bg-hi,#f3ecda) 0%, var(--bg) 45%, var(--bg-2) 100%);
   }
   html.light .hero-atmos .texture{
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'><defs><filter id='f' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch' seed='11'/><feColorMatrix values='0 0 0 0 0.48  0 0 0 0 0.36  0 0 0 0 0.18  0 0 0 0.55 0'/></filter></defs><rect width='600' height='600' filter='url(%23f)'/></svg>");
     mix-blend-mode:multiply; opacity:.10;
   }
+  /* No drifting clouds on paper: soft brown clouds read as stains there. Where the shader runs
+     it draws the smoke as moving ink lines; elsewhere (phones, reduced motion, no WebGL) this
+     layer shows a still drawing of the same kind of lines, half as strong on the text's side. */
   html.light .hero-atmos .texture2{
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900' viewBox='0 0 900 900'><defs><filter id='g' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='4' stitchTiles='stitch' seed='5'/><feColorMatrix values='0 0 0 0 0.30  0 0 0 0 0.20  0 0 0 0 0.08  0 0 0 0.75 0'/></filter></defs><rect width='900' height='900' filter='url(%23g)'/></svg>");
-    mix-blend-mode:multiply; opacity:.55;
+    top:0; right:0; bottom:0; left:0;
+    background:url(assets/lines-hero.svg) center / cover no-repeat;
+    opacity:1; mix-blend-mode:normal; animation:none; will-change:auto;
+    -webkit-mask-image:linear-gradient(90deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.5) 42%, #000 80%);
+    mask-image:linear-gradient(90deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.5) 42%, #000 80%);
   }
-  html.light .hero-atmos .wash{ display:none; }
+  @media (max-width:820px){
+    /* on a phone the text runs the full width: the whole drawing steps back a little */
+    html.light .hero-atmos .texture2{ opacity:.6; -webkit-mask-image:none; mask-image:none; }
+  }
+  html.light.shade-soon .hero-atmos .texture2{ display:none; }   /* the shader is starting: no stand-in */
+  /* The unused glow layer carries the paper here, above the fade-out, so the hero runs into the next section without a seam. */
+  html.light .hero-atmos .wash{ background:var(--paper-layers); z-index:2; }
+  /* .hero-atmos is a stacking context, so blend modes inside it only see what is inside it.
+     It repeats the hero's paper here, otherwise "multiply" has nothing to multiply with and
+     the smoke canvas lies over the hero as a white veil. */
+  html.light .hero-atmos{ background:linear-gradient(180deg, var(--bg-hi,#f3ecda) 0%, var(--bg) 45%, var(--bg-2) 100%); }
   html.light .hero-atmos .fadetop{ display:none; }
   html.light .hero-atmos .sunwash{
     position:absolute; inset:0;
-    background:
-      radial-gradient(70% 55% at 18% 20%, rgba(217,134,40,0.16) 0%, rgba(217,134,40,0.07) 35%, rgba(217,134,40,0) 70%),
-      radial-gradient(65% 50% at 85% 90%, rgba(182,106,21,0.07) 0%, rgba(182,106,21,0) 65%);
+    /* clean paper with one soft pool of light: the drawing on it is the decoration */
+    background:radial-gradient(54% 60% at 62% 30%, rgba(255,252,240,.72) 0%, rgba(255,252,240,0) 70%);
   }
   html.light .hero-atmos .dust{
     position:absolute; inset:0;
@@ -348,7 +372,7 @@
     transition:opacity 1.2s ease, transform 1.2s cubic-bezier(.2,.8,.2,1);
   }
   html.light .hero-atmos .fadeout{
-    background:linear-gradient(180deg, rgba(245,238,221,0) 0%, rgba(239,230,208,0.9) 60%, var(--bg) 100%);
+    background:linear-gradient(180deg, rgba(235,226,204,0) 0%, rgba(227,217,192,0.9) 60%, var(--bg) 100%);
   }
 
   /* ---- Light mode: aurora ---- */
@@ -367,27 +391,29 @@
   html.light .build-badge.beta{ border-color:rgba(182,106,21,0.35); background:rgba(182,106,21,0.08); }
   html.light .build-badge.beta .b-dot{ background:var(--amber-2); box-shadow:0 0 0 2px rgba(217,134,40,0.22); }
 
-  /* ---- Light mode: section backgrounds ---- */
-  html.light .about{
-    background:linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+  /* ---- Light mode: section backgrounds ----
+     Paper: fine grain, fibres in both directions and a few scratches. It is part of each section's
+     background, so it lies under photos, text and cards instead of over them. */
+  html.light{
+    --paper:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'><defs><filter id='g' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.34  0 0 0 0 0.25  0 0 0 0 0.13  0 0 0 0.55 0'/></filter><filter id='h' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.008 0.42' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.34  0 0 0 0 0.25  0 0 0 0 0.13  0 0 0 3.4 -2.05'/></filter><filter id='v' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.5 0.01' numOctaves='2' seed='21' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.34  0 0 0 0 0.25  0 0 0 0 0.13  0 0 0 3.4 -2.15'/></filter></defs><rect width='800' height='800' filter='url(%23g)' opacity='0.2'/><rect width='800' height='800' filter='url(%23h)' opacity='0.2'/><rect width='800' height='800' filter='url(%23v)' opacity='0.12'/></svg>");
+    --scratches:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='1000' viewBox='0 0 1400 1000' fill='none' stroke='%235a4326' stroke-linecap='round'><path d='M60 210 Q300 150 620 96' stroke-width='0.7' opacity='0.17'/><path d='M240 760 Q520 690 900 640' stroke-width='0.6' opacity='0.14'/><path d='M820 330 Q1010 300 1330 214' stroke-width='0.8' opacity='0.16'/><path d='M980 880 Q1150 850 1360 790' stroke-width='0.5' opacity='0.12'/><path d='M130 480 Q230 462 380 420' stroke-width='0.5' opacity='0.11'/><path d='M560 520 Q700 470 760 452' stroke-width='0.6' opacity='0.12'/><path d='M1040 560 Q1100 548 1230 500' stroke-width='0.5' opacity='0.1'/><path d='M400 950 Q470 930 610 884' stroke-width='0.5' opacity='0.1'/></svg>");
+    --paper-layers: var(--scratches) 0 0 / 1400px 1000px, var(--paper) 0 0 / 800px 800px;
   }
-  html.light .work{ background:var(--bg-2); }
-  html.light .expertise{
-    background:linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
-  }
-  html.light .contact{
-    background:linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 60%, var(--bg-3) 100%);
-  }
-  html.light footer{ background:var(--bg-3); }
+  html.light .about{ --base:linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%); }
+  html.light .work{ --base:var(--bg-2); }
+  html.light .expertise{ --base:linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%); }
+  html.light .contact{ --base:linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 60%, var(--bg-3) 100%); }
+  html.light footer{ --base:var(--bg-3); }
 
   /* ---- Light mode: project cards ---- */
   html.light .project{
-    background:linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.15));
-    box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 40px 80px -60px rgba(91,70,30,.35);
+    background:linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.24));
+    border-color:var(--rule);
+    box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 40px 80px -60px rgba(91,70,30,.35);
   }
   html.light .project:hover{
     border-color:rgba(182,106,21,.5);
-    box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 40px 80px -40px rgba(182,106,21,.22);
+    box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 40px 80px -40px rgba(182,106,21,.22);
   }
 
   /* ---- Light mode: mockup ---- */
@@ -395,8 +421,8 @@
     background: repeating-linear-gradient(45deg, rgba(182,106,21,0.04) 0 2px, transparent 2px 14px),
                 linear-gradient(180deg, var(--bg-hi,#faf4e6), var(--bg-3));
   }
-  html.light .mockup-ui{ background:rgba(255,255,255,.55); }
-  html.light .mockup-ui .bar{ background:rgba(255,255,255,.4); }
+  html.light .mockup-ui{ background:rgba(255,255,255,.3); }
+  html.light .mockup-ui .bar{ background:rgba(255,255,255,.22); }
   html.light .mockup-ui .cell{
     background: linear-gradient(180deg, rgba(182,106,21,0.05), transparent 60%), rgba(255,255,255,0.35);
   }
@@ -406,18 +432,17 @@
   }
 
   /* ---- Light mode: commit-log & ping ---- */
-  html.light .commit-log{ background:rgba(255,255,255,.25); border-left-color:rgba(182,106,21,0.45); }
-  html.light .ping-block{ background:rgba(255,255,255,.3); border-left-color:rgba(182,106,21,0.45); }
+  html.light .commit-log{ background:rgba(255,255,255,.14); border-left-color:rgba(182,106,21,0.45); }
+  html.light .ping-block{ background:rgba(255,255,255,.16); border-left-color:rgba(182,106,21,0.45); }
   html.light .ping-block .pblink{ color:var(--go,#5b8a6a); }
 
   /* ---- Light mode: about card ---- */
-  html.light .about-card{ background:rgba(255,255,255,.38); }
+  html.light .about-card{ background:rgba(255,255,255,.2); }
 
   /* ---- Light mode: ls-list ---- */
-  html.light .ls-list{ background:rgba(255,255,255,.35); }
+  html.light .ls-list{ background:rgba(255,255,255,.18); }
 
   /* ---- Light mode: settings dropdown ---- */
-  html.light .settings-dropdown{ background:var(--bg-2); }
 
   /* ---- Light mode: profile photo ---- */
   html.light .profile-photo{
@@ -449,7 +474,7 @@
   }
   .settings-dropdown.open{ opacity:1;pointer-events:auto;transform:translateY(0); }
   .sd-group{ display:flex;flex-direction:column;gap:8px; }
-  .sd-label{ color:var(--ink-mute);font-size:9px;letter-spacing:.2em; }
+  .sd-label{ color:var(--ink-mute);font-size:11px;letter-spacing:.2em; }
   .sd-options{ display:flex;align-items:center;gap:8px; }
   .sd-sep{ color:var(--rule); }
   .sd-opt{
@@ -468,7 +493,7 @@
     background:transparent;border:none;cursor:pointer;
     padding:4px 0;
     font-family:'Space Grotesk',sans-serif;
-    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
     color:var(--ink-mute);
     transition:color .2s ease;
   }
@@ -531,7 +556,7 @@
   .sec-num::before{
     content:"";width:44px;height:1px;background:var(--rule);
   }
-  @media (max-width:900px){ .sec-num{top:28px;right:28px;font-size:10px} .sec-num::before{width:24px} }
+  @media (max-width:900px){ .sec-num{top:28px;right:28px;font-size:11px} .sec-num::before{width:24px} }
 
   .sec-label{
     display:inline-flex;align-items:center;gap:10px;
@@ -687,15 +712,6 @@
   }
   .hero-inner{position:relative;z-index:2;max-width:1400px;}
 
-  .eyebrow{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:12px;letter-spacing:.3em;text-transform:uppercase;
-    color:var(--ink-dim);
-    display:flex;align-items:center;gap:14px;
-    margin-bottom:40px;
-  }
-  .eyebrow .tick{width:10px;height:10px;border:1px solid var(--amber);transform:rotate(45deg);display:inline-block;}
-  .eyebrow .line{width:60px;height:1px;background:var(--rule);}
 
   .hero h1{
     font-family:'Space Grotesk',sans-serif;
@@ -710,15 +726,17 @@
     display:block;
     overflow:hidden;
     white-space:nowrap;
+    /* The line box (.92em) is shorter than the letters: without this room the mask cuts the
+       tails of j, p and g. The negative margin keeps the rows where they were. */
+    padding-bottom:.2em; margin-bottom:-.2em;
   }
   .hero h1 .word{
     display:inline-block;
     position:relative;
     opacity:1;
-    transform:translateY(102%);
+    transform:translateY(130%);   /* far enough to stay out of the taller mask */
     will-change:transform;
   }
-  .hero h1 .row + .row .word{ transform:translateY(102%); }
   .hero h1 .word + .word{margin-left:.28em}
   .hero h1 em{
     font-family:'Lora',serif;
@@ -1007,7 +1025,7 @@
   .project .meta div + div{ padding-left:0; }
   .project .meta div > span:first-child{
     display:flex; align-items:center; gap:8px;
-    font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
     color:var(--amber);
   }
   .project .meta div > span:first-child::after{
@@ -1021,7 +1039,7 @@
   /* --- Build badges on project index --- */
   .build-badge{
     font-family:'JetBrains Mono', ui-monospace, monospace;
-    font-size:10px;
+    font-size:11px;
     letter-spacing:.02em;
     text-transform:none;
     color:var(--ink-mute);
@@ -1110,7 +1128,7 @@
   }
   .case-cta-sub{
     font-family:'Space Grotesk',sans-serif;
-    font-size:10px;letter-spacing:.1em;
+    font-size:11px;letter-spacing:.1em;
     color:var(--ink-dim);
   }
   .case-study dl{
@@ -1120,7 +1138,7 @@
   }
   .case-study dt{
     font-family:'Space Grotesk',sans-serif;
-    font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
     color:var(--amber);
     padding-top:3px;
   }
@@ -1158,11 +1176,11 @@
   .mockup .c4{bottom:12px;right:12px;border-left:0;border-top:0}
   .mockup .label{
     position:absolute;left:20px;bottom:16px;
-    font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-mute);
+    font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-mute);
   }
   .mockup .ratio{
     position:absolute;right:20px;top:16px;
-    font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:.2em;color:var(--ink-mute);
+    font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:.2em;color:var(--ink-mute);
   }
 
   .mockup-ui{position:absolute;inset:44px 40px;border:1px solid var(--rule);background:rgba(13,11,9,.6);display:flex;flex-direction:column;}
@@ -1400,7 +1418,7 @@
     transform: translateX(-50%);
     white-space: nowrap;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: .24em;
     text-transform: uppercase;
     color: var(--ink-mute);
@@ -1411,7 +1429,7 @@
     right: 16px;
     top: 12px;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: .2em;
     color: var(--ink-mute);
     z-index: 10;
@@ -1517,13 +1535,13 @@
   }
   .cred-card .cc-issuer{
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
     color:var(--ink-mute); margin-top:auto; padding-top:24px;
   }
   .cred-card .cc-verify{
     display:inline-block; align-self:flex-start;
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
     color:var(--amber); text-decoration:none;
     border:1px solid rgba(232,150,42,.35);
     padding:8px 18px; margin-top:8px; white-space:nowrap;
@@ -1554,7 +1572,7 @@
   .stack-header .legend{
     display:flex; align-items:center; gap:20px;
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-mute);
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-mute);
   }
   .stack-header .legend .yr{ display:inline-flex; align-items:center; gap:8px; }
   .stack-header .legend .bar{
@@ -1585,7 +1603,7 @@
   }
   .tech-cart .idx{
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-mute);
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-dim);
   }
   .tech-cart .name{
     font-family:'Space Grotesk',sans-serif; font-weight:400;
@@ -1610,7 +1628,7 @@
   .tech-cart .years{
     display:flex; justify-content:space-between;
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.08em; color:var(--ink-mute);
+    font-size:11px; letter-spacing:.08em; color:var(--ink-dim);
   }
   .tech-cart .years b{ color:var(--ink); font-weight:500; }
   .tech-cart .meta-row{
@@ -1618,7 +1636,7 @@
     padding-top:12px; margin-top:4px;
     border-top:1px dashed var(--rule-2);
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-mute);
+    font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-dim);
   }
   .tech-cart .meta-row .cat{ color:var(--amber); }
   .exp-item::after{
@@ -1658,10 +1676,10 @@
 
   /* ---- Light mode: tech-cart ---- */
   html.light .tech-cart{
-    background: linear-gradient(180deg, rgba(255,253,245,.9), rgba(250,244,230,.75));
+    background: linear-gradient(180deg, #f5efde, #ece4d0);
   }
   html.light .tech-cart:hover{
-    background: linear-gradient(180deg, rgba(255,250,235,.95), rgba(252,244,225,.9));
+    background: linear-gradient(180deg, #f9f4e6, #f1e9d7);
   }
   html.light .tech-cart .glyph{ background:rgba(182,106,21,.06); }
 
@@ -1741,13 +1759,13 @@
   }
   .register-entry .num{
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.22em; text-transform:uppercase;
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
     color:var(--amber); display:flex; align-items:center; gap:10px;
   }
   .register-entry .num::after{ content:""; flex:1; height:1px; background:var(--rule-2); }
   .register-entry .label{
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-mute);
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-mute);
   }
   .register-entry .value{
     font-family:'Space Grotesk',sans-serif; font-weight:400;
@@ -1761,10 +1779,10 @@
   .register-entry .links{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
   .register-entry .links a{
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--amber); text-decoration:none;
     border:1px solid rgba(232,150,42,.35);
-    padding:8px 12px;
+    padding:8px 10px;
     display:inline-flex; align-items:center; gap:7px;
     transition:background .2s ease, border-color .2s ease, color .2s ease;
   }
@@ -1773,9 +1791,9 @@
   }
   .register-entry .links a.cv-link{
     font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
     color:#0d0b08; background:var(--amber); text-decoration:none;
-    border-color:var(--amber); padding:8px 12px; margin-top:0;
+    border-color:var(--amber); padding:8px 10px; margin-top:0;
     transition:opacity .2s ease;
   }
   .register-entry .links a.cv-link:hover{ opacity:.85; color:#0d0b08; }
@@ -1907,12 +1925,12 @@
     background:rgba(13,11,9,0.97);
     border:1px solid rgba(232,150,42,0.3);
     min-width:210px;
-    opacity:0; transform:translateY(-6px);
-    transition:opacity .2s ease, transform .2s ease;
+    opacity:0; transform:translateY(-6px); visibility:hidden;
+    transition:opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
     pointer-events:none;
     box-shadow:0 8px 28px rgba(0,0,0,.6);
   }
-  .brand-tip.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .brand-tip.visible{ opacity:1; transform:translateY(0); pointer-events:auto; visibility:visible; transition:opacity .2s ease, transform .2s ease; }
   .bt-row{
     display:flex; justify-content:space-between; align-items:center;
     padding:11px 14px;
@@ -1923,7 +1941,7 @@
   }
   .bt-row:last-child{ border-bottom:none; }
   .bt-row:hover{ color:var(--ink); background:rgba(232,150,42,.06); }
-  .bt-action{ color:var(--amber); flex-shrink:0; font-size:10px; letter-spacing:.1em; }
+  .bt-action{ color:var(--amber); flex-shrink:0; font-size:11px; letter-spacing:.1em; }
   .bt-copy{
     width:100%; background:transparent; border:none; cursor:pointer;
     text-align:left; font-family:inherit; font-size:inherit; letter-spacing:inherit; text-transform:inherit;
@@ -1950,10 +1968,10 @@
     position:fixed; inset:0; z-index:100;
     display:flex; align-items:flex-start; justify-content:center;
     padding-top:12vh;
-    opacity:0; pointer-events:none;
-    transition:opacity .2s ease;
+    opacity:0; pointer-events:none; visibility:hidden;
+    transition:opacity .2s ease, visibility 0s linear .2s;
   }
-  .cp-root.open{ opacity:1; pointer-events:auto; }
+  .cp-root.open{ opacity:1; pointer-events:auto; visibility:visible; transition:opacity .2s ease; }
   .cp-scrim{
     position:absolute; inset:0;
     background:rgba(5,4,3,0.75);
@@ -1982,7 +2000,7 @@
   }
   .cp-input::placeholder{ color:var(--ink-mute); }
   .cp-hint{
-    font-size:10px; color:var(--ink-mute);
+    font-size:11px; color:var(--ink-mute);
     border:1px solid rgba(255,255,255,0.12);
     padding:2px 6px; letter-spacing:.05em;
   }
@@ -2010,7 +2028,7 @@
     display:flex; gap:18px; justify-content:flex-end;
     padding:10px 18px;
     border-top:1px solid rgba(255,255,255,0.06);
-    font-size:10px; color:var(--ink-mute);
+    font-size:11px; color:var(--ink-mute);
   }
   .cp-foot kbd{
     background:rgba(255,255,255,0.06);
@@ -2083,7 +2101,7 @@
     .project .mockup { height:auto; position:relative; width:100%; margin:0; }
     .project .mockup-ui { inset:24px 20px; }
     .project .tags   { order:5; justify-content:center; width:100%; align-self:stretch; }
-    .project .tag    { padding:6px 10px; font-size:10px; }
+    .project .tag    { padding:6px 10px; font-size:11px; }
     .project .tags .tag:nth-child(n+4) { display:none; }
     .project .meta   { display:none; }
     .project .case-toggle { order:7; margin-top:28px; }
@@ -2098,6 +2116,440 @@
     .tech-cart .meta-row { flex-direction:column; gap:2px; align-items:flex-start; }
     .tech-cart .meta-row span:last-child { display:none; }
   }
+
+  /* ---------- Theme switch: the new theme grows as a circle from the button ---------- */
+  ::view-transition-old(root), ::view-transition-new(root){ animation:none; mix-blend-mode:normal; }
+  ::view-transition-old(root){ z-index:1; }
+  ::view-transition-new(root){ z-index:2; }
+
+  /* ---------- Glow that follows the pointer on cards ---------- */
+  .project{ position:relative; }
+  @media (hover:hover){
+    .tech-cart::before, .project::before{
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background:radial-gradient(var(--gr,240px) circle at var(--mx,-999px) var(--my,-999px), rgba(232,150,42,.13), transparent 70%);
+      opacity:0; transition:opacity .35s ease;
+    }
+    .project::before{ --gr:520px; background:radial-gradient(var(--gr) circle at var(--mx,-999px) var(--my,-999px), rgba(232,150,42,.07), transparent 70%); }
+    .tech-cart:hover::before, .project:hover::before{ opacity:1; }
+    html.light .tech-cart::before{ background:radial-gradient(var(--gr,240px) circle at var(--mx,-999px) var(--my,-999px), rgba(115,60,7,.12), transparent 70%); }
+    html.light .project::before{ background:radial-gradient(var(--gr) circle at var(--mx,-999px) var(--my,-999px), rgba(115,60,7,.07), transparent 70%); }
+  }
+
+  /* Four narrow columns (small laptops, tablets in landscape): keep the card footer on one line so the bars stay level. */
+  @media (min-width:1001px) and (max-width:1120px){
+    .tech-cart{ padding-left:16px; padding-right:16px; }
+    .tech-cart .meta-row{ letter-spacing:0; }
+  }
+
+  /* ---------- Stack <-> projects: jump links ---------- */
+  .project, .tech-cart{ scroll-margin-top:96px; }
+  .tech-cart .used-in{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px;
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:11px; letter-spacing:.04em; color:var(--ink-dim);
+  }
+  .tech-cart .used-in a{
+    color:var(--amber); text-decoration:none; white-space:nowrap;
+    border-bottom:1px solid transparent; transition:border-color .2s ease;
+  }
+  .tech-cart .used-in a::before{ content:"\2192\00a0"; }
+  .tech-cart .used-in a:hover, .tech-cart .used-in a:focus-visible{ border-bottom-color:var(--amber); }
+  .project a.tag{ text-decoration:none; transition:color .2s ease, border-color .2s ease; }
+  .project a.tag:hover, .project a.tag:focus-visible{ color:var(--amber); border-color:var(--amber); }
+  .project:focus, .tech-cart:focus, section:focus{ outline:none; }
+  .project:focus-visible, .tech-cart:focus-visible{ outline:1px solid var(--amber); outline-offset:2px; }
+  .jump-hit{ animation:jump-hit 1.8s ease; z-index:2; }
+  @keyframes jump-hit{
+    0%   { box-shadow:0 0 0 0 rgba(232,150,42,0); }
+    18%  { box-shadow:0 0 0 2px var(--amber), 0 0 48px rgba(232,150,42,.35); }
+    100% { box-shadow:0 0 0 0 rgba(232,150,42,0); }
+  }
+
+  /* ---------- Count-up figures ---------- */
+  .count{ font-variant-numeric:tabular-nums; }
+
+  /* ---------- Hero backdrop shader (desktop; smoke on dark, the same smoke drawn in ink lines on the light theme) ---------- */
+  .hero-atmos .shader{
+    position:absolute; inset:0; width:100%; height:100%;
+    mix-blend-mode:screen; opacity:0; pointer-events:none;
+  }
+  /* An animation, not a transition: it runs once when the shader starts. With a transition the
+     dark smoke stayed at the light theme's strength for a second after switching themes. */
+  html.shader-on .hero-atmos .shader{ opacity:.28; animation:shader-in 1.4s ease both; }
+  @keyframes shader-in{ from{ opacity:0; } }
+  html.shader-on.light .hero-atmos .shader{ mix-blend-mode:multiply; opacity:1; }
+  html.shader-on .hero-atmos .texture2{ display:none; }
+
+  /* ---------- Light theme: readable accent ---------- */
+  html.light .register-entry .links a:hover,
+  html.light .register-entry .links a.cv-link,
+  html.light .cred-card .cc-verify:hover{ color:#faf4e6; }
+  html.light ::selection{ color:#faf4e6; }
+  html.light .cp-head{ border-bottom-color:var(--rule-2); }
+  html.light .cp-hint{ border-color:var(--rule); }
+  html.light .cp-foot{ border-top-color:var(--rule-2); }
+  html.light .cp-scrim{ background:rgba(60,46,26,.38); }
+  html.light .cred-card{
+    background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,.26));
+    border-color:var(--rule);
+    box-shadow:0 18px 40px -34px rgba(91,70,30,.45);
+  }
+  html.light .cred-card:hover{ border-color:var(--amber); background:linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.36)); }
+  html.light em{ color:var(--amber-display); }
+  html.light .uptime-line .um{ opacity:1; color:var(--ink-dim); }
+  html.light .hero .sec-num{ color:var(--ink-dim); }
+
+  /* =====================================================================================
+     BACKDROP: soft warm colour fields in every section, so translucent UI has something to
+     pick up while the page scrolls. Static gradients inside the section backgrounds: no
+     fixed layers, no blending, no animation. A fine grain tile dithers the dark ramps.
+     ===================================================================================== */
+  :root{
+    --ember-a:rgba(232,150,42,.15);   /* amber */
+    --ember-b:rgba(160,74,26,.22);    /* burnt sienna */
+    --ember-c:rgba(205,125,42,.10);   /* ochre highlight */
+    --ek:1;                           /* size factor of the fields */
+    --contour:none;                   /* light theme only: a patch of drawn height lines */
+    --ember-grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='6' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 0.9  0 0 0 0 0.75  0 0 0 0.05 0'/></filter><rect width='260' height='260' filter='url(%23n)'/></svg>");
+    --surface-layers:var(--ember-grain) 0 0 / 260px 260px;
+  }
+  html.light{
+    /* On paper: the same amber family as the embers of the dark theme, wide and soft, with a
+       pool of light between them. Calm, so the paper stays clean. */
+    --ember-a:rgba(236,160,72,.24);   /* amber glow */
+    --ember-b:rgba(200,118,84,.15);   /* burnt sienna, thinned */
+    --ember-c:rgba(255,251,238,.85);  /* pool of light */
+    --ek:1.4;
+    --contour:url(assets/lines-patch.svg);   /* fades out to its own edges */
+    --surface-layers:var(--paper-layers);
+  }
+  .about, .work, .expertise, .contact, footer{ --base:var(--bg); }
+  .about{
+    background:var(--surface-layers),
+      var(--contour) no-repeat right -260px bottom -150px / 880px auto,
+      radial-gradient(calc(720px * var(--ek)) calc(540px * var(--ek)) at 8% 460px, var(--ember-a), transparent 70%),
+      radial-gradient(calc(780px * var(--ek)) calc(580px * var(--ek)) at 96% calc(100% - 460px), var(--ember-b), transparent 70%),
+      var(--base);
+  }
+  .work{
+    background:var(--surface-layers),
+      var(--contour) no-repeat right -150px top 30px / 900px auto,
+      radial-gradient(calc(760px * var(--ek)) calc(560px * var(--ek)) at 97% 560px, var(--ember-a), transparent 70%),
+      radial-gradient(calc(820px * var(--ek)) calc(620px * var(--ek)) at 2% 1750px, var(--ember-b), transparent 70%),
+      radial-gradient(calc(700px * var(--ek)) calc(520px * var(--ek)) at 98% calc(100% - 1500px), var(--ember-c), transparent 70%),
+      radial-gradient(calc(780px * var(--ek)) calc(580px * var(--ek)) at 4% calc(100% - 520px), var(--ember-a), transparent 70%),
+      var(--base);
+  }
+  .expertise{
+    background:var(--surface-layers),
+      var(--contour) no-repeat right -170px top 20px / 860px auto,
+      radial-gradient(calc(740px * var(--ek)) calc(540px * var(--ek)) at 4% 500px, var(--ember-b), transparent 70%),
+      radial-gradient(calc(760px * var(--ek)) calc(560px * var(--ek)) at 97% 1350px, var(--ember-a), transparent 70%),
+      radial-gradient(calc(720px * var(--ek)) calc(520px * var(--ek)) at 8% calc(100% - 480px), var(--ember-c), transparent 70%),
+      var(--base);
+  }
+  .contact{
+    background:var(--surface-layers),
+      var(--contour) no-repeat left -280px bottom -140px / 880px auto,
+      radial-gradient(58% 52% at 86% 44%, var(--ember-a), transparent 70%),
+      radial-gradient(50% 46% at 6% 62%, var(--ember-b), transparent 70%),
+      var(--base);
+  }
+  footer{ background:var(--surface-layers), var(--base); }
+
+  /* =====================================================================================
+     LIQUID GLASS: the navigation layer only (bar, menus, command palette, tooltips).
+     Content cards stay solid. Ladder: a readable solid surface first, glass where the
+     browser has backdrop-filter, solid again for reduced transparency / more contrast.
+     ===================================================================================== */
+  /* Corner radii, one scale for the whole site: the bar, the cards and the panels share --r,
+     what sits inside them is smaller, so inner corners follow outer ones. */
+  :root{ --r:14px; --r-in:8px; --r-xs:5px; }
+  /* The content column is 1400px wide at most and stays 80px from the edges below that. This
+     is the distance from a screen edge to that column, also on screens wider than the column. */
+  :root{ --gutter:max(80px, calc(50% - 700px)); }
+  :root{
+    --glass-solid:rgba(24,19,14,.97);
+    --glass-tint:rgba(30,24,17,.64);
+    --glass-tint-strong:rgba(28,22,16,.72);
+    --glass-line:rgba(255,236,205,.16);
+    /* light on the edge: a streak top left, a fainter return bottom right, a general top light */
+    --glass-edge:
+      radial-gradient(40% 90% at 12% 0%, rgba(255,244,224,.50), transparent 70%),
+      radial-gradient(40% 90% at 88% 100%, rgba(255,244,224,.20), transparent 70%),
+      linear-gradient(180deg, rgba(255,244,224,.24), transparent 55%);
+    --glass-sheen:rgba(255,240,215,.07);
+    --glass-fill:rgba(255,240,215,.08);
+    --glass-fill-hover:rgba(255,240,215,.13);
+    --glass-shadow:0 14px 34px -12px rgba(0,0,0,.65), 0 2px 6px rgba(0,0,0,.30);
+    --edge-fade:linear-gradient(180deg, rgba(13,11,9,.88) 0%, rgba(13,11,9,.50) 48%, rgba(13,11,9,0) 100%);
+  }
+  html.light{
+    --glass-solid:rgba(247,241,227,.98);
+    --glass-tint:rgba(251,246,234,.56);
+    --glass-tint-strong:rgba(251,246,234,.78);
+    --glass-line:rgba(70,48,18,.22);
+    --glass-edge:
+      radial-gradient(40% 90% at 12% 0%, rgba(255,255,255,.95), transparent 70%),
+      radial-gradient(40% 90% at 88% 100%, rgba(255,255,255,.60), transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,.85), transparent 55%);
+    --glass-sheen:rgba(255,255,255,.30);
+    --glass-fill:rgba(70,48,18,.07);
+    --glass-fill-hover:rgba(70,48,18,.12);
+    --glass-shadow:0 14px 30px -14px rgba(70,48,18,.42), 0 2px 5px rgba(70,48,18,.12);
+    --edge-fade:linear-gradient(180deg, rgba(235,226,204,.90) 0%, rgba(235,226,204,.52) 48%, rgba(235,226,204,0) 100%);
+  }
+
+  /* Content dissolves into the page colour as it passes under the bar, instead of a hard divider. */
+  body::before{
+    content:""; position:fixed; top:0; left:0; right:0; height:104px; z-index:54;
+    pointer-events:none; background:var(--edge-fade);
+  }
+
+  /* --- the bar: a floating capsule --- */
+  .topbar{
+    /* As wide as the content column below it (sections: 80px gutter, 1400px max), and with the
+       same corner radius as the cards in that column. */
+    --bar-h:54px; --bar-pl:22px; --bar-pr:10px;
+    top:14px; left:var(--gutter); right:var(--gutter);
+    height:var(--bar-h); padding:0 var(--bar-pr) 0 var(--bar-pl);
+    border-radius:var(--r);
+  }
+  /* The plate is a pseudo-element on purpose: the bar itself must not carry backdrop-filter,
+     or the menus inside it could only blur the bar and not the page behind them. */
+  .topbar::before{
+    content:""; position:absolute; inset:0; z-index:-1; border-radius:inherit; pointer-events:none;
+    background:var(--glass-solid);
+    box-shadow:var(--glass-shadow);
+  }
+  /* One edge per glass surface. It is a single ring on the surface's own box with the surface's
+     own radius, so hairline and highlight share one curve. (A border plus a shifted inner
+     highlight plus a ring inside the border gave two or three lines with different curves.) */
+  .topbar::after, .settings-dropdown::after, .brand-tip::after, .cp-modal::after, .tag-tip::after, .copy-confirm::after{
+    content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    border:1px solid var(--glass-line);
+  }
+  @supports ((mask-composite:exclude) or (-webkit-mask-composite:xor)){
+    .topbar::after, .settings-dropdown::after, .brand-tip::after, .cp-modal::after, .tag-tip::after, .copy-confirm::after{
+      border:0; padding:1px;
+      background:var(--glass-edge), var(--glass-line);
+      -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude;
+    }
+  }
+  .topbar nav{ gap:2px; top:50%; transform:translate(-50%,-50%); align-items:center; }
+  .topbar nav a{ height:34px; padding:0 13px; border-radius:var(--r-in); align-items:center; transition:color .3s ease, background .3s ease; }
+  .topbar nav a:hover{ background:var(--glass-fill); }
+  .topbar nav a.active{ background:var(--glass-fill-hover); }
+  .cp-trigger{
+    height:34px; padding:0 8px 0 12px; border-radius:var(--r-in);
+    background:var(--glass-fill); border-color:transparent; color:var(--ink-dim);
+  }
+  .cp-trigger:hover{ background:var(--glass-fill-hover); border-color:transparent; color:var(--ink); }
+  html.light .cp-trigger{ background:var(--glass-fill); border-color:transparent; }
+  html.light .cp-trigger:hover{ background:var(--glass-fill-hover); border-color:transparent; }
+  .cp-trigger-kbd{ border-radius:var(--r-xs); padding:1px 6px; }
+  /* The settings button is the search button's twin: same height, fill, corner and hover. */
+  .settings-btn{ width:34px; height:34px; padding:0; border-radius:var(--r-in); justify-content:center; background:var(--glass-fill); color:var(--ink-dim); transition:color .2s ease, background .2s ease; }
+  .settings-btn:hover, .settings-btn[aria-expanded="true"]{ background:var(--glass-fill-hover); color:var(--ink); }
+  /* drawn as lightly as the magnifying glass in the search button */
+  .settings-btn svg{ opacity:.6; transition:opacity .2s ease; }
+  .settings-btn:hover svg, .settings-btn[aria-expanded="true"] svg{ opacity:.85; }
+  /* The shortcut hint used to sit inline and reserve width even while hidden, which made the
+     menu collide with the name and the search button on tablet widths. It now floats below the item. */
+  .topbar nav a::after{
+    position:absolute; left:50%; top:calc(100% + 16px); margin:0; white-space:nowrap;
+    transform:translate(-50%,-3px);
+    background:var(--glass-solid); border-color:var(--glass-line); border-radius:var(--r-xs); padding:2px 7px;
+    box-shadow:var(--glass-shadow); pointer-events:none;
+  }
+  .topbar nav a:hover::after{ transform:translate(-50%,0); }
+  @media (max-width:1100px){ .topbar nav a{ padding:0 10px; } }
+  @media (max-width:1050px){
+    /* narrower than this the menu no longer fits centred: it joins the row between name and tools */
+    .topbar nav{ position:relative; left:auto; top:auto; transform:none; }
+    .topbar nav a{ padding:0 9px; letter-spacing:.12em; }
+    .topbar nav a::before{ display:none; }
+    .topbar{ --bar-pl:18px; --bar-pr:10px; }
+  }
+  @media (max-width:900px){ .topbar{ left:28px; right:28px; } }   /* the sections' gutter at this width */
+  @media (max-width:860px){ .cp-trigger-kbd{ display:none; } .cp-trigger{ padding:0 9px; } }
+  @media (max-width:720px){
+    .topbar{ --bar-h:48px; --bar-pl:16px; --bar-pr:7px; top:10px; }
+    body::before{ height:84px; }
+  }
+  @media (max-width:600px){ .topbar{ left:20px; right:20px; } }
+
+  /* --- menus, command palette, tooltips --- */
+  .settings-dropdown, .brand-tip, .cp-modal, .tag-tip{
+    background:var(--glass-solid);
+    border:0;
+    box-shadow:var(--glass-shadow);
+  }
+  /* Every panel has the bar's corner radius and hangs 10px below the bar, flush with the bar's
+     edge. Shapes inside a panel follow its curve: inner radius = outer radius minus the gap. */
+  .settings-dropdown, .brand-tip, .cp-modal{ border-radius:var(--r); }
+  .settings-dropdown{
+    padding:18px 20px;
+    top:calc(100% + (var(--bar-h) - 34px) / 2 + 10px);   /* 34px = the button's height */
+    right:calc(-1 * var(--bar-pr));
+  }
+  .brand-tip{ padding:6px; }
+  .bt-row{ border-radius:var(--r-in); border-bottom:0; padding:11px 14px; }
+  /* Invisible bridge so the pointer can cross from the name to the menu without the menu closing.
+     The script sizes it to exactly the space between the two: it must not lie over the name or
+     the menu items next to it, or clicks there would land on the bridge. */
+  .brand-tip::before{
+    content:""; position:absolute; left:var(--bridge-x,0px); width:var(--bridge-w,100%);
+    top:calc(-1 * var(--bridge-h,10px)); height:var(--bridge-h,10px);
+  }
+  @media (hover:none){ .brand-tip::before{ display:none; } }
+  .bt-row:hover{ background:var(--glass-fill-hover); }
+  .cp-modal{ overflow:hidden; }
+  .cp-head{ padding:16px 20px; }
+  .cp-foot{ padding:10px 20px; }
+  .cp-list{ padding:6px; }
+  .cp-list li{ border-left:0; border-radius:var(--r-in); padding:10px 14px; }
+  .cp-foot kbd{ border-radius:4px; }
+  .cp-head{ border-bottom-color:var(--glass-line); }
+  .cp-foot{ border-top-color:var(--glass-line); }
+  html.light .cp-head{ border-bottom-color:var(--glass-line); }
+  html.light .cp-foot{ border-top-color:var(--glass-line); }
+  .cp-hint, html.light .cp-hint{ border-color:var(--glass-line); border-radius:var(--r-xs); }
+  .cp-list li:hover, .cp-list li.active{ background:var(--glass-fill-hover); }
+  .cp-scrim{ background:rgba(5,4,3,.42); }
+  html.light .cp-scrim{ background:rgba(60,46,26,.26); }
+  .tag-tip{ border-radius:var(--r-in); padding:7px 11px; color:var(--ink); }
+  .sd-divider{ background:var(--glass-line); }
+  .copy-confirm{
+    border-radius:var(--r); padding:11px 20px 11px 16px; color:var(--ink);
+    background:var(--glass-solid); border:0;
+    box-shadow:var(--glass-shadow);
+  }
+  .copy-confirm::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; background:#7fc96d; margin-right:10px; vertical-align:1px; }
+
+  @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .topbar::before{
+      background:linear-gradient(180deg, var(--glass-sheen), transparent 55%), var(--glass-tint);
+      -webkit-backdrop-filter:blur(18px) saturate(175%);
+      backdrop-filter:blur(18px) saturate(175%);
+    }
+    .settings-dropdown, .brand-tip, .copy-confirm{
+      background:linear-gradient(180deg, var(--glass-sheen), transparent 50%), var(--glass-tint-strong);
+      -webkit-backdrop-filter:blur(22px) saturate(175%);
+      backdrop-filter:blur(22px) saturate(175%);
+    }
+    .cp-modal{
+      background:linear-gradient(180deg, var(--glass-sheen), transparent 40%), var(--glass-tint-strong);
+      -webkit-backdrop-filter:blur(26px) saturate(165%);
+      backdrop-filter:blur(26px) saturate(165%);
+    }
+    .tag-tip{
+      background:var(--glass-tint-strong);
+      -webkit-backdrop-filter:blur(14px) saturate(160%);
+      backdrop-filter:blur(14px) saturate(160%);
+    }
+  }
+  /* People who ask for less transparency or more contrast get the solid surface back. */
+  @media (prefers-reduced-transparency:reduce), (prefers-contrast:more){
+    .topbar::before, .settings-dropdown, .brand-tip, .cp-modal, .tag-tip, .copy-confirm{
+      background:var(--glass-solid);
+      -webkit-backdrop-filter:none; backdrop-filter:none;
+    }
+  }
+  /* Forced colours (Windows high contrast) drop shadows and gradients: the ring becomes a plain border there too. */
+  @media (prefers-contrast:more), (forced-colors:active){
+    .topbar::after, .settings-dropdown::after, .brand-tip::after, .cp-modal::after, .tag-tip::after, .copy-confirm::after{
+      border:1px solid var(--ink); padding:0; background:none; -webkit-mask:none; mask:none;
+    }
+  }
+
+  /* =====================================================================================
+     CORNERS of the content: the same radius as the bar for cards and other standalone boxes,
+     the smaller one for what sits inside them.
+     ===================================================================================== */
+  .project, .cred-card, .about-card, .profile-photo, .tech-grid{ border-radius:var(--r); }
+  .project::before{ border-radius:inherit; }          /* the pointer glow stays inside the rounded card */
+  .cred-card{ overflow:hidden; }                       /* so the amber bar on the left follows the corner */
+  /* The stack is one rounded block of cells: the block is clipped, the cells stay straight. A ring
+     drawn outside a cell would be cut off by that clip, so the two rings on a cell go inside it. */
+  .tech-grid{ overflow:hidden; }
+  .tech-cart:focus-visible{ outline-offset:-3px; }
+  .tech-cart.jump-hit{ animation-name:jump-hit-in; }
+  @keyframes jump-hit-in{
+    0%   { box-shadow:inset 0 0 0 0 rgba(232,150,42,0); }
+    18%  { box-shadow:inset 0 0 0 2px var(--amber), inset 0 0 48px rgba(232,150,42,.28); }
+    100% { box-shadow:inset 0 0 0 0 rgba(232,150,42,0); }
+  }
+  .mockup, .demo-frame, .case-cta, .tech-cart .glyph,
+  .cred-card .cc-verify, .register-entry .links a{ border-radius:var(--r-in); }
+  .project .tag, .build-badge{ border-radius:var(--r-xs); }
+
+  /* Wide screens: the hero, the contact block, the footer and the section numbers keep to the
+     same column as the bar and the cards (they used to stay 80px from the screen edge). */
+  @media (min-width:901px){
+    .hero-inner, .contact-inner{ width:100%; max-width:1400px; margin-left:auto; margin-right:auto; }
+    .sec-num{ right:var(--gutter); }
+    .hero-meta{ left:var(--gutter); right:var(--gutter); }
+    footer{ padding-left:var(--gutter); padding-right:var(--gutter); }
+  }
+
+  /* Settings menu: each choice is a two-part switch whose thumb slides to the chosen side
+     (the script sets data-side; without it the thumb rests on the first option, the default). */
+  :root{ --thumb:rgba(255,240,215,.17); --thumb-shadow:0 1px 2px rgba(0,0,0,.30); }
+  html.light{ --thumb:rgba(255,253,246,.92); --thumb-shadow:0 1px 2px rgba(70,48,18,.20), 0 0 0 1px rgba(70,48,18,.06); }
+  .settings-dropdown{ min-width:212px; }
+  .sd-options{
+    position:relative; display:grid; grid-template-columns:1fr 1fr; gap:0;
+    padding:3px; border-radius:var(--r-in); background:var(--glass-fill);
+  }
+  .sd-options::before{
+    content:""; position:absolute; top:3px; bottom:3px; left:3px; width:calc(50% - 3px);
+    border-radius:var(--r-xs); background:var(--thumb); box-shadow:var(--thumb-shadow);
+    transition:transform .35s cubic-bezier(.3,.8,.2,1);
+  }
+  .sd-options[data-side="right"]::before{ transform:translateX(100%); }
+  .sd-sep{ display:none; }
+  .sd-opt{
+    position:relative; z-index:1; height:30px; padding:0 12px; border-radius:var(--r-xs);
+    text-align:center; color:var(--ink-dim); transition:color .25s ease;
+  }
+  .sd-opt:hover, .sd-opt.active{ color:var(--ink); }
+  .sd-opt:focus-visible{ outline:1px solid var(--amber); outline-offset:1px; }
+  .sd-divider{ margin:14px 0; }
+  @media (prefers-reduced-motion:reduce){ .sd-options::before{ transition:none; } }
+
+  /* Contact: the two link buttons are filled too, a tint of the accent, so the solid one (the CV)
+     stays the strongest of the three. */
+  .register-entry .links a:not(.cv-link){ background:rgba(232,150,42,.14); border-color:rgba(232,150,42,.42); }
+  html.light .register-entry .links a:not(.cv-link){ background:rgba(115,60,7,.13); border-color:rgba(115,60,7,.42); }
+  .register-entry .links a:not(.cv-link):hover, html.light .register-entry .links a:not(.cv-link):hover{ background:var(--amber); border-color:var(--amber); }
+
+  /* The marker of the current section in the menu is one element that slides from item to item
+     (the script places it); without the script each item keeps its own background. */
+  .nav-pill{
+    position:absolute; left:0; top:0; width:0; height:34px; border-radius:var(--r-in);
+    background:var(--glass-fill-hover); opacity:0; pointer-events:none;
+    transition:transform .5s cubic-bezier(.3,.8,.2,1), width .5s cubic-bezier(.3,.8,.2,1), opacity .25s ease;
+  }
+  .topbar nav.has-pill a{ z-index:1; }
+  .topbar nav.has-pill a.active{ background:transparent; }
+  @media (prefers-reduced-motion:reduce){ .nav-pill{ transition:opacity .2s ease; } }
+
+  /* ---------- Fallback: no JavaScript, or the animation library did not load ----------
+     Everything that is hidden until an animation reveals it becomes visible. */
+  html:not(.anim) .hero h1 .word,
+  html:not(.anim) .reveal-line > span{ transform:none !important; }
+  html:not(.anim) .hero-tagline,
+  html:not(.anim) .about-body p,
+  html:not(.anim) .project,
+  html:not(.anim) .exp-item .text,
+  html:not(.anim) .exp-item .kw{ opacity:1 !important; transform:none !important; }
+  html:not(.anim) #heroUnderline{ width:42% !important; }
+  html:not(.anim) .exp-list{ --lp:1; }
+  html:not(.anim) .exp-item{ --p:1; }
+  html.no-boot .boot{ display:none !important; }
 </style>
 </head>
 <body>
@@ -2107,12 +2559,10 @@
 <!-- Terminal boot loader -->
 <div class="boot" id="bootLoader" aria-hidden="true">
   <div class="boot-inner">
-    <div class="boot-line"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-init">initializing bram.exe</span></div>
-    <div class="boot-line"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-loading">loading portfolio</span><span class="boot-dots"></span></div>
-    <div class="boot-line boot-done"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-done">done.</span> <span class="boot-check">&#10003;</span></div>
+    <div class="boot-line"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-init">bram.exe initialiseren</span></div>
+    <div class="boot-line"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-loading">portfolio laden</span><span class="boot-dots"></span></div>
+    <div class="boot-line boot-done"><span class="boot-prompt">&gt;</span> <span data-i18n="boot-done">klaar.</span> <span class="boot-check">&#10003;</span></div>
   </div>
-</div>
-
 </div>
 
 <!-- Cursor trail layer -->
@@ -2157,7 +2607,7 @@
 </div>
 
 <!-- Copy confirmation -->
-<div class="copy-confirm" id="copyConfirm" role="status" aria-live="polite" data-i18n="copy-confirm">Email address copied</div>
+<div class="copy-confirm" id="copyConfirm" role="status" aria-live="polite" data-i18n="copy-confirm">E-mailadres gekopieerd</div>
 
 <!-- Tag tooltip (shared) -->
 <div class="tag-tip" id="tagTip" aria-hidden="true"></div>
@@ -2193,9 +2643,9 @@
 <header class="topbar">
   <div class="mark"><span class="dot"></span> <span class="brand-name" id="brandName"></span><span class="brand-caret" id="brandCaret"></span></div>
   <nav>
-    <a href="#hero"       data-num="00" data-kbd="⌘ 0" data-hoverable>Index</a>
-    <a href="#about"      data-num="01" data-kbd="⌘ 1" data-hoverable data-i18n="nav-about">About</a>
-    <a href="#work"       data-num="02" data-kbd="⌘ 2" data-hoverable data-i18n="nav-work">Work</a>
+    <a href="#index"      data-num="00" data-kbd="⌘ 0" data-hoverable>Index</a>
+    <a href="#about"      data-num="01" data-kbd="⌘ 1" data-hoverable data-i18n="nav-about">Over</a>
+    <a href="#work"       data-num="02" data-kbd="⌘ 2" data-hoverable data-i18n="nav-work">Werk</a>
     <a href="#expertise"  data-num="03" data-kbd="⌘ 3" data-hoverable>Expertise</a>
     <a href="#contact"    data-num="04" data-kbd="⌘ 4" data-hoverable>Contact</a>
   </nav>
@@ -2204,22 +2654,23 @@
     <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="6.5" cy="6.5" r="5.5"/><line x1="10.5" y1="10.5" x2="14.5" y2="14.5"/>
     </svg>
-    <span class="cp-trigger-label" data-i18n="ui-search">Search</span>
+    <span class="cp-trigger-label" data-i18n="ui-search">Zoeken</span>
     <span class="cp-trigger-kbd" id="cpTriggerKbd">⌘K</span>
   </button>
   <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"><span class="nt-open">Menu</span><span class="nt-close">Close</span></button>
   <div class="settings-wrap" id="settingsWrap">
     <button class="settings-btn" id="settingsBtn" aria-label="Settings" aria-expanded="false">
-      <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-        <line x1="1" y1="3.5" x2="15" y2="3.5"/>
-        <line x1="1" y1="10.5" x2="15" y2="10.5"/>
-        <circle cx="5.5" cy="3.5" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
-        <circle cx="10.5" cy="10.5" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/>
+      <!-- Two sliders. Each line stops at its knob, so the knob stays open without a fill colour. -->
+      <svg width="14" height="12" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+        <line x1="1" y1="3.5" x2="3" y2="3.5"/><line x1="8" y1="3.5" x2="15" y2="3.5"/>
+        <circle cx="5.5" cy="3.5" r="1.9"/>
+        <line x1="1" y1="10.5" x2="8" y2="10.5"/><line x1="13" y1="10.5" x2="15" y2="10.5"/>
+        <circle cx="10.5" cy="10.5" r="1.9"/>
       </svg>
     </button>
     <div class="settings-dropdown" id="settingsDropdown">
       <div class="sd-group">
-        <span class="sd-label" data-i18n="ui-language">Language</span>
+        <span class="sd-label" data-i18n="ui-language">Taal</span>
         <div class="sd-options">
           <button class="sd-opt active" data-lang="nl" id="sdNl">NL</button>
           <span class="sd-sep">·</span>
@@ -2228,11 +2679,11 @@
       </div>
       <div class="sd-divider"></div>
       <div class="sd-group">
-        <span class="sd-label" data-i18n="ui-theme">Theme</span>
+        <span class="sd-label" data-i18n="ui-theme">Thema</span>
         <div class="sd-options">
-          <button class="sd-opt active" data-theme="dark" id="sdDark" data-i18n="ui-dark">Dark</button>
+          <button class="sd-opt active" data-theme="dark" id="sdDark" data-i18n="ui-dark">Donker</button>
           <span class="sd-sep">·</span>
-          <button class="sd-opt" data-theme="light" id="sdLight" data-i18n="ui-light">Light</button>
+          <button class="sd-opt" data-theme="light" id="sdLight" data-i18n="ui-light">Licht</button>
         </div>
       </div>
     </div>
@@ -2242,20 +2693,22 @@
 
 <div class="mobile-nav" id="mobileNav" aria-hidden="true">
   <nav>
-    <a href="#hero"      data-num="00">Index</a>
-    <a href="#about"     data-num="01" data-i18n="nav-about">About</a>
-    <a href="#work"      data-num="02" data-i18n="nav-work">Work</a>
+    <a href="#index"     data-num="00">Index</a>
+    <a href="#about"     data-num="01" data-i18n="nav-about">Over</a>
+    <a href="#work"      data-num="02" data-i18n="nav-work">Werk</a>
     <a href="#expertise" data-num="03">Expertise</a>
     <a href="#contact"   data-num="04">Contact</a>
   </nav>
 </div>
 
+<main>
 <!-- 1. HERO -->
-<section class="hero" id="hero">
+<section class="hero" id="index">
   <div class="bg">
     <div class="hero-atmos" aria-hidden="true">
       <div class="texture"></div>
       <div class="texture2"></div>
+      <canvas class="shader" id="heroShader"></canvas>
       <div class="wash"></div>
       <div class="fadetop"></div>
       <div class="sunwash"></div>
@@ -2269,21 +2722,15 @@
   <div class="sec-num" data-i18n="sec-0">00 / Index</div>
 
   <div class="hero-inner">
-    <div class="eyebrow">
-      <span class="tick"></span>
-      <span>Index · MMXXVI</span>
-      <span class="line"></span>
-      <span>Zwolle, NL</span>
-    </div>
 
     <h1>
       <span class="row">
-        <span class="word" data-i18n="hero-w1">Writing</span>
-        <span class="word" data-i18n="hero-w2">code</span>
+        <span class="word" data-i18n="hero-w1">Code</span>
+        <span class="word" data-i18n="hero-w2">schrijven</span>
       </span>
       <span class="row">
-        <span class="word" data-i18n="hero-w3"><em>and</em></span>
-        <span class="word" data-i18n="hero-w3b">guarding&nbsp;scope.</span>
+        <span class="word" data-i18n="hero-w3"><em>én</em></span>
+        <span class="word" data-i18n="hero-w3b">scope&nbsp;bewaken.</span>
       </span>
       <span class="row">
         <span class="word" data-i18n="hero-w4"></span>
@@ -2292,9 +2739,7 @@
       </span>
     </h1>
 
-    <p class="hero-tagline" id="heroTag" data-i18n="hero-tagline">
-      Bram van Zwolle —<br>Full-Stack Developer &amp; Product Owner.
-    </p>
+    <p class="hero-tagline" id="heroTag" data-i18n="hero-tagline">Bram van Zwolle —<br>Product Owner &amp; Software Engineer.</p>
   </div>
 
   <div class="hero-meta">
@@ -2307,28 +2752,28 @@
 
 <!-- 2. ABOUT -->
 <section class="about" id="about">
-  <div class="sec-num" data-i18n="sec-1">01 / About</div>
+  <div class="sec-num" data-i18n="sec-1">01 / Over</div>
   <div style="max-width:1400px;margin:0 auto;">
-    <div class="sec-label" data-i18n="about-label">Profile — a short introduction</div>
+    <div class="sec-label" data-i18n="about-label">Profiel — een korte introductie</div>
   </div>
   <div class="about-grid">
     <div class="about-left">
       <div class="profile-photo"><img src="assets/bram-van-zwolle.jpg" alt="Bram van Zwolle" width="800" height="800" loading="lazy"></div>
-      <div class="uptime-line" aria-label="Uptime"><span class="um">$ uptime:</span> <span id="uptimeVal">—</span> <span class="um" data-i18n="uptime-suffix">days as engineer</span></div>
+      <div class="uptime-line" aria-label="Uptime"><span class="um">$ uptime:</span> <span id="uptimeVal">—</span> <span class="um" data-i18n="uptime-suffix">dagen als engineer</span></div>
     </div>
 
     <div class="about-body">
-      <p data-i18n="about-p1">Since 2023 I've been building SaaS for healthcare at Sibi: as the engineer who writes the code, and since 2024 also as the product owner who decides what we build and why. <strong style="color:var(--ink);font-weight:500;">A multi-tenant platform used by around 50 care organisations and 30,000+ employees.</strong> I want to understand why something is needed first.</p>
-      <p data-i18n="about-p2">Day to day I work in Laravel, Livewire and MariaDB. After hours I build my own projects to try what work doesn't ask for: an Android app, a command-line tool in Rust, a dashboard for my home.</p>
+      <p data-i18n="about-p1">Sinds 2023 bouw ik bij Sibi SaaS voor de zorg: als de engineer die de code schrijft, en sinds 2024 ook als de product owner die beslist wat we bouwen en waarom. <strong style="color:var(--ink);font-weight:500;">Een multi-tenant platform voor zo'n <span class="count" data-to="50">50</span> zorgorganisaties en ruim <span class="count" data-to="30000">30.000</span> medewerkers.</strong></p>
+      <p data-i18n="about-p2">Overdag werk ik in Laravel, Livewire en MariaDB. Na werktijd bouw ik eigen projecten om dingen te proberen waar mijn werk niet om vraagt: een Android-app, een command-line tool in Rust, een dashboard voor thuis.</p>
     </div>
   </div>
 
   <div class="xp">
-    <div class="sec-label" data-i18n="xp-label">Experience</div>
+    <div class="sec-label" data-i18n="xp-label">Ervaring</div>
     <ol class="xp-list">
-      <li class="xp-item"><span class="xp-when" data-i18n="xp-1-when">2024 → now</span><span class="xp-what"><strong data-i18n="xp-1-role">Product Owner</strong><span data-i18n="xp-1-note">Social intranet &amp; app, part-time alongside engineering</span></span><span class="xp-where">Sibi</span></li>
-      <li class="xp-item"><span class="xp-when" data-i18n="xp-2-when">2023 → now</span><span class="xp-what"><strong data-i18n="xp-2-role">Software Engineer</strong><span data-i18n="xp-2-note">Medior since 2026 · Laravel, TALL stack, MariaDB</span></span><span class="xp-where">Sibi</span></li>
-      <li class="xp-item"><span class="xp-when" data-i18n="xp-3-when">2025</span><span class="xp-what"><strong data-i18n="xp-3-role">Product Operations Coordinator</strong><span data-i18n="xp-3-note">Led the switch from Scrum to Shape Up</span></span><span class="xp-where">Nexxtmove</span></li>
+      <li class="xp-item"><span class="xp-when" data-i18n="xp-1-when">2024 → nu</span><span class="xp-what"><strong data-i18n="xp-1-role">Product Owner</strong><span data-i18n="xp-1-note">Sociaal intranet &amp; app, parttime naast engineering</span></span><span class="xp-where">Sibi</span></li>
+      <li class="xp-item"><span class="xp-when" data-i18n="xp-2-when">2023 → nu</span><span class="xp-what"><strong data-i18n="xp-2-role">Software Engineer</strong><span data-i18n="xp-2-note">Medior sinds 2026 · Laravel, TALL-stack, MariaDB</span></span><span class="xp-where">Sibi</span></li>
+      <li class="xp-item"><span class="xp-when" data-i18n="xp-3-when">2025</span><span class="xp-what"><strong data-i18n="xp-3-role">Product Operations Coordinator</strong><span data-i18n="xp-3-note">Leidde de overstap van Scrum naar Shape Up</span></span><span class="xp-where">Nexxtmove</span></li>
       <li class="xp-item"><span class="xp-when" data-i18n="xp-4-when">2019 → 2023</span><span class="xp-what"><strong data-i18n="xp-4-role">HBO-ICT, Software Engineering</strong><span data-i18n="xp-4-note">Bachelor (ing.)</span></span><span class="xp-where">Windesheim</span></li>
     </ol>
   </div>
@@ -2336,36 +2781,131 @@
 
 <!-- 3. WORK -->
 <section class="work" id="work">
-  <div class="sec-num" data-i18n="sec-2">02 / Work</div>
+  <div class="sec-num" data-i18n="sec-2">02 / Werk</div>
   <div class="work-header">
-    <h2 data-i18n="work-h2">Side projects, end-to-end — <em>built after hours</em> to learn what the day job doesn't teach.</h2>
+    <h2 data-i18n="work-h2">Eigen projecten, end-to-end — <em>na werktijd gebouwd</em> om te leren wat mijn werk me niet leert.</h2>
   </div>
 
-  <article class="project from-left" data-dir="left">
+  <article class="project from-left" data-dir="left" id="proj-sooth">
     <div class="body">
-      <div class="index" data-i18n="p4-index">Project 01 — Closed Beta</div>
+      <div class="index" data-i18n="p6-index" data-live="sooth:p6-index-live">Project 01 — v0.3 uitgebracht</div>
+      <h3>sooth <span class="year"> / 2026</span></h3>
+      <p class="desc" data-i18n="proj6-desc">Een command-line tool die je bestaande testcommando draait en vertelt welke tests flaky zijn. Hij houdt per commit een geschiedenis bij, dus een test die op dezelfde code zowel slaagde als faalde is aantoonbaar flaky, niet gegokt. Mijn eerste project in Rust.</p>
+      <div class="tags">
+        <a class="tag" href="#tech-rust" data-jump data-lines="~10,200 lines written">Rust</a><span class="tag" data-lines="the report format every runner speaks">JUnit XML</span><span class="tag" data-lines="pytest · PHPUnit · Jest · Go">CLI</span>
+      </div>
+      <div class="meta">
+        <div><span data-i18n="meta-role">Rol</span><span class="v" data-i18n="p6-role-v">Solo engineer</span></div>
+        <div><span data-i18n="meta-users">Gebruikers</span><span class="v" data-i18n="p6-users-v">Developers</span></div>
+        <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p6-status-v">Op crates.io</span></div>
+      </div>
+      <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-sooth">
+        <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
+      </button>
+      <div class="case-study" id="case-sooth" data-open="false">
+        <dl>
+          <dt data-i18n="case-problem">Probleem</dt><dd data-i18n="p6-problem">Een flaky test houdt je op: de pipeline wordt rood, je draait hem opnieuw, hij wordt groen, en je weet nog steeds niet of de test onbetrouwbaar is of dat er echt iets stuk is. Tools die dit bijhouden, zoals ReportPortal of Allure, hebben een server en een dashboard nodig.</dd>
+          <dt data-i18n="case-solution">Oplossing</dt><dd data-i18n="p6-solution">sooth draait om het testcommando dat je al hebt en leest het JUnit-rapport dat dat schrijft. Elke run voegt per test één regel toe aan een lokaal geschiedenisbestand. Met <code>--verify</code> draait hij alleen de gefaalde tests opnieuw, om echte fouten van flaky tests te scheiden. Een fout verbergt hij nooit: de exitcode blijft wat je testrunner zei. Geen server, geen account, geen AI.</dd>
+          <dt data-i18n="case-result">Resultaat</dt><dd data-i18n="p6-result">Versie 0.3 staat op crates.io en is er als kant-en-klare binary. Het werkt met pytest, PHPUnit, Pest, Laravels artisan test, Jest en Go. Trage en volgorde-afhankelijke tests opsporen is de volgende stap op de roadmap.</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mockup-col">
+      <div class="mockup mockup--embed">
+        <iframe class="demo-frame demo-frame--sooth" data-src="demo/sooth-demo.html?v=4" title="sooth — terminal met echte output: een testrun, een bewezen flaky test, --verify en de geschiedenis"></iframe>
+      </div>
+      <div class="case-ctas">
+        <a class="case-cta" href="https://github.com/Bramvzw/sooth" target="_blank" rel="noopener" data-hoverable>
+          <span class="case-cta-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 6 2 12 8 18"/><polyline points="16 6 22 12 16 18"/></svg>
+          </span>
+          <span class="case-cta-text">
+            <span class="case-cta-label" data-i18n="cta-source">Bekijk de broncode</span>
+            <span class="case-cta-sub">github.com/Bramvzw/sooth</span>
+          </span>
+        </a>
+        <a class="case-cta" href="https://crates.io/crates/sooth" target="_blank" rel="noopener" data-hoverable>
+          <span class="case-cta-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </span>
+          <span class="case-cta-text">
+            <span class="case-cta-label">cargo install sooth</span>
+            <span class="case-cta-sub" data-live="sooth:live-crate">crates.io</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </article>
+
+  <article class="project from-right" data-dir="right" id="proj-hub">
+    <div class="body">
+      <div class="index" data-i18n="p5-index">Project 02 — Dagelijks in gebruik</div>
+      <h3>Smart Home Hub <span class="year"> / 2025</span></h3>
+      <p class="desc" data-i18n="proj5-desc">Het dashboard op een Raspberry Pi in mijn woonkamer. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het daar een korte briefing van.</p>
+      <div class="tags">
+        <a class="tag" href="#tech-laravel" data-jump data-lines="~36,500 lines written">Laravel</a><a class="tag" href="#tech-livewire" data-jump data-lines="12 modules">Livewire</a><span class="tag" data-lines="briefing + menu via Prism">Claude API</span><a class="tag" href="#tech-docker" data-jump data-lines="Docker on a Synology NAS">Docker</a>
+      </div>
+      <div class="meta">
+        <div><span data-i18n="meta-role">Rol</span><span class="v" data-i18n="p5-role-v">Solo engineer</span></div>
+        <div><span data-i18n="meta-users">Gebruikers</span><span class="v" data-i18n="p5-users-v">Mijn huishouden</span></div>
+        <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p5-status-v">Open source · MIT</span></div>
+      </div>
+      <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-smarthome">
+        <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
+      </button>
+      <div class="case-study" id="case-smarthome" data-open="false">
+        <dl>
+          <dt data-i18n="case-problem">Probleem</dt><dd data-i18n="p5-problem">Self-hosted dashboards als Homepage of Dashy zijn vooral tegels met links. Ik wilde er een die dingen doet, en waarin de onderdelen van elkaar weten: regen in de verwachting moet de lampen aanpassen, en een deal die ik volg moet in het weekmenu terugkomen.</dd>
+          <dt data-i18n="case-solution">Oplossing</dt><dd data-i18n="p5-solution">Een modulaire monoliet: twaalf Laravel-modules (weer, agenda, verlichting, Spotify, deals, recepten en meer) op een gedeelde set contracten. Elke module kan bijdragen aan de ochtendbriefing, die Claude via Prism schrijft. Zonder API-key neemt een vast sjabloon het over. Lampen, winkels en concertbronnen zijn adapters achter een interface, dus een nieuw merk is één class.</dd>
+          <dt data-i18n="case-result">Resultaat</dt><dd data-i18n="p5-result">Draait in Docker op mijn Synology NAS, met een Raspberry Pi als scherm. 217 commits sinds mei 2025, met tests per module en CI op GitHub.</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="mockup-col">
+      <div class="mockup mockup--embed">
+        <iframe class="demo-frame demo-frame--shh" data-src="demo/smart-home-hub-demo.html?v=3" title="Smart Home Hub — rondleiding: briefing, dashboard, agenda, weekmenu, prijzen en filmtips"></iframe>
+      </div>
+      <div class="case-ctas">
+        <a class="case-cta" href="https://github.com/Bramvzw/smart-home-hub" target="_blank" rel="noopener" data-hoverable>
+          <span class="case-cta-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 6 2 12 8 18"/><polyline points="16 6 22 12 16 18"/></svg>
+          </span>
+          <span class="case-cta-text">
+            <span class="case-cta-label" data-i18n="cta-source">Bekijk de broncode</span>
+            <span class="case-cta-sub">github.com/Bramvzw/smart-home-hub</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </article>
+
+  <article class="project from-left" data-dir="left" id="proj-skylanders">
+    <div class="body">
+      <div class="index" data-i18n="p4-index">Project 03 — Closed Beta</div>
       <h3>Skylanders Tracker <span class="year"> / 2026</span></h3>
       <p class="desc" data-i18n="proj4-desc">Ik verzamel zelf Skylanders, en de goede koopjes zijn snel weg. Vroeger ververste ik de hele dag Marktplaats en Vinted; nu doet deze app dat. Nieuwe advertenties komen vanzelf binnen, Claude leest ze en schat wat een figuur echt waard is. De backend, het AI-deel en de Android-app bouwde ik zelf.</p>
       <div class="tags">
-        <span class="tag" data-lines="~38,500 lines written">Laravel</span><span class="tag" data-lines="~21,400 lines written">React Native</span><span class="tag" data-lines="prompts + pipelines">Claude</span><span class="tag" data-lines="single source of truth">Postgres</span>
+        <a class="tag" href="#tech-laravel" data-jump data-lines="~38,500 lines written">Laravel</a><a class="tag" href="#tech-react-native" data-jump data-lines="~21,400 lines written">React Native</a><span class="tag" data-lines="prompts + pipelines">Claude API</span><a class="tag" href="#tech-postgres" data-jump data-lines="single source of truth">Postgres</a>
       </div>
       <div class="meta">
-        <div><span data-i18n="meta-role">Role</span><span class="v" data-i18n="p4-role-v">Solo engineer</span></div>
-        <div><span data-i18n="meta-users">Users</span><span class="v" data-i18n="p4-users-v">Backend + mobile</span></div>
-        <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p4-status-v">Closed beta on Play</span></div>
+        <div><span data-i18n="meta-role">Rol</span><span class="v" data-i18n="p4-role-v">Solo engineer</span></div>
+        <div><span data-i18n="meta-users">Gebruikers</span><span class="v" data-i18n="p4-users-v">Backend + mobile</span></div>
+        <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p4-status-v">Gesloten beta op Play</span></div>
       </div>
       <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-skylanders">
         <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
       </button>
       <div class="case-study" id="case-skylanders" data-open="false">
         <dl>
-          <dt data-i18n="case-problem">Problem</dt><dd data-i18n="p4-problem">Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn. Dat kost uren, en je mist er alsnog.</dd>
-          <dt data-i18n="case-solution">Solution</dt><dd data-i18n="p4-solution">Scrapers halen nieuwe advertenties van Marktplaats en Vinted binnen, rustig aan zodat de sites niet dichtslaan. Claude leest er elke advertentie: welke figuur, welke staat, en is de vraagprijs redelijk? Alleen de interessante blijven hangen. Daarnaast houd ik in de app mijn eigen collectie bij, met per stuk wat ik betaalde en wat het nu waard is. Eén Postgres-database eronder, gehost op Coolify.</dd>
-          <dt data-i18n="case-result">Result</dt><dd data-i18n="p4-result">Draait als closed beta op Google Play. Ik bouwde alles zelf, van de scrapers tot de app. Wil je het proberen? Mail me voor beta-toegang, of download de APK direct.</div>
+          <dt data-i18n="case-problem">Probleem</dt><dd data-i18n="p4-problem">Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn. Dat kost uren, en je mist er alsnog.</dd>
+          <dt data-i18n="case-solution">Oplossing</dt><dd data-i18n="p4-solution">Scrapers halen nieuwe advertenties van Marktplaats en Vinted binnen, rustig aan zodat de sites niet dichtslaan. Claude leest er elke advertentie: welke figuur, welke staat, en is de vraagprijs redelijk? Alleen de interessante blijven hangen. Daarnaast houd ik in de app mijn eigen collectie bij, met per stuk wat ik betaalde en wat het nu waard is. Eén Postgres-database eronder, gehost op Coolify.</dd>
+          <dt data-i18n="case-result">Resultaat</dt><dd data-i18n="p4-result">Draait als closed beta op Google Play. Ik bouwde alles zelf, van de scrapers tot de app. Wil je het proberen? Mail me voor beta-toegang, of download de APK direct.</dd>
+        </dl>
+      </div>
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--phone">
-        <iframe class="demo-frame" src="demo/skylanders-demo.html" title="Skylanders Tracker — interactieve app-demo: de volledige flip-lifecycle van deal tot winst" loading="lazy"></iframe>
+        <iframe class="demo-frame" data-src="demo/skylanders-demo.html?v=3" title="Skylanders Tracker — interactieve app-demo: de volledige flip-lifecycle van deal tot winst"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="mailto:bram@vanzwolle.net?subject=Skylanders%20Tracker%20%E2%80%94%20Play%20beta%20toegang" data-hoverable>
@@ -2383,100 +2923,7 @@
           </span>
           <span class="case-cta-text">
             <span class="case-cta-label" data-i18n="cta-apk">Download APK direct</span>
-            <span class="case-cta-sub" data-i18n="cta-apk-sub">Laatste release · GitHub</span>
-          </span>
-        </a>
-      </div>
-    </div>
-  </article>
-
-  <article class="project from-right" data-dir="right">
-    <div class="body">
-      <div class="index" data-i18n="p5-index">Project 02 — In daily use</div>
-      <h3>Smart Home Hub <span class="year"> / 2025</span></h3>
-      <p class="desc" data-i18n="proj5-desc">The dashboard on a Raspberry Pi in my living room. It controls the lights and Spotify, plans my week around my calendar, tracks prices and turns supermarket offers into a weekly menu. Every morning it writes a short briefing from all of that.</p>
-      <div class="tags">
-        <span class="tag" data-lines="~36,500 lines written">Laravel</span><span class="tag" data-lines="12 modules">Livewire</span><span class="tag" data-lines="briefing + menu via Prism">Claude</span><span class="tag" data-lines="Docker on a Synology NAS">Docker</span>
-      </div>
-      <div class="meta">
-        <div><span data-i18n="meta-role">Role</span><span class="v" data-i18n="p5-role-v">Solo engineer</span></div>
-        <div><span data-i18n="meta-users">Users</span><span class="v" data-i18n="p5-users-v">My household</span></div>
-        <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p5-status-v">Open source · MIT</span></div>
-      </div>
-      <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-smarthome">
-        <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
-      </button>
-      <div class="case-study" id="case-smarthome" data-open="false">
-        <dl>
-          <dt data-i18n="case-problem">Problem</dt><dd data-i18n="p5-problem">Self-hosted dashboards like Homepage or Dashy are mostly tiles with links. I wanted one that does things, and where the parts know about each other: rain in the forecast should change the lights, and a deal I track should show up in the weekly menu.</dd>
-          <dt data-i18n="case-solution">Solution</dt><dd data-i18n="p5-solution">A modular monolith: twelve Laravel modules (weather, calendar, lighting, Spotify, deals, recipes and more) on top of a shared set of contracts. Each module can contribute to the morning briefing, which Claude writes via Prism. Without an API key a fixed template takes over. Lamps, shops and concert sources are adapters behind an interface, so a new brand is one class.</dd>
-          <dt data-i18n="case-result">Result</dt><dd data-i18n="p5-result">Runs in Docker on my Synology NAS, with a Raspberry Pi as the screen. 217 commits since May 2025, with tests per module and CI on GitHub.</dd>
-        </dl>
-      </div>
-    </div>
-    <div class="mockup-col">
-      <div class="mockup mockup--embed">
-        <iframe class="demo-frame demo-frame--shh" src="demo/smart-home-hub-demo.html" title="Smart Home Hub — rondleiding: briefing, dashboard, agenda, weekmenu, prijzen en filmtips" loading="lazy"></iframe>
-      </div>
-      <div class="case-ctas">
-        <a class="case-cta" href="https://github.com/Bramvzw/smart-home-hub" target="_blank" rel="noopener" data-hoverable>
-          <span class="case-cta-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 6 2 12 8 18"/><polyline points="16 6 22 12 16 18"/></svg>
-          </span>
-          <span class="case-cta-text">
-            <span class="case-cta-label" data-i18n="cta-source">View the source</span>
-            <span class="case-cta-sub">github.com/Bramvzw/smart-home-hub</span>
-          </span>
-        </a>
-      </div>
-    </div>
-  </article>
-
-  <article class="project from-left" data-dir="left">
-    <div class="body">
-      <div class="index" data-i18n="p6-index">Project 03 — v0.1 released</div>
-      <h3>sooth <span class="year"> / 2026</span></h3>
-      <p class="desc" data-i18n="proj6-desc">A command-line tool that runs your existing test command and tells you which tests are flaky. It keeps a history per commit, so a test that both passed and failed on the same code is proven flaky, not guessed. My first project in Rust.</p>
-      <div class="tags">
-        <span class="tag" data-lines="~10,200 lines written">Rust</span><span class="tag" data-lines="the report format every runner speaks">JUnit XML</span><span class="tag" data-lines="pytest · PHPUnit · Jest · Go">CLI</span>
-      </div>
-      <div class="meta">
-        <div><span data-i18n="meta-role">Role</span><span class="v" data-i18n="p6-role-v">Solo engineer</span></div>
-        <div><span data-i18n="meta-users">Users</span><span class="v" data-i18n="p6-users-v">Developers</span></div>
-        <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p6-status-v">On crates.io</span></div>
-      </div>
-      <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-sooth">
-        <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
-      </button>
-      <div class="case-study" id="case-sooth" data-open="false">
-        <dl>
-          <dt data-i18n="case-problem">Problem</dt><dd data-i18n="p6-problem">A flaky test blocks you: the pipeline goes red, you re-run it, it turns green, and you still don't know whether the test is unreliable or something is really broken. Tools that track this, like ReportPortal or Allure, need a server and a dashboard.</dd>
-          <dt data-i18n="case-solution">Solution</dt><dd data-i18n="p6-solution">sooth wraps the test command you already have and reads the JUnit report it writes. Each run adds one line per test to a local history file. With <code>--verify</code> it re-runs only the failed tests to tell real failures from flaky ones. It never hides a failure: the exit code stays what your test runner said. No server, no account, no AI.</dd>
-          <dt data-i18n="case-result">Result</dt><dd data-i18n="p6-result">Version 0.1 is on crates.io, with presets for pytest, PHPUnit, Jest and Go. Detecting slow and order-dependent tests is next on the roadmap.</dd>
-        </dl>
-      </div>
-    </div>
-    <div class="mockup-col">
-      <div class="mockup mockup--embed">
-        <iframe class="demo-frame demo-frame--sooth" src="demo/sooth-demo.html" title="sooth — terminal met echte output: een testrun, een bewezen flaky test, --verify en de geschiedenis" loading="lazy"></iframe>
-      </div>
-      <div class="case-ctas">
-        <a class="case-cta" href="https://github.com/Bramvzw/sooth" target="_blank" rel="noopener" data-hoverable>
-          <span class="case-cta-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 6 2 12 8 18"/><polyline points="16 6 22 12 16 18"/></svg>
-          </span>
-          <span class="case-cta-text">
-            <span class="case-cta-label" data-i18n="cta-source">View the source</span>
-            <span class="case-cta-sub">github.com/Bramvzw/sooth</span>
-          </span>
-        </a>
-        <a class="case-cta" href="https://crates.io/crates/sooth" target="_blank" rel="noopener" data-hoverable>
-          <span class="case-cta-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-          </span>
-          <span class="case-cta-text">
-            <span class="case-cta-label">cargo install sooth</span>
-            <span class="case-cta-sub">crates.io</span>
+            <span class="case-cta-sub" data-i18n="cta-apk-sub" data-live="skylanders:live-version">Laatste release · GitHub</span>
           </span>
         </a>
       </div>
@@ -2485,17 +2932,16 @@
 
   <div class="more-work">
     <div class="mw-col">
-      <div class="sec-label" data-i18n="more-label">More projects</div>
+      <div class="sec-label" data-i18n="more-label">Meer projecten</div>
       <ul class="mw-list">
-        <li><a href="https://github.com/Bramvzw/claude-usage-dashboard" target="_blank" rel="noopener" data-hoverable><span class="mw-name">Claude Usage Dashboard</span><span class="mw-tech">HTML · JS</span></a><p data-i18n="more-usage">Reads the local Claude Code logs and shows token usage per prompt and per model, so you can see where the tokens go.</p></li>
+        <li><a href="https://github.com/Bramvzw/claude-usage-dashboard" target="_blank" rel="noopener" data-hoverable><span class="mw-name">Claude Usage Dashboard</span><span class="mw-tech">HTML · JS</span></a><p data-i18n="more-usage">Leest de lokale logs van Claude Code en toont het tokengebruik per prompt en per model, zodat je ziet waar de tokens heen gaan.</p></li>
       </ul>
     </div>
     <div class="mw-col">
-      <div class="sec-label" data-i18n="os-label">Open source · merged</div>
+      <div class="sec-label" data-i18n="os-label">Open source · gemerged</div>
       <ul class="mw-list">
-        <li><a href="https://github.com/filamentphp/filament/pull/20121" target="_blank" rel="noopener" data-hoverable><span class="mw-name">Filament</span><span class="mw-tech">PHP · Livewire</span></a><p data-i18n="os-filament">Fixed a race where an in-flight upload was wiped when a parallel upload completed, with a reproduction repo.</p></li>
-        <li><a href="https://github.com/laravel/scout/pull/1002" target="_blank" rel="noopener" data-hoverable><span class="mw-name">Laravel Scout</span><span class="mw-tech">PHP</span></a><p data-i18n="os-scout">Scout jobs are now marked as failed on timeout by default, so they don't hang silently in the queue.</p></li>
-        <li><a href="https://github.com/horde/horde-installer-plugin/pull/27" target="_blank" rel="noopener" data-hoverable><span class="mw-name">Horde installer plugin</span><span class="mw-tech">PHP</span></a><p data-i18n="os-horde">Removed invalid class-style use imports for global functions.</p></li>
+        <li><a href="https://github.com/filamentphp/filament/pull/20121" target="_blank" rel="noopener" data-hoverable><span class="mw-name">Filament</span><span class="mw-tech">PHP · Livewire</span></a><p data-i18n="os-filament">Race condition opgelost waarbij een lopende upload verdween zodra een parallelle upload klaar was, met een reproductie-repo.</p></li>
+        <li><a href="https://github.com/laravel/scout/pull/1002" target="_blank" rel="noopener" data-hoverable><span class="mw-name">Laravel Scout</span><span class="mw-tech">PHP</span></a><p data-i18n="os-scout">Scout-jobs worden bij een timeout standaard als mislukt gemarkeerd, zodat ze niet stil in de queue blijven hangen.</p></li>
       </ul>
     </div>
   </div>
@@ -2505,30 +2951,30 @@
 <section class="expertise" id="expertise">
   <div class="sec-num" data-i18n="sec-3">03 / Expertise</div>
   <div class="exp-wrap">
-    <div class="sec-label" data-i18n="exp-label">How I work</div>
+    <div class="sec-label" data-i18n="exp-label">Werkwijze</div>
     <div class="exp-head">
-      <h2 data-i18n="exp-h2">How I work <em>as product owner and engineer.</em></h2>
+      <h2 data-i18n="exp-h2">Hoe ik werk <em>als product owner en engineer.</em></h2>
     </div>
 
     <ol class="exp-list">
       <li class="exp-item">
         <span class="num">01</span>
-        <span class="text" data-i18n="exp-1">I turn what care organisations ask for into <em>user stories and acceptance criteria.</em></span>
+        <span class="text" data-i18n="exp-1">Ik vertaal wensen van zorgorganisaties naar <em>user stories en acceptatiecriteria.</em></span>
         <span class="kw">Product · Backlog</span>
       </li>
       <li class="exp-item">
         <span class="num">02</span>
-        <span class="text" data-i18n="exp-2">I build full-stack in Laravel and the TALL stack, <em>from data model to screen.</em></span>
+        <span class="text" data-i18n="exp-2">Ik bouw full-stack mee in Laravel en de TALL-stack, <em>van datamodel tot scherm.</em></span>
         <span class="kw">Laravel · Livewire · MariaDB</span>
       </li>
       <li class="exp-item">
         <span class="num">03</span>
-        <span class="text" data-i18n="exp-3">I take part in the discussion on <em>APIs, data models</em> and technical choices.</span>
+        <span class="text" data-i18n="exp-3">Ik praat inhoudelijk mee over <em>API's, datamodellen</em> en technische keuzes.</span>
         <span class="kw">API · Data</span>
       </li>
       <li class="exp-item">
         <span class="num">04</span>
-        <span class="text" data-i18n="exp-4">I want to understand <em>why something is needed</em> before we decide how to build it.</span>
+        <span class="text" data-i18n="exp-4">Ik wil eerst snappen <em>waarom iets nodig is,</em> voordat we bepalen hoe we het bouwen.</span>
         <span class="kw">Roadmap · Scope</span>
       </li>
     </ol>
@@ -2552,83 +2998,91 @@
     <div class="stack">
       <div class="stack-header">
         <span class="sec-label">Stack</span>
-        <h2 class="stack-title" data-i18n="stack-title">The tools I use <em>every day.</em></h2>
+        <h2 class="stack-title" data-i18n="stack-title">De tools die ik <em>elke dag gebruik.</em></h2>
       </div>
       <div class="tech-grid" id="techGrid">
-        <div class="tech-cart" style="--level:90%">
+        <div class="tech-cart" id="tech-laravel" style="--level:90%">
           <div class="cart-top"><span class="glyph">Lv</span><span class="idx">№ 01</span></div>
           <div class="name">Laravel</div>
-          <div class="role" data-i18n="stack-1-role">What I use every day at Sibi, and the base of most of my own projects.</div>
+          <div class="role" data-i18n="stack-1-role">Wat ik elke dag bij Sibi gebruik, en de basis van de meeste eigen projecten.</div>
+          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-hub" data-jump>Smart Home Hub</a><a href="#proj-skylanders" data-jump>Skylanders Tracker</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Backend</span><span>PHP 8 · Livewire</span></div>
         </div>
-        <div class="tech-cart" style="--level:85%">
+        <div class="tech-cart" id="tech-livewire" style="--level:85%">
           <div class="cart-top"><span class="glyph">Lw</span><span class="idx">№ 02</span></div>
           <div class="name">Livewire &amp; Filament</div>
-          <div class="role" data-i18n="stack-2-role">The TALL stack: interactive screens without leaving PHP. Contributed a fix to Filament.</div>
+          <div class="role" data-i18n="stack-2-role">De TALL-stack: interactieve schermen zonder PHP te verlaten. Droeg een fix bij aan Filament.</div>
+          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-hub" data-jump>Smart Home Hub</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Frontend</span><span>Alpine · Tailwind</span></div>
         </div>
-        <div class="tech-cart" style="--level:80%">
+        <div class="tech-cart" id="tech-mariadb" style="--level:80%">
           <div class="cart-top"><span class="glyph">Db</span><span class="idx">№ 03</span></div>
           <div class="name">MariaDB / MySQL</div>
-          <div class="role" data-i18n="stack-3-role">Multi-tenant databases at work: migrations, backfills, snapshots and query tuning.</div>
+          <div class="role" data-i18n="stack-3-role">Multi-tenant databases op het werk: migraties, backfills, snapshots en query-tuning.</div>
+          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#about" data-jump data-i18n="stack-work">Werk bij Sibi</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Data</span><span>SQL</span></div>
         </div>
-        <div class="tech-cart" style="--level:60%">
+        <div class="tech-cart" id="tech-postgres" style="--level:60%">
           <div class="cart-top"><span class="glyph">Pg</span><span class="idx">№ 04</span></div>
           <div class="name">Postgres</div>
-          <div class="role" data-i18n="stack-4-role">The database under my own projects, like the Skylanders Tracker.</div>
+          <div class="role" data-i18n="stack-4-role">De database onder mijn eigen projecten, zoals de Skylanders Tracker.</div>
+          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-skylanders" data-jump>Skylanders Tracker</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
           <div class="meta-row"><span class="cat">Data</span><span>Coolify</span></div>
         </div>
-        <div class="tech-cart" style="--level:60%">
+        <div class="tech-cart" id="tech-typescript" style="--level:60%">
           <div class="cart-top"><span class="glyph">Ts</span><span class="idx">№ 05</span></div>
           <div class="name">TypeScript</div>
-          <div class="role" data-i18n="stack-5-role">For the Skylanders app and my own tools.</div>
+          <div class="role" data-i18n="stack-5-role">Voor de Skylanders-app en mijn eigen tools.</div>
+          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-skylanders" data-jump>Skylanders Tracker</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
-          <div class="meta-row"><span class="cat" data-i18n="stack-cat-lang">Language</span><span>React Native</span></div>
+          <div class="meta-row"><span class="cat" data-i18n="stack-cat-lang">Taal</span><span>React Native</span></div>
         </div>
-        <div class="tech-cart" style="--level:55%">
+        <div class="tech-cart" id="tech-react-native" style="--level:55%">
           <div class="cart-top"><span class="glyph">Rn</span><span class="idx">№ 06</span></div>
           <div class="name">React Native</div>
-          <div class="role" data-i18n="stack-6-role">The Skylanders app on Android.</div>
+          <div class="role" data-i18n="stack-6-role">De Skylanders-app op Android.</div>
+          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-skylanders" data-jump>Skylanders Tracker</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
-          <div class="meta-row"><span class="cat" data-i18n="stack-cat-mobile">Mobile</span><span>Android</span></div>
+          <div class="meta-row"><span class="cat" data-i18n="stack-cat-mobile">Mobiel</span><span>Android</span></div>
         </div>
-        <div class="tech-cart" style="--level:45%">
+        <div class="tech-cart" id="tech-rust" style="--level:45%">
           <div class="cart-top"><span class="glyph">Rs</span><span class="idx">№ 07</span></div>
           <div class="name">Rust</div>
-          <div class="role" data-i18n="stack-7-role">sooth, a CLI that finds flaky tests. My first project in Rust.</div>
+          <div class="role" data-i18n="stack-7-role">sooth, een CLI die flaky tests opspoort. Mijn eerste project in Rust.</div>
+          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-sooth" data-jump>sooth</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
           </div>
-          <div class="meta-row"><span class="cat" data-i18n="stack-cat-systems">Systems</span><span>CLI</span></div>
+          <div class="meta-row"><span class="cat" data-i18n="stack-cat-systems">Systemen</span><span>CLI</span></div>
         </div>
-        <div class="tech-cart" style="--level:70%">
+        <div class="tech-cart" id="tech-docker" style="--level:70%">
           <div class="cart-top"><span class="glyph">Dk</span><span class="idx">№ 08</span></div>
           <div class="name">Docker &amp; CI/CD</div>
-          <div class="role" data-i18n="stack-8-role">Local environments, pipelines and automated checks: tests, PHPStan and Rector.</div>
+          <div class="role" data-i18n="stack-8-role">Lokale omgevingen, pipelines en geautomatiseerde checks: tests, PHPStan en Rector.</div>
+          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-hub" data-jump>Smart Home Hub</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -2644,21 +3098,21 @@
 <section class="contact" id="contact">
   <div class="sec-num" data-i18n="sec-4">04 / Contact</div>
   <div class="contact-inner">
-    <div class="sec-label" data-i18n="contact-label">Correspondence</div>
-    <div class="kicker" data-i18n="contact-kicker">Let's <em>talk.</em><span class="hand"></span></div>
+    <div class="sec-label" data-i18n="contact-label">Correspondentie</div>
+    <div class="kicker" data-i18n="contact-kicker">Laten we <em>praten.</em><span class="hand"></span></div>
 
     <a class="email" href="mailto:bram@vanzwolle.net" data-hoverable id="emailLink">
       <span class="line">bram<span class="at">@</span>vanzwolle<span class="dot-sep">.</span>net</span>
     </a>
     <ol class="register-list">
       <li class="register-entry">
-        <span class="num" data-i18n="contact-response-k">Response</span>
-        <span class="value" data-i18n="contact-response-v">Within <em>two working days.</em></span>
-        <span class="note" data-i18n="contact-response-note">Monday to Friday, 09:00–18:00 CET. Slower on weekends — I read, but rarely respond.</span>
+        <span class="num" data-i18n="contact-response-k">Reactietijd</span>
+        <span class="value" data-i18n="contact-response-v">Binnen <em>twee werkdagen.</em></span>
+        <span class="note" data-i18n="contact-response-note">Maandag tot vrijdag, 09:00–18:00 CET. In het weekend reageer ik trager — ik lees, maar reageer zelden.</span>
       </li>
       <li class="register-entry">
-        <span class="num" data-i18n="contact-elsewhere-k">Elsewhere</span>
-        <span class="value" data-i18n="contact-elsewhere-v">Find me under the <em>same name,</em> everywhere.</span>
+        <span class="num" data-i18n="contact-elsewhere-k">Elders</span>
+        <span class="value" data-i18n="contact-elsewhere-v">Ook te vinden op <em>GitHub en LinkedIn.</em></span>
         <div class="links">
           <a href="https://github.com/Bramvzw" target="_blank" rel="noopener" data-hoverable>GitHub ↗</a>
           <a href="https://www.linkedin.com/in/bram-van-zwolle" target="_blank" rel="noopener" data-hoverable>LinkedIn ↗</a>
@@ -2666,20 +3120,27 @@
         </div>
       </li>
       <li class="register-entry">
-        <span class="num" data-i18n="contact-based-k">Based</span>
-        <span class="value" data-i18n="contact-based-v">Zwolle, NL — <em>on site or hybrid.</em></span>
-        <span class="note" data-i18n="contact-based-note">Open to roles in and around Zwolle. Timezone: CET.</span>
+        <span class="num" data-i18n="contact-based-k">Gevestigd</span>
+        <span class="value" data-i18n="contact-based-v">Zwolle, NL — <em>op locatie of hybride.</em></span>
+        <span class="note" data-i18n="contact-based-note">Open voor rollen in en rond Zwolle. Tijdzone: CET.</span>
       </li>
     </ol>
   </div>
 </section>
+</main>
 
 <footer>
-  <div class="mark"><span class="dot"></span> Bram van Zwolle · MMXXVI</div>
+  <div class="mark"><span class="dot"></span> Bram van Zwolle</div>
   <div class="clock" id="utcClock" aria-label="Zwolle time">UTC+2 · --:--:--</div>
 </footer>
 
 <script>
+/* Storage can be blocked (private mode, strict settings): that must never break the page. */
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+};
+
 /* ----------------------- Custom cursor ----------------------- */
 (() => {
   if (window.matchMedia('(hover:none)').matches) return;
@@ -2709,22 +3170,40 @@
   document.addEventListener('mouseleave', ()=>{ dot.style.opacity=0; ring.style.opacity=0; });
   document.addEventListener('mouseenter', ()=>{ dot.style.opacity=1; ring.style.opacity=1; });
 
-  // Hide the page cursor while hovering the embedded demo iframe — the demo
-  // renders its own matching cursor, so this avoids a stranded duplicate.
-  const demoFrame = document.querySelector('.demo-frame');
-  if (demoFrame) {
-    demoFrame.addEventListener('mouseenter', ()=>{ dot.style.opacity=0; ring.style.opacity=0; });
-    demoFrame.addEventListener('mouseleave', ()=>{ dot.style.opacity=1; ring.style.opacity=1; });
-  }
+  // Hide the page cursor while the pointer is over an embedded demo. Pointer movement inside
+  // an iframe never reaches this page, so the ring would stay behind at the iframe's edge; each
+  // demo draws its own matching cursor. This must cover every demo, not only the first.
+  document.querySelectorAll('.demo-frame').forEach((frame) => {
+    frame.addEventListener('mouseenter', ()=>{ dot.style.opacity=0; ring.style.opacity=0; });
+    frame.addEventListener('mouseleave', ()=>{ dot.style.opacity=1; ring.style.opacity=1; });
+  });
+})();
+
+/* ----------------------- Demos: load on approach ----------------------- */
+(() => {
+  const frames = document.querySelectorAll('iframe[data-src]');
+  // The ?v= on each data-src changes whenever a demo or its images change, so a browser never
+  // pairs a cached old demo page with images that no longer exist.
+  const load = (f) => { if (!f.src) f.src = f.dataset.src + '&theme=' + (document.documentElement.classList.contains('light') ? 'light' : 'dark'); };
+  if (!('IntersectionObserver' in window)) { frames.forEach(load); return; }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { load(e.target); io.unobserve(e.target); } });
+  }, { rootMargin: '900px 0px' });
+  frames.forEach((f) => io.observe(f));
 })();
 
 /* ----------------------- GSAP animations ----------------------- */
-window.addEventListener('load', () => {
-  if (!window.gsap) return;
+// Runs at DOMContentLoaded: the deferred GSAP files have executed by then. Waiting for the
+// window load event instead would keep the headline hidden until every image and demo is in.
+document.addEventListener('DOMContentLoaded', () => {
+  if (!window.gsap) { document.documentElement.classList.remove('anim'); return; }
   gsap.registerPlugin(ScrollTrigger);
+  window.addEventListener('load', () => ScrollTrigger.refresh());
 
-  // Hero: cinematic single-beat reveal
-  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+  // Hero: cinematic single-beat reveal. On a first visit it waits for the boot screen to finish.
+  const noBoot = document.documentElement.classList.contains('no-boot');
+  const bootEnd = window.__bootEnd || 0;   // set by the boot loader below, which runs before this handler
+  const tl = gsap.timeline({ defaults: { ease: 'power4.out' }, delay: noBoot ? 0 : Math.max(0, bootEnd - 150 - performance.now()) / 1000 });
   tl.to('.hero h1 .row:nth-child(1) .word', { y: 0, duration: 1.2, stagger: 0.04 }, 0.1)
     .to('.hero h1 .row:nth-child(2) .word', { y: 0, duration: 1.2 }, 0.35)
     .to('.hero h1 .row:nth-child(3) .word', { y: 0, duration: 1.2, stagger: 0.04 }, 0.6)
@@ -2789,10 +3268,10 @@ const i18n = {
   en: {
     'nav-about':'About','nav-work':'Work',
     'hero-w1':'Writing','hero-w2':'code','hero-w3':'<em>and</em>','hero-w3b':'guarding&nbsp;scope.','hero-w4':'','hero-w5':'',
-    'hero-tagline':'Bram van Zwolle —<br>Full-Stack Developer &amp; Product Owner.',
+    'hero-tagline':'Bram van Zwolle —<br>Product Owner &amp; Software Engineer.',
     'hero-curr-label':'Currently','hero-curr-val':'200 OK — working at Sibi','hero-scroll':'Scroll',
     'about-label':'Profile — a short introduction',
-    'about-p1':'Since 2023 I\'ve been building SaaS for healthcare at Sibi: as the engineer who writes the code, and since 2024 also as the product owner who decides what we build and why. <strong style="color:var(--ink);font-weight:500;">A multi-tenant platform used by around 50 care organisations and 30,000+ employees.</strong> I want to understand why something is needed first.',
+    'about-p1':'Since 2023 I\'ve been building SaaS for healthcare at Sibi: as the engineer who writes the code, and since 2024 also as the product owner who decides what we build and why. <strong style="color:var(--ink);font-weight:500;">A multi-tenant platform used by around <span class="count" data-to="50">50</span> care organisations and <span class="count" data-to="30000">30,000</span>+ employees.</strong>',
     'about-p2':'Day to day I work in Laravel, Livewire and MariaDB. After hours I build my own projects to try what work doesn\'t ask for: an Android app, a command-line tool in Rust, a dashboard for my home.',
 
     'about-card-k':'Based','about-card-v':'Zwolle — hybrid',
@@ -2809,11 +3288,13 @@ const i18n = {
     'stack-7-role':'sooth, a CLI that finds flaky tests. My first project in Rust.',
     'stack-8-role':'Local environments, pipelines and automated checks: tests, PHPStan and Rector.',
     'stack-cat-lang':'Language','stack-cat-mobile':'Mobile','stack-cat-systems':'Systems',
+    'stack-used':'Used in','stack-work':'Work at Sibi',
+    'p6-index-live':'Project 01 — {v} released','live-version':'{v} · GitHub','live-crate':'{v} · crates.io',
 
     'meta-role':'Role','meta-users':'Users','meta-status':'Status',
     'case-toggle':'Case study','case-toggle-hide':'Hide case study',
     'case-problem':'Problem','case-solution':'Solution','case-result':'Result',
-    'p4-index':'Project 01 — Closed Beta',
+    'p4-index':'Project 03 — Closed Beta',
     'proj4-desc':'I collect Skylanders myself, and the good deals disappear fast. I used to refresh Marktplaats and Vinted all day; now the app does that. New listings come in on their own, Claude reads them and estimates what a figure is really worth. I built the backend, the AI part and the Android app myself.',
     'p4-role-v':'Solo engineer','p4-users-v':'Backend + mobile','p4-status-v':'Closed beta on Play',
     'p4-problem':'Skylanders stopped making new figures back in 2017, so everything trades second-hand now. The rare pieces are usually buried in big mixed lots with a sloppy title and one blurry photo. To catch the good ones you sift through hundreds of listings a day and have to be quick. It costs hours, and you still miss some.',
@@ -2827,12 +3308,12 @@ const i18n = {
     'p5-problem':'Self-hosted dashboards like Homepage or Dashy are mostly tiles with links. I wanted one that does things, and where the parts know about each other: rain in the forecast should change the lights, and a deal I track should show up in the weekly menu.',
     'p5-solution':'A modular monolith: twelve Laravel modules (weather, calendar, lighting, Spotify, deals, recipes and more) on top of a shared set of contracts. Each module can contribute to the morning briefing, which Claude writes via Prism. Without an API key a fixed template takes over. Lamps, shops and concert sources are adapters behind an interface, so a new brand is one class.',
     'p5-result':'Runs in Docker on my Synology NAS, with a Raspberry Pi as the screen. 217 commits since May 2025, with tests per module and CI on GitHub.',
-    'p6-index':'Project 03 — v0.1 released',
+    'p6-index':'Project 01 — v0.3 released',
     'proj6-desc':'A command-line tool that runs your existing test command and tells you which tests are flaky. It keeps a history per commit, so a test that both passed and failed on the same code is proven flaky, not guessed. My first project in Rust.',
     'p6-role-v':'Solo engineer','p6-users-v':'Developers','p6-status-v':'On crates.io',
     'p6-problem':'A flaky test blocks you: the pipeline goes red, you re-run it, it turns green, and you still don\'t know whether the test is unreliable or something is really broken. Tools that track this, like ReportPortal or Allure, need a server and a dashboard.',
     'p6-solution':'sooth wraps the test command you already have and reads the JUnit report it writes. Each run adds one line per test to a local history file. With <code>--verify</code> it re-runs only the failed tests to tell real failures from flaky ones. It never hides a failure: the exit code stays what your test runner said. No server, no account, no AI.',
-    'p6-result':'Version 0.1 is on crates.io, with presets for pytest, PHPUnit, Jest and Go. Detecting slow and order-dependent tests is next on the roadmap.',
+    'p6-result':'Version 0.3 is on crates.io and as a prebuilt binary. It works with pytest, PHPUnit, Pest, Laravel\'s artisan test, Jest and Go. Detecting slow and order-dependent tests is next on the roadmap.',
     'cta-source':'View the source',
     'more-usage':'Reads the local Claude Code logs and shows token usage per prompt and per model, so you can see where the tokens go.',
     'xp-label':'Experience',
@@ -2844,7 +3325,6 @@ const i18n = {
 
     'os-filament':'Fixed a race where an in-flight upload was wiped when a parallel upload completed, with a reproduction repo.',
     'os-scout':'Scout jobs are now marked as failed on timeout by default, so they don\'t hang silently in the queue.',
-    'os-horde':'Removed invalid class-style use imports for global functions.',
     'exp-label':'How I work',
     'exp-h2':'How I work <em>as product owner and engineer.</em>',
 
@@ -2858,7 +3338,7 @@ const i18n = {
     'contact-cv':'Download CV ↓',
     'contact-response-k':'Response','contact-response-v':'Within <em>two working days.</em>',
     'contact-response-note':'Monday to Friday, 09:00–18:00 CET. Slower on weekends — I read, but rarely respond.',
-    'contact-elsewhere-k':'Elsewhere','contact-elsewhere-v':'Find me under the <em>same name,</em> everywhere.',
+    'contact-elsewhere-k':'Elsewhere','contact-elsewhere-v':'Also on <em>GitHub and LinkedIn.</em>',
     'contact-avail-k':'Availability',
     'contact-based-k':'Based','contact-based-v':'Zwolle, NL — <em>on site or hybrid.</em>',
     'contact-based-note':'Open to roles in and around Zwolle. Timezone: CET.',
@@ -2876,10 +3356,10 @@ const i18n = {
   nl: {
     'nav-about':'Over','nav-work':'Werk',
     'hero-w1':'Code','hero-w2':'schrijven','hero-w3':'<em>én</em>','hero-w3b':'scope&nbsp;bewaken.','hero-w4':'','hero-w5':'',
-    'hero-tagline':'Bram van Zwolle —<br>Full-Stack Developer &amp; Product Owner.',
+    'hero-tagline':'Bram van Zwolle —<br>Product Owner &amp; Software Engineer.',
     'hero-curr-label':'Momenteel','hero-curr-val':'200 OK — werkzaam bij Sibi','hero-scroll':'Scroll',
     'about-label':'Profiel — een korte introductie',
-    'about-p1':'Sinds 2023 bouw ik bij Sibi SaaS voor de zorg: als de engineer die de code schrijft, en sinds 2024 ook als de product owner die beslist wat we bouwen en waarom. <strong style="color:var(--ink);font-weight:500;">Een multi-tenant platform voor zo\'n 50 zorgorganisaties en ruim 30.000 medewerkers.</strong> Ik wil eerst snappen waarom iets nodig is.',
+    'about-p1':'Sinds 2023 bouw ik bij Sibi SaaS voor de zorg: als de engineer die de code schrijft, en sinds 2024 ook als de product owner die beslist wat we bouwen en waarom. <strong style="color:var(--ink);font-weight:500;">Een multi-tenant platform voor zo\'n <span class="count" data-to="50">50</span> zorgorganisaties en ruim <span class="count" data-to="30000">30.000</span> medewerkers.</strong>',
     'about-p2':'Overdag werk ik in Laravel, Livewire en MariaDB. Na werktijd bouw ik eigen projecten om dingen te proberen waar mijn werk niet om vraagt: een Android-app, een command-line tool in Rust, een dashboard voor thuis.',
 
     'about-card-k':'Gevestigd','about-card-v':'Zwolle — hybride',
@@ -2896,11 +3376,13 @@ const i18n = {
     'stack-7-role':'sooth, een CLI die flaky tests opspoort. Mijn eerste project in Rust.',
     'stack-8-role':'Lokale omgevingen, pipelines en geautomatiseerde checks: tests, PHPStan en Rector.',
     'stack-cat-lang':'Taal','stack-cat-mobile':'Mobiel','stack-cat-systems':'Systemen',
+    'stack-used':'Gebruikt in','stack-work':'Werk bij Sibi',
+    'p6-index-live':'Project 01 — {v} uitgebracht','live-version':'{v} · GitHub','live-crate':'{v} · crates.io',
 
     'meta-role':'Rol','meta-users':'Gebruikers','meta-status':'Status',
     'case-toggle':'Case study','case-toggle-hide':'Verberg case study',
     'case-problem':'Probleem','case-solution':'Oplossing','case-result':'Resultaat',
-    'p4-index':'Project 01 — Closed Beta',
+    'p4-index':'Project 03 — Closed Beta',
     'proj4-desc':'Ik verzamel zelf Skylanders, en de goede koopjes zijn snel weg. Vroeger ververste ik de hele dag Marktplaats en Vinted; nu doet deze app dat. Nieuwe advertenties komen vanzelf binnen, Claude leest ze en schat wat een figuur echt waard is. De backend, het AI-deel en de Android-app bouwde ik zelf.',
     'p4-role-v':'Solo engineer','p4-users-v':'Backend + mobile','p4-status-v':'Gesloten beta op Play',
     'p4-problem':'Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn. Dat kost uren, en je mist er alsnog.',
@@ -2914,12 +3396,12 @@ const i18n = {
     'p5-problem':'Self-hosted dashboards als Homepage of Dashy zijn vooral tegels met links. Ik wilde er een die dingen doet, en waarin de onderdelen van elkaar weten: regen in de verwachting moet de lampen aanpassen, en een deal die ik volg moet in het weekmenu terugkomen.',
     'p5-solution':'Een modulaire monoliet: twaalf Laravel-modules (weer, agenda, verlichting, Spotify, deals, recepten en meer) op een gedeelde set contracten. Elke module kan bijdragen aan de ochtendbriefing, die Claude via Prism schrijft. Zonder API-key neemt een vast sjabloon het over. Lampen, winkels en concertbronnen zijn adapters achter een interface, dus een nieuw merk is één class.',
     'p5-result':'Draait in Docker op mijn Synology NAS, met een Raspberry Pi als scherm. 217 commits sinds mei 2025, met tests per module en CI op GitHub.',
-    'p6-index':'Project 03 — v0.1 uitgebracht',
+    'p6-index':'Project 01 — v0.3 uitgebracht',
     'proj6-desc':'Een command-line tool die je bestaande testcommando draait en vertelt welke tests flaky zijn. Hij houdt per commit een geschiedenis bij, dus een test die op dezelfde code zowel slaagde als faalde is aantoonbaar flaky, niet gegokt. Mijn eerste project in Rust.',
     'p6-role-v':'Solo engineer','p6-users-v':'Developers','p6-status-v':'Op crates.io',
     'p6-problem':'Een flaky test houdt je op: de pipeline wordt rood, je draait hem opnieuw, hij wordt groen, en je weet nog steeds niet of de test onbetrouwbaar is of dat er echt iets stuk is. Tools die dit bijhouden, zoals ReportPortal of Allure, hebben een server en een dashboard nodig.',
     'p6-solution':'sooth draait om het testcommando dat je al hebt en leest het JUnit-rapport dat dat schrijft. Elke run voegt per test één regel toe aan een lokaal geschiedenisbestand. Met <code>--verify</code> draait hij alleen de gefaalde tests opnieuw, om echte fouten van flaky tests te scheiden. Een fout verbergt hij nooit: de exitcode blijft wat je testrunner zei. Geen server, geen account, geen AI.',
-    'p6-result':'Versie 0.1 staat op crates.io, met presets voor pytest, PHPUnit, Jest en Go. Trage en volgorde-afhankelijke tests opsporen is de volgende stap op de roadmap.',
+    'p6-result':'Versie 0.3 staat op crates.io en is er als kant-en-klare binary. Het werkt met pytest, PHPUnit, Pest, Laravels artisan test, Jest en Go. Trage en volgorde-afhankelijke tests opsporen is de volgende stap op de roadmap.',
     'cta-source':'Bekijk de broncode',
     'more-usage':'Leest de lokale logs van Claude Code en toont het tokengebruik per prompt en per model, zodat je ziet waar de tokens heen gaan.',
     'xp-label':'Ervaring',
@@ -2931,7 +3413,6 @@ const i18n = {
 
     'os-filament':'Race condition opgelost waarbij een lopende upload verdween zodra een parallelle upload klaar was, met een reproductie-repo.',
     'os-scout':'Scout-jobs worden bij een timeout standaard als mislukt gemarkeerd, zodat ze niet stil in de queue blijven hangen.',
-    'os-horde':'Ongeldige use-imports voor globale functies opgeruimd.',
     'exp-label':'Werkwijze',
     'exp-h2':'Hoe ik werk <em>als product owner en engineer.</em>',
 
@@ -2945,7 +3426,7 @@ const i18n = {
     'contact-cv':'Download CV ↓',
     'contact-response-k':'Reactietijd','contact-response-v':'Binnen <em>twee werkdagen.</em>',
     'contact-response-note':'Maandag tot vrijdag, 09:00–18:00 CET. In het weekend reageer ik trager — ik lees, maar reageer zelden.',
-    'contact-elsewhere-k':'Elders','contact-elsewhere-v':'Overal te vinden onder <em>dezelfde naam.</em>',
+    'contact-elsewhere-k':'Elders','contact-elsewhere-v':'Ook te vinden op <em>GitHub en LinkedIn.</em>',
     'contact-avail-k':'Beschikbaarheid',
     'contact-based-k':'Gevestigd','contact-based-v':'Zwolle, NL — <em>op locatie of hybride.</em>',
     'contact-based-note':'Open voor rollen in en rond Zwolle. Tijdzone: CET.',
@@ -2962,11 +3443,11 @@ const i18n = {
   }
 };
 
-let currentLang = localStorage.getItem('lang') || 'nl';
+let currentLang = store.get('lang') || 'nl';
 
 function applyLang(lang) {
   currentLang = lang;
-  localStorage.setItem('lang', lang);
+  store.set('lang', lang);
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n;
@@ -2984,9 +3465,24 @@ function applyLang(lang) {
       s.classList.toggle('off', !isActive);
     });
   }
+  renderLive();
 }
 
-if (currentLang !== 'en') applyLang(currentLang);
+/* --- Live project data: the latest version numbers from the public GitHub API.
+       Deliberately no dates: "x days ago" would make a quiet project look abandoned. --- */
+const live = {};
+function renderLive() {
+  document.querySelectorAll('[data-live]').forEach((el) => {
+    const [src, key] = el.dataset.live.split(':');
+    const d = live[src];
+    const tpl = i18n[currentLang] && i18n[currentLang][key];
+    if (!d || !tpl) return;
+    el.textContent = tpl.replace('{v}', () => d.v);
+  });
+}
+
+// The static HTML is Dutch; only switch when the visitor chose another language.
+if (currentLang !== 'nl') applyLang(currentLang);
 
 // Settings dropdown
 (() => {
@@ -2996,21 +3492,23 @@ if (currentLang !== 'en') applyLang(currentLang);
   const drop = document.getElementById('settingsDropdown');
 
   // Init theme
-  const storedTheme = localStorage.getItem('theme');
+  const storedTheme = store.get('theme');
   if (storedTheme === 'light') { html.classList.add('light'); setThemeActive('light'); }
   else setThemeActive('dark');
 
   // Init lang active state
   setLangActive(currentLang);
 
-  function setThemeActive(t) {
-    document.getElementById('sdDark')?.classList.toggle('active', t === 'dark');
-    document.getElementById('sdLight')?.classList.toggle('active', t === 'light');
+  // Each setting is a two-part switch: the first option on the left, the second on the right.
+  function setSwitch(leftId, rightId, right) {
+    const a = document.getElementById(leftId), b = document.getElementById(rightId);
+    if (!a || !b) return;
+    a.classList.toggle('active', !right); b.classList.toggle('active', right);
+    a.setAttribute('aria-pressed', String(!right)); b.setAttribute('aria-pressed', String(right));
+    a.parentElement.dataset.side = right ? 'right' : 'left';   // the thumb slides to this side
   }
-  function setLangActive(l) {
-    document.getElementById('sdNl')?.classList.toggle('active', l === 'nl');
-    document.getElementById('sdEn')?.classList.toggle('active', l === 'en');
-  }
+  function setThemeActive(t) { setSwitch('sdDark', 'sdLight', t === 'light'); }
+  function setLangActive(l) { setSwitch('sdNl', 'sdEn', l === 'en'); }
 
   // Toggle dropdown
   btn?.addEventListener('click', (e) => {
@@ -3031,14 +3529,53 @@ if (currentLang !== 'en') applyLang(currentLang);
   });
 
   // Theme options
-  drop?.querySelectorAll('[data-theme]').forEach(opt => {
-    opt.addEventListener('click', () => {
-      const t = opt.dataset.theme;
-      html.classList.toggle('light', t === 'light');
-      localStorage.setItem('theme', t);
-      setThemeActive(t);
-      updateFavicon(t);
+  const applyTheme = (t) => {
+    html.classList.toggle('light', t === 'light');
+    store.set('theme', t);
+    setThemeActive(t);
+    updateFavicon(t);
+    document.getElementById('themeColor')?.setAttribute('content', t === 'light' ? '#ebe2cc' : '#0d0b09');
+    // The embedded demos recolour their captions and controls to match.
+    document.querySelectorAll('iframe.demo-frame').forEach((f) => {
+      try { if (f.src && f.contentWindow) f.contentWindow.postMessage({ type: 'portfolio-theme', theme: t }, '*'); } catch (e) {}
     });
+  };
+  // The theme a running switch is heading for. The class on <html> only changes when the view
+  // transition's callback runs, so a second request in the same frame must not read the class.
+  let heading = null;
+  const themeNow = () => heading || (html.classList.contains('light') ? 'light' : 'dark');
+  const switchTheme = (t, from) => {
+    if (t === themeNow()) return;
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || calm) { applyTheme(t); return; }
+    heading = t;
+    // The new theme grows as a circle from the control that asked for it.
+    const r = from ? from.getBoundingClientRect() : null;
+    const seen = r && r.width > 0;
+    const x = seen ? r.left + r.width / 2 : innerWidth / 2, y = seen ? r.top + r.height / 2 : 0;
+    const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    let vt;
+    try { vt = document.startViewTransition(() => { applyTheme(t); if (heading === t) heading = null; }); }
+    catch (e) { heading = null; applyTheme(t); return; }
+    vt.finished.catch(() => {}).then(() => { if (heading === t) heading = null; });   // safety net: never stay "heading" somewhere
+    vt.ready.then(() => {
+      html.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+        { duration: 700, easing: 'cubic-bezier(.3,.7,.2,1)', pseudoElement: '::view-transition-new(root)' }
+      );
+    }).catch(() => {});
+  };
+  drop?.querySelectorAll('[data-theme]').forEach(opt => {
+    opt.addEventListener('click', () => switchTheme(opt.dataset.theme, opt));
+  });
+  // Unlisted shortcut: Option/Alt + T switches the theme. It needs a modifier on purpose: a bare
+  // letter would fire while someone dictates text, and browsers leave this combination alone.
+  window.addEventListener('keydown', (e) => {
+    if (e.code !== 'KeyT' || !e.altKey || e.metaKey || e.ctrlKey || e.shiftKey || e.repeat) return;
+    const el = e.target;
+    if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
+    e.preventDefault();
+    switchTheme(themeNow() === 'light' ? 'dark' : 'light', btn);
   });
 
   function updateFavicon(t) {
@@ -3052,10 +3589,27 @@ if (currentLang !== 'en') applyLang(currentLang);
   }
 })();
 
-// Active nav section highlight
+// Active nav section highlight: one marker that slides from item to item
 (() => {
-  const sections = ['hero', 'about', 'work', 'expertise', 'contact'];
+  const sections = ['index', 'about', 'work', 'expertise', 'contact'];
+  const nav = document.querySelector('.topbar nav');
   const navLinks = document.querySelectorAll('.topbar nav a');
+  let pill = null, placed = false;
+  if (nav) {
+    pill = document.createElement('span'); pill.className = 'nav-pill'; pill.setAttribute('aria-hidden', 'true');
+    nav.prepend(pill); nav.classList.add('has-pill');
+  }
+  const movePill = () => {
+    if (!pill) return;
+    const a = nav.querySelector('a.active');
+    if (!a || !a.offsetWidth) { pill.style.opacity = '0'; placed = false; return; }   // nothing active yet, or the menu is hidden
+    // The first placement jumps into place; after that the marker slides.
+    if (!placed) pill.style.transition = 'none';
+    pill.style.width = a.offsetWidth + 'px';
+    pill.style.transform = 'translate(' + a.offsetLeft + 'px,' + a.offsetTop + 'px)';
+    pill.style.opacity = '1';
+    if (!placed) { void pill.offsetWidth; pill.style.transition = ''; placed = true; }
+  };
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
@@ -3063,7 +3617,12 @@ if (currentLang !== 'en') applyLang(currentLang);
         a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
       });
     });
+    movePill();
   }, { rootMargin: '-40% 0px -55% 0px' });
+  // The items change size with the window, the language and the web font: follow them.
+  window.addEventListener('resize', movePill, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(movePill);
+  if (nav) new MutationObserver(movePill).observe(nav, { childList: true, subtree: true, characterData: true });
   sections.forEach((id) => {
     const el = document.getElementById(id);
     if (el) observer.observe(el);
@@ -3154,7 +3713,9 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
 (() => {
   const boot = document.getElementById('bootLoader');
   if (!boot) return;
+  if (document.documentElement.classList.contains('no-boot')) { boot.remove(); return; }
   const lines = boot.querySelectorAll('.boot-line');
+  window.__bootEnd = performance.now() + 1500;   // the hero reveal starts just before this
   document.body.style.overflow = 'hidden';
   lines.forEach((ln, i) => {
     setTimeout(() => { ln.style.transition = 'opacity .25s ease'; ln.style.opacity = '1'; }, 120 + i*380);
@@ -3182,7 +3743,7 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
       setTimeout(() => { if (caret) caret.style.display = 'none'; }, 800);
     }
   };
-  setTimeout(tick, 1600);
+  setTimeout(tick, document.documentElement.classList.contains('no-boot') ? 200 : 1600);
 })();
 
 
@@ -3208,7 +3769,7 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
   const getCmds = () => {
     const t = (key) => (i18n[currentLang] && i18n[currentLang][key]) || (i18n.en && i18n.en[key]) || key;
     return [
-      { id:'index',      ico:'→', label:t('cp-nav-index'),     desc:mod+' 0', run:()=>scrollToSel('#hero') },
+      { id:'index',      ico:'→', label:t('cp-nav-index'),     desc:mod+' 0', run:()=>scrollToSel('#index') },
       { id:'about',      ico:'→', label:t('cp-nav-about'),     desc:mod+' 1', run:()=>scrollToSel('#about') },
       { id:'work',       ico:'→', label:t('cp-nav-work'),      desc:mod+' 2', run:()=>scrollToSel('#work') },
       { id:'expertise',  ico:'→', label:t('cp-nav-expertise'), desc:mod+' 3', run:()=>scrollToSel('#expertise') },
@@ -3270,7 +3831,7 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
     if (e.key === 'Escape' && root.classList.contains('open')) { e.preventDefault(); close(); return; }
     if (mod && ['0','1','2','3','4'].includes(e.key)) {
       e.preventDefault();
-      const map = { '0':'#hero', '1':'#about', '2':'#work', '3':'#expertise', '4':'#contact' };
+      const map = { '0':'#index', '1':'#about', '2':'#work', '3':'#expertise', '4':'#contact' };
       scrollToSel(map[e.key]);
       return;
     }
@@ -3360,9 +3921,16 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
   let locked = false;
   let hideTimer = null;
   const position = () => {
-    const r = mark.getBoundingClientRect();
-    tip.style.left = r.left + 'px';
-    tip.style.top  = (r.bottom + 8) + 'px';
+    // Hang the menu from the bar, not from the name inside it, so it never overlaps the glass.
+    const bar = (mark.closest('.topbar') || mark).getBoundingClientRect();
+    const name = mark.getBoundingClientRect();
+    const left = bar.left, top = bar.bottom + 10;
+    tip.style.left = left + 'px';
+    tip.style.top  = top + 'px';
+    // hover bridge: the column under the name, from the name down to the menu
+    tip.style.setProperty('--bridge-h', Math.max(0, Math.floor(top - name.bottom)) + 'px');   // floor: never a sliver over the name
+    tip.style.setProperty('--bridge-x', Math.max(0, name.left - left) + 'px');
+    tip.style.setProperty('--bridge-w', name.width + 'px');
   };
   const show = () => { clearTimeout(hideTimer); position(); open = true; tip.classList.add('visible'); tip.setAttribute('aria-hidden','false'); };
   const hide = () => { open = false; locked = false; tip.classList.remove('visible'); tip.setAttribute('aria-hidden','true'); };
@@ -3420,6 +3988,301 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
   });
 })();
 
+/* --- Live project data: fetch (cached per session; on failure the static text stays) --- */
+(() => {
+  // A version looks like v1.2.3; anything else is ignored and the static text stays.
+  const clean = (d) => (d && typeof d.v === 'string' && /^v?\d+(\.\d+){0,3}[\w.-]{0,12}$/.test(d.v) ? { v: d.v } : null);
+  const SOURCES = {
+    sooth:      'https://api.github.com/repos/Bramvzw/sooth/releases/latest',
+    skylanders: 'https://api.github.com/repos/Bramvzw/skylanders-tracker-releases/releases/latest',
+  };
+  const TTL = 60 * 60 * 1000;
+  const run = () => Object.entries(SOURCES).forEach(([key, url]) => {
+    let cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem('live:' + key)); } catch (e) {}
+    const fromCache = cached && Date.now() - cached.t < TTL ? clean(cached.d) : null;
+    if (fromCache) { live[key] = fromCache; renderLive(); return; }
+    fetch(url, { headers: { Accept: 'application/vnd.github+json' } })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d) => {
+        const v = clean(d && typeof d === 'object' ? { v: d.tag_name } : null);
+        if (!v) return;
+        live[key] = v; renderLive();
+        try { sessionStorage.setItem('live:' + key, JSON.stringify({ t: Date.now(), d: v })); } catch (e) {}
+      })
+      .catch(() => {});
+  });
+  if (document.readyState === 'complete') run(); else window.addEventListener('load', run);
+})();
+
+/* --- Jump between a tool in the stack and the projects that use it --- */
+(() => {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[data-jump]');
+    if (!a) return;
+    const target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const tall = target.offsetHeight > window.innerHeight * 0.8;
+    target.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: tall ? 'start' : 'center' });
+    // Keyboard users continue from the target, and Back returns to where they were.
+    if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+    try { history.pushState(null, '', a.getAttribute('href')); } catch (err) {}
+    if (!target.matches('.project, .tech-cart')) return;
+    target.classList.remove('jump-hit');
+    setTimeout(() => {
+      target.classList.add('jump-hit');
+      setTimeout(() => target.classList.remove('jump-hit'), 1900);
+    }, calm ? 0 : 450);
+  });
+})();
+
+/* --- Pointer glow on cards --- */
+(() => {
+  if (!window.matchMedia('(hover:hover)').matches) return;
+  document.querySelectorAll('.tech-cart, .project').forEach((el) => {
+    el.addEventListener('pointermove', (e) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+})();
+
+/* --- Count-up for the figures in the intro --- */
+(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+  const first = document.querySelector('.about-body .count');
+  const host = first && first.closest('p');
+  if (!host) return;
+  const io = new IntersectionObserver((entries) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    io.disconnect();
+    const locale = currentLang === 'nl' ? 'nl-NL' : 'en-US';
+    host.querySelectorAll('.count').forEach((el) => {
+      const to = Number(el.dataset.to);
+      if (!to) return;
+      // Reserve the final width so the sentence does not reflow while counting.
+      el.style.display = 'inline-block'; el.style.minWidth = el.offsetWidth + 'px'; el.style.textAlign = 'right';
+      const t0 = performance.now(), dur = 1500;
+      const step = (now) => {
+        if (!el.isConnected) return;
+        const k = Math.min(1, (now - t0) / dur), eased = 1 - Math.pow(1 - k, 3);
+        el.textContent = Math.round(to * eased).toLocaleString(locale);
+        if (k < 1) requestAnimationFrame(step);
+        else { el.style.display = ''; el.style.minWidth = ''; el.style.textAlign = ''; }
+      };
+      requestAnimationFrame(step);
+    });
+  }, { threshold: 0.5 });
+  io.observe(host);
+})();
+
+/* --- Hero backdrop: a small WebGL shader replaces the drifting clouds (desktop): smoke in the
+       dark theme, the same smoke drawn as ink lines in the light theme.
+       Without WebGL, on touch devices or with reduced motion a stand-in stays: the drifting
+       clouds in the dark theme, a still drawing of the lines in the light theme. --- */
+(() => {
+  const canvas = document.getElementById('heroShader');
+  const hero = document.getElementById('index');
+  const root = document.documentElement;
+  if (!canvas || !hero) return;
+  const wide = window.matchMedia('(min-width:821px) and (hover:hover)');
+  // Whenever the shader turns out not to run, the stand-in (clouds in dark, a still drawing in light) may show.
+  const standIn = () => root.classList.remove('shade-soon');
+  if (!wide.matches) return standIn();
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return standIn();
+  let gl = null;
+  // failIfMajorPerformanceCaveat: no shader on software rendering, the stand-in is cheaper there.
+  try { gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power', failIfMajorPerformanceCaveat: true }); } catch (e) {}
+  if (!gl) return standIn();
+  const VS = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+  // With this extension the GPU reports how fast a value changes from pixel to pixel, so the
+  // height lines need one sample of the landscape instead of three. Without it: three samples.
+  const deriv = !!gl.getExtension('OES_standard_derivatives');
+  const FS = (deriv ? '#extension GL_OES_standard_derivatives : enable\n#define DERIV\n' : '') + `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse; uniform float u_light; uniform float u_ink; uniform vec4 u_text;
+    float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+    float noise(vec2 p){
+      vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
+      return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+    }
+    float fbm(vec2 p){
+      float v = 0.0, a = 0.5;
+      for (int i = 0; i < 4; i++){ v += a * noise(p); p = p * 2.03 + vec2(17.3, 9.1); a *= 0.5; }
+      return v;
+    }
+    // Smooth noise for the drawn lines: gradients on the grid instead of values, so the contour
+    // lines run in long calm curves without the kinks that value noise gives.
+    vec2 grad(vec2 i){ float a = 6.2832 * hash(i); return vec2(cos(a), sin(a)); }
+    float gnoise(vec2 p){
+      vec2 i = floor(p), f = fract(p), u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+      return mix(mix(dot(grad(i), f), dot(grad(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x),
+                 mix(dot(grad(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)), dot(grad(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);
+    }
+    // The landscape whose height lines are drawn: it drifts the way the smoke does.
+    float land(vec2 p, float t, vec2 bend){
+      vec2 q = p * 0.42 + bend;
+      q += 0.55 * vec2(gnoise(q * 0.8 + vec2(t, -0.6 * t)), gnoise(q * 0.8 + vec2(5.2, 1.3) - vec2(0.8 * t, 0.3 * t)));
+      return gnoise(q + vec2(-0.5 * t, 0.4 * t)) + 0.32 * gnoise(q * 2.1 + vec2(3.1, 7.7) + vec2(0.3 * t, 0.0));
+    }
+    void main(){
+      vec2 uv = gl_FragCoord.xy / u_res.xy;
+      float aspect = u_res.x / u_res.y;
+      vec2 p = vec2(uv.x * aspect, uv.y) * 4.2;
+      vec2 m = vec2(u_mouse.x * aspect, u_mouse.y) * 4.2;
+      vec2 d = p - m;
+      float near = exp(-dot(d, d) * 0.42);              // 1 at the pointer, fading out around it
+      float t = u_time * 0.045;
+      float smoke = 0.0, line = 0.0, heavy = 0.0;
+      if (u_ink < 0.999){
+        // two slow fields bend the coordinates, which gives the smoke its folds
+        vec2 q = vec2(fbm(p + vec2(t, -0.6 * t)), fbm(p + vec2(5.2, 1.3) - vec2(0.8 * t, 0.3 * t)));
+        vec2 pw = p + 1.25 * q + d * near * 0.22;        // the pointer gently pushes the smoke aside
+        smoke = smoothstep(0.30, 0.82, fbm(pw + vec2(-0.5 * t, 0.4 * t)));
+      }
+      if (u_ink > 0.001){
+        // Height lines of the drifting landscape, one pixel wide whatever the slope: for that the
+        // shader has to know how fast the height changes from one pixel to the next.
+        const float LEVELS = 8.0;
+        float px = 4.2 / u_res.y;
+        vec2 bend = d * near * 0.10;                     // the pointer pushes the lines aside too
+        float h = land(p, t, bend) * LEVELS;
+        #ifdef DERIV
+        float slope = length(vec2(dFdx(h), dFdy(h)));
+        #else
+        float slope = length(vec2(land(p + vec2(px, 0.0), t, bend) * LEVELS - h, land(p + vec2(0.0, px), t, bend) * LEVELS - h));
+        #endif
+        // On nearly flat ground a line would smear out into a blot: there it fades away instead.
+        float firm = smoothstep(0.004, 0.02, slope);
+        slope = max(slope, 0.012);
+        float dl = abs(fract(h - 0.5) - 0.5) / slope;    // distance to the nearest line, in pixels
+        float dh = abs(fract(h / 4.0 - 0.5) - 0.5) * 4.0 / slope;   // every fourth line is drawn heavier, as on a map
+        line = firm * (1.0 - smoothstep(0.25, 1.0, dl));
+        heavy = firm * (1.0 - smoothstep(0.55, 1.4, dh));
+      }
+      // While the theme changes, u_ink runs between 0 and 1: the smoke settles into drawn lines, or the lines go up in smoke.
+      float glow = mix(smoke, 0.55 * line + 0.45 * heavy, u_ink);
+      // Dark theme: light on black (blended with "screen"); the pointer lights it up a little.
+      vec3 dark = vec3(0.91, 0.78, 0.55) * (glow * (0.85 + 0.55 * near) + 0.035 * near);
+      // Light theme (blended with "multiply", so white leaves the paper as it is): the same smoke,
+      // drawn in ink. The lines step back for the text: about half as strong inside the text
+      // block (u_text, in uv), full strength a little way outside it.
+      vec3 haze = mix(vec3(1.0), vec3(0.93, 0.75, 0.53), clamp(smoke * (1.0 - 0.6 * near), 0.0, 1.0));
+      vec2 away = (abs(uv - 0.5 * (u_text.xy + u_text.zw)) - 0.5 * (u_text.zw - u_text.xy)) * vec2(aspect, 1.0);
+      float quiet = mix(0.52, 1.0, smoothstep(0.0, 0.20, length(max(away, 0.0))));
+      float amount = clamp(0.22 * line + 0.16 * heavy, 0.0, 0.36) * quiet;
+      vec3 drawn = mix(vec3(1.0), vec3(0.33, 0.23, 0.13), amount);
+      vec3 light = mix(haze, drawn, u_ink);
+      gl_FragColor = vec4(mix(dark, light, u_light), 1.0);
+    }`;
+  const mk = (type, src) => { const sh = gl.createShader(type); gl.shaderSource(sh, src); gl.compileShader(sh); return gl.getShaderParameter(sh, gl.COMPILE_STATUS) ? sh : null; };
+  const vs = mk(gl.VERTEX_SHADER, VS), fs = mk(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) return standIn();
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return standIn();
+  gl.useProgram(prog);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const uRes = gl.getUniformLocation(prog, 'u_res'), uTime = gl.getUniformLocation(prog, 'u_time'), uMouse = gl.getUniformLocation(prog, 'u_mouse'), uLight = gl.getUniformLocation(prog, 'u_light'), uInk = gl.getUniformLocation(prog, 'u_ink'), uText = gl.getUniformLocation(prog, 'u_text');
+  // The smoke is soft: half the resolution is plenty. Drawn lines need every pixel.
+  const resize = () => {
+    // Lines: one canvas pixel per CSS pixel, but never more than about 2.2 million of them (a
+    // 2560x1440 window is drawn at three quarters of its size). Smoke: half the size.
+    const scale = (ink > 0 || inkTo > 0) ? Math.min(1, Math.sqrt(2.2e6 / Math.max(1, canvas.clientWidth * canvas.clientHeight))) : 0.5;
+    const w = Math.max(2, Math.round(canvas.clientWidth * scale)), h = Math.max(2, Math.round(canvas.clientHeight * scale));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
+  };
+  let mx = 0.72, my = 0.62, tx = mx, ty = my, visible = true, raf = 0, last = 0, clock = 0, lost = false, odd = false;
+  // Dark theme: smoke (0). Light theme: the smoke drawn in ink (1). A theme switch runs from one to the other in MORPH ms.
+  const isLight = () => root.classList.contains('light');
+  const MORPH = 1500;
+  let ink = isLight() ? 1 : 0, inkFrom = ink, inkTo = ink, inkStart = 0;
+  const stepInk = (now) => {
+    if (ink === inkTo) return;
+    const k = Math.min(1, (now - inkStart) / MORPH);
+    ink = k >= 1 ? inkTo : inkFrom + (inkTo - inkFrom) * (k * k * (3 - 2 * k));
+  };
+  window.addEventListener('pointermove', (e) => {
+    const r = hero.getBoundingClientRect();
+    tx = (e.clientX - r.left) / r.width; ty = 1 - (e.clientY - r.top) / r.height;
+  }, { passive: true });
+  // Where the hero's text is, so the drawn lines can make way for it: left, bottom, right, top
+  // as fractions of the hero (y upwards, like the shader). The width comes from the text itself
+  // (a Range), not from the boxes, which run the full width of the column.
+  const inner = hero.querySelector('.hero-inner');
+  let textBox = [0, 0, 0, 0], textDirty = true;
+  const measureText = () => {
+    textDirty = false;
+    if (!inner) return;
+    const h = hero.getBoundingClientRect(), box = inner.getBoundingClientRect();
+    if (!h.width || !h.height) return;
+    let right = box.left;
+    inner.querySelectorAll('h1 .row, .hero-tagline').forEach((el) => {
+      const range = document.createRange(); range.selectNodeContents(el);
+      right = Math.max(right, range.getBoundingClientRect().right);
+    });
+    textBox = [(box.left - h.left) / h.width, 1 - (box.bottom - h.top) / h.height, (right - h.left) / h.width, 1 - (box.top - h.top) / h.height];
+  };
+  const markText = () => { textDirty = true; };
+  window.addEventListener('resize', markText, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(markText);
+  if (inner) new MutationObserver(markText).observe(inner, { childList: true, subtree: true, characterData: true });
+  const draw = () => {
+    resize();
+    gl.uniform2f(uRes, canvas.width, canvas.height); gl.uniform1f(uTime, clock); gl.uniform2f(uMouse, mx, my);
+    gl.uniform1f(uLight, isLight() ? 1 : 0); gl.uniform1f(uInk, ink);
+    if (textDirty) measureText();
+    gl.uniform4f(uText, textBox[0], textBox[1], textBox[2], textBox[3]);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+  const frame = (now) => {
+    raf = 0;
+    if (!visible || document.hidden || !root.classList.contains('shader-on')) return;
+    clock += Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+    mx += (tx - mx) * 0.05; my += (ty - my) * 0.05;
+    stepInk(now);
+    // The drawn lines are sharp and drift slowly: every other frame is enough and halves the work.
+    odd = !odd;
+    if (!(ink === 1 && odd)) draw();
+    raf = requestAnimationFrame(frame);
+  };
+  const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } };
+  new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible) kick(); }).observe(hero);
+  document.addEventListener('visibilitychange', kick);
+  // Theme switched: redraw at once in the new theme's colours (so the canvas never shows the other
+  // theme's colours for a frame) and start turning the smoke into drawn lines, or the lines into smoke.
+  new MutationObserver(() => {
+    const to = isLight() ? 1 : 0;
+    if (to !== inkTo) { inkFrom = ink; inkTo = to; inkStart = performance.now(); }
+    if (!lost && root.classList.contains('shader-on')) draw();
+    kick();
+  }).observe(root, { attributes: true, attributeFilter: ['class'] });
+  // Context lost (GPU reset, too many contexts): back to the fallback for the rest of the visit.
+  // No preventDefault: that would ask the browser to restore a context that nothing here rebuilds.
+  canvas.addEventListener('webglcontextlost', () => { lost = true; root.classList.remove('shader-on'); standIn(); });
+  // Narrowed below the mobile breakpoint: back to the stand-in; widened again: shader on.
+  wide.addEventListener('change', () => {
+    if (lost) return;
+    root.classList.toggle('shader-on', wide.matches);
+    root.classList.toggle('shade-soon', wide.matches);
+    if (wide.matches) kick();
+  });
+  draw();
+  root.classList.add('shader-on');
+  kick();
+})();
+
 /* --- 14. Tag tooltip on tech-tag hover --- */
 (() => {
   const tip = document.getElementById('tagTip');
@@ -3429,9 +4292,20 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
     tip.style.left = Math.min(window.innerWidth - r.width - 10, e.clientX + 14) + 'px';
     tip.style.top  = (e.clientY + 18) + 'px';
   };
+  // The notes on the tags are written in English in the markup; these are their Dutch versions.
+  const NOTE_NL = {
+    '~38,500 lines written': '~38.500 regels geschreven',
+    '~36,500 lines written': '~36.500 regels geschreven',
+    '~21,400 lines written': '~21.400 regels geschreven',
+    '~10,200 lines written': '~10.200 regels geschreven',
+    'the report format every runner speaks': 'het rapportformaat dat elke testrunner spreekt',
+    'single source of truth': 'één bron van waarheid',
+    'Docker on a Synology NAS': 'Docker op een Synology-NAS'
+  };
   document.querySelectorAll('.project .tag[data-lines]').forEach((tok) => {
     tok.addEventListener('mouseenter', (e) => {
-      tip.textContent = tok.dataset.lines || '';
+      const note = tok.dataset.lines || '';
+      tip.textContent = (currentLang === 'nl' && NOTE_NL[note]) || note;
       tip.classList.add('visible');
       pos(e);
     });
@@ -3478,7 +4352,7 @@ document.querySelectorAll('.case-toggle').forEach((btn) => {
     hint.style.left = (r.left + r.width / 2 - 14) + 'px';
     hint.style.top  = (r.top  + r.height / 2 - 4) + 'px';
     hint.style.animation = 'hint-tap 2.4s ease 0s forwards';
-  }, 2500);
+  }, document.documentElement.classList.contains('no-boot') ? 1300 : 2500);
 })();
 </script>
 </body>
