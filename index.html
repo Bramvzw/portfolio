@@ -3837,12 +3837,22 @@ if (currentLang !== 'nl') applyLang(currentLang);
   // Open and close. The menu closes on a click outside it, on Escape and as soon as the page scrolls.
   let openedAt = 0, settleUntil = 0;
   const isOpen = () => drop.classList.contains('open');
+  // On a phone the menu is exactly as wide as the bar it hangs from, like the menu under the name.
+  const fit = () => {
+    const bar = btn.closest('.topbar');
+    drop.style.width = bar && window.matchMedia('(max-width:600px)').matches ? bar.getBoundingClientRect().width + 'px' : '';
+  };
+  window.addEventListener('resize', () => { if (isOpen()) fit(); }, { passive: true });
   const setOpen = (open) => {
     if (open === isOpen()) return;
+    if (open) fit();
     if (!open && drop.contains(document.activeElement)) btn.focus({ preventScroll: true });   // never leave focus in a hidden menu
     drop.classList.toggle('open', open);
     btn.setAttribute('aria-expanded', String(open));
-    if (open) openedAt = window.scrollY;
+    if (open) {
+      openedAt = window.scrollY;
+      document.dispatchEvent(new CustomEvent('portfolio:overlay', { detail: 'settings' }));   // only one menu open at a time
+    }
   };
   btn?.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!isOpen()); });
   document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) setOpen(false); });
@@ -3852,7 +3862,7 @@ if (currentLang !== 'nl') applyLang(currentLang);
     if (document.getElementById('cpRoot')?.classList.contains('open')) return;
     setOpen(false);   // moves focus to the button only when it was inside the menu
   });
-  document.addEventListener('portfolio:overlay', () => setOpen(false));   // the command palette opened
+  document.addEventListener('portfolio:overlay', (e) => { if (e.detail !== 'settings') setOpen(false); });   // the menu under the name or the command palette opened
   // Switching language reflows the page, which can move it a little by itself: that is not the
   // visitor scrolling, so the menu stays open for a moment after a choice inside it.
   drop?.addEventListener('click', () => { settleUntil = performance.now() + 600; });
@@ -4183,7 +4193,7 @@ document.querySelectorAll('.cs-close').forEach((close) => {
   };
 
   const open = () => {
-    document.dispatchEvent(new Event('portfolio:overlay'));   // an open settings menu makes way
+    document.dispatchEvent(new CustomEvent('portfolio:overlay', { detail: 'palette' }));   // open menus in the bar make way
     root.classList.add('open');
     root.setAttribute('aria-hidden','false');
     input.value = '';
@@ -4300,12 +4310,18 @@ document.querySelectorAll('.cs-close').forEach((close) => {
     const left = bar.left, top = bar.bottom + 10;
     tip.style.left = left + 'px';
     tip.style.top  = top + 'px';
+    // On a phone the menu is exactly as wide as the bar it hangs from.
+    tip.style.width = window.matchMedia('(max-width:600px)').matches ? bar.width + 'px' : '';
     // hover bridge: the column under the name, from the name down to the menu
     tip.style.setProperty('--bridge-h', Math.max(0, Math.floor(top - name.bottom)) + 'px');   // floor: never a sliver over the name
     tip.style.setProperty('--bridge-x', Math.max(0, name.left - left) + 'px');
     tip.style.setProperty('--bridge-w', name.width + 'px');
   };
-  const show = () => { clearTimeout(hideTimer); position(); open = true; tip.classList.add('visible'); tip.setAttribute('aria-hidden','false'); };
+  const show = () => {
+    clearTimeout(hideTimer); position();
+    if (!open) document.dispatchEvent(new CustomEvent('portfolio:overlay', { detail: 'brand' }));   // only one menu open at a time
+    open = true; tip.classList.add('visible'); tip.setAttribute('aria-hidden','false');
+  };
   const hide = () => { open = false; locked = false; tip.classList.remove('visible'); tip.setAttribute('aria-hidden','true'); };
   const toggle = () => { if (open) { hide(); } else { show(); locked = true; } };
   const isTouch = () => window.matchMedia('(hover:none)').matches;
@@ -4319,6 +4335,8 @@ document.querySelectorAll('.cs-close').forEach((close) => {
   // Both: click/tap toggle
   mark.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
   document.addEventListener('click', (e) => { if (open && !tip.contains(e.target) && !mark.contains(e.target)) hide(); });
+  window.addEventListener('resize', () => { if (open) position(); }, { passive: true });   // a turned phone: follow the bar
+  document.addEventListener('portfolio:overlay', (e) => { if (e.detail !== 'brand' && open) hide(); });   // the settings menu or the command palette opened
 
 })();
 
