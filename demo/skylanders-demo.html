@@ -1054,8 +1054,8 @@
   <!-- Narration — beside the phone (wide) or under it (mobile) -->
   <div id="side">
     <div id="caption-area">
-      <div class="caption-eyebrow" id="cap-eyebrow">AUTOMATISCH VAN VINTED</div>
-      <div class="caption-main"    id="cap-main">Elke ~15 min scant de app Vinted op nieuwe deals</div>
+      <div class="caption-eyebrow" id="cap-eyebrow">AUTOMATISCH BINNENGEHAALD</div>
+      <div class="caption-main"    id="cap-main">Ongeveer elk uur zoekt de app op Vinted en Marktplaats</div>
     </div>
   </div><!-- /side -->
 
@@ -1348,7 +1348,7 @@ function animateSwipeGesture() {
 // Beat 1: Deal feed — scan Vinted, the deal appears AFTER the scan
 function beatFeed() {
   showScreen('feed');
-  setCaption('AUTOMATISCH VAN VINTED', 'Elke ~15 min scant de app Vinted op nieuwe deals');
+  setCaption('AUTOMATISCH BINNENGEHAALD', 'Ongeveer elk uur zoekt de app op Vinted en Marktplaats');
   if (reduceMotion) return;
   const overlay = document.getElementById('vinted-scan-overlay');
   overlay.classList.remove('active');
@@ -1359,7 +1359,7 @@ function beatFeed() {
 // Beat 2: AI image-match — no title, AI identifies the figure from the photo
 function beatMatch() {
   showScreen('match');
-  setCaption('AI-BEELDHERKENNING', 'Geen titel? AI herkent Spyro aan de foto — 71% zeker');
+  setCaption('AI-BEELDHERKENNING', 'Geen titel? De app stelt Spyro voor op basis van de foto — 71% match');
   pulse(document.getElementById('ai-pick-glow'), 300);
 }
 

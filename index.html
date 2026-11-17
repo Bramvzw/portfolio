@@ -512,9 +512,12 @@
     backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     opacity:0;pointer-events:none;
-    transition:opacity .3s ease;
+    /* hidden for real while closed: its links stay out of the tab order, and the phone does not
+       have to keep a full-screen blurred layer ready behind every frame */
+    visibility:hidden;
+    transition:opacity .3s ease, visibility 0s linear .3s;
   }
-  .mobile-nav[aria-hidden="false"]{opacity:1;pointer-events:auto;}
+  .mobile-nav[aria-hidden="false"]{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .3s ease, visibility 0s;}
   .mobile-nav nav{display:flex;flex-direction:column;align-items:center;gap:8px;}
   .mobile-nav nav a{
     font-family:'Space Grotesk',sans-serif;
@@ -1079,17 +1082,6 @@
   }
   .case-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
   .case-toggle:hover{opacity:.75;}
-  .case-study{
-    max-height:0;overflow:hidden;
-    transition:max-height .3s ease, opacity .3s ease, margin-top .3s ease;
-    opacity:0;
-    margin-top:0;
-  }
-  .case-study[data-open="true"]{
-    max-height:700px;
-    opacity:1;
-    margin-top:20px;
-  }
   .mockup-col{
     display:flex;flex-direction:column;gap:18px;min-width:0;max-width:100%;
   }
@@ -1131,26 +1123,6 @@
     font-size:11px;letter-spacing:.1em;
     color:var(--ink-dim);
   }
-  .case-study dl{
-    display:grid;grid-template-columns:110px 1fr;gap:14px 24px;
-    padding:20px 0 4px 0;
-    border-top:1px solid var(--rule-2);
-  }
-  .case-study dt{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
-    color:var(--amber);
-    padding-top:3px;
-  }
-  .case-study dd{
-    font-family:'Lora',serif;
-    font-size:15px;line-height:1.65;
-    color:var(--ink-dim);
-    margin:0;
-    overflow-wrap:break-word;
-    min-width:0;
-  }
-  .case-study dd em{color:var(--ink);font-style:italic;}
 
   /* Mockup placeholder */
   .mockup{
@@ -2224,6 +2196,22 @@
     --contour:url(assets/lines-patch.svg);   /* fades out to its own edges */
     --surface-layers:var(--paper-layers);
   }
+  /* Phones (light theme). The paper is this theme's expensive part: one 800px tile with three
+     noise filters, which a phone has to compute and keep in memory at two to three times that
+     size, next to a 1400px tile of scratches. Here the same three layers are small tiles of
+     their own and the scratches are drawn smaller: the same paper for about a tenth of the
+     work. The patches of height lines in the sections and the cards' wide shadow are left out. */
+  @media (max-width:820px), (hover:none) and (pointer:coarse){
+    html.light{
+      --paper-grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><filter id='g' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.34  0 0 0 0 0.25  0 0 0 0 0.13  0 0 0 0.55 0'/></filter><rect width='200' height='200' filter='url(%23g)' opacity='0.2'/></svg>");
+      --paper-fibre-h:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='240' viewBox='0 0 400 240'><filter id='h' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.008 0.42' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.34  0 0 0 0 0.25  0 0 0 0 0.13  0 0 0 3.4 -2.05'/></filter><rect width='400' height='240' filter='url(%23h)' opacity='0.2'/></svg>");
+      --paper-fibre-v:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='400' viewBox='0 0 240 400'><filter id='v' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.5 0.01' numOctaves='2' seed='21' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.34  0 0 0 0 0.25  0 0 0 0 0.13  0 0 0 3.4 -2.15'/></filter><rect width='240' height='400' filter='url(%23v)' opacity='0.12'/></svg>");
+      --paper-layers: var(--scratches) 0 0 / 560px 400px, var(--paper-fibre-h) 0 0 / 400px 240px, var(--paper-fibre-v) 0 0 / 240px 400px, var(--paper-grain) 0 0 / 200px 200px;
+      --contour:none;
+    }
+    html.light .hero-atmos .texture{ mix-blend-mode:normal; opacity:.06; }
+    html.light .project{ box-shadow:0 1px 0 rgba(255,255,255,.5) inset; }
+  }
   .about, .work, .expertise, .contact, footer{ --base:var(--bg); }
   .about{
     background:var(--surface-layers),
@@ -2486,6 +2474,105 @@
   .cred-card .cc-verify, .register-entry .links a{ border-radius:var(--r-in); }
   .project .tag, .build-badge{ border-radius:var(--r-xs); }
 
+  /* =====================================================================================
+     CASE STUDIES: a panel across the full width of a project card, under its two columns.
+     It opens by growing a grid row, so it is as tall as its content at every width (the old
+     panel had a fixed maximum height and was cut off on phones).
+     ===================================================================================== */
+  .project{ row-gap:0; }   /* a row gap would stay under a closed panel: the rows are spaced by margins instead */
+  @media (min-width:601px) and (max-width:1000px){ .project .mockup-col{ margin-top:40px; } }
+  .case-study{
+    grid-column:1 / -1; width:100%; min-width:0;
+    display:grid; grid-template-rows:0fr;
+    opacity:0; visibility:hidden;
+    transition:grid-template-rows .5s cubic-bezier(.3,.8,.2,1), opacity .35s ease, visibility 0s linear .5s;
+  }
+  .case-study[data-open="true"]{
+    grid-template-rows:1fr; opacity:1; visibility:visible;
+    transition:grid-template-rows .5s cubic-bezier(.3,.8,.2,1), opacity .35s ease .1s, visibility 0s;
+  }
+  .cs-clip{ overflow:hidden; min-height:0; }
+  .cs-wrap{
+    margin-top:44px; padding-top:38px; border-top:1px solid var(--rule-2);
+    display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:40px 56px;
+  }
+  .cs-wrap h4{
+    font-family:'Space Grotesk',sans-serif; font-weight:500;
+    font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--amber); margin:0 0 14px;
+  }
+  .cs-wrap p, .cs-wrap li{ font-family:'Lora',serif; font-size:15px; line-height:1.65; color:var(--ink-dim); margin:0; }
+  .cs-wrap p + p{ margin-top:12px; }
+  .cs-wrap strong{ color:var(--ink); font-weight:500; }
+  .cs-wrap code{ font-family:'JetBrains Mono',ui-monospace,monospace; font-size:.88em; color:var(--ink); }
+  .cs-wrap a{ color:var(--amber); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
+  .cs-col{ grid-column:span 4; min-width:0; }
+  .cs-choices{ list-style:none; padding:0; margin:0; display:grid; gap:14px; }
+  .cs-choices li{ padding-left:16px; border-left:1px solid var(--rule); }
+  /* how it works, as a row of steps */
+  .cs-flow{ grid-column:1 / -1; min-width:0; }
+  .cs-steps{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:0 34px; counter-reset:step; }
+  .cs-steps li{
+    counter-increment:step; display:flex; align-items:baseline; gap:10px;
+    font-family:'Space Grotesk',sans-serif; font-size:13px; line-height:1.4; letter-spacing:.01em; color:var(--ink);
+    padding:10px 14px; border:1px solid var(--rule-2); border-radius:var(--r-in);
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+  }
+  html.light .cs-steps li{ background:rgba(255,255,255,.32); }
+  .cs-steps li::before{
+    content:counter(step, decimal-leading-zero);
+    font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; color:var(--amber);
+  }
+  .cs-steps li{ position:relative; }
+  .cs-steps li + li::after{
+    content:"→"; position:absolute; left:-25px; top:50%; transform:translateY(-52%);
+    font-family:'JetBrains Mono',ui-monospace,monospace; font-size:13px; color:var(--ink-mute);
+  }
+  /* what came of it, with the figures beside it */
+  .cs-result{ grid-column:span 5; min-width:0; }
+  .cs-facts{ grid-column:span 7; min-width:0; margin:0; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:1px; background:var(--rule-2); border:1px solid var(--rule-2); border-radius:var(--r-in); overflow:hidden; align-self:start; }
+  .cs-facts > div{ background:var(--bg); padding:16px 16px 14px; display:flex; flex-direction:column; gap:6px; }
+  .cs-facts dd{ order:1; }   /* the figure first, its label under it, so the figures line up across the tiles */
+  .cs-facts dt{ order:2; }
+  html.light .cs-facts > div{ background:#f3ecda; }
+  .cs-facts dd{ margin:0; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:26px; line-height:1; letter-spacing:-.02em; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .cs-facts dt{ font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-mute); line-height:1.35; overflow-wrap:anywhere; }
+  .cs-close{
+    grid-column:1 / -1; justify-self:start; cursor:pointer;
+    font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--amber); background:transparent; border:0; padding:6px 0; display:inline-flex; gap:10px; align-items:center;
+  }
+  .cs-close:hover{ opacity:.75; }
+  .cs-close:focus-visible{ outline:1px solid var(--amber); outline-offset:3px; }
+  .cs-note{ grid-column:1 / -1; font-family:'Space Grotesk',sans-serif !important; font-size:12px !important; letter-spacing:.02em; color:var(--ink-mute) !important; }
+  @media (max-width:1100px){
+    .cs-wrap{ gap:34px 40px; }
+    .cs-col{ grid-column:span 6; }
+    .cs-col--wide{ grid-column:1 / -1; }
+    .cs-result, .cs-facts{ grid-column:1 / -1; }
+    /* the steps stand under each other, each arrow pointing down */
+    .cs-steps{ grid-template-columns:minmax(0,1fr); gap:0; max-width:560px; }
+    .cs-steps li + li{ margin-top:26px; }
+    .cs-steps li + li::after{ content:"↓"; left:18px; top:-22px; transform:none; }
+  }
+  @media (max-width:700px){
+    .cs-wrap{ margin-top:28px; padding-top:26px; gap:28px 0; }
+    .cs-col, .cs-col--wide{ grid-column:1 / -1; }
+    .cs-facts{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .cs-facts dd{ font-size:22px; }
+    .cs-steps{ max-width:none; }
+  }
+  /* the button that opens it: a real button, not a line of small text */
+  .case-toggle{
+    align-self:flex-start; margin-top:8px; padding:10px 14px; border-radius:var(--r-in);
+    border:1px solid rgba(232,150,42,.42); background:rgba(232,150,42,.12);
+    transition:background .2s ease, border-color .2s ease, color .2s ease;
+  }
+  html.light .case-toggle{ border-color:rgba(115,60,7,.42); background:rgba(115,60,7,.11); }
+  .case-toggle:hover{ opacity:1; background:var(--amber); border-color:var(--amber); color:#0d0b08; }
+  html.light .case-toggle:hover{ color:#faf4e6; }
+  .case-toggle:focus-visible{ outline:1px solid var(--amber); outline-offset:2px; }
+  @media (prefers-reduced-motion:reduce){ .case-study, .case-study[data-open="true"]{ transition:none; } }
+
   /* Wide screens: the hero, the contact block, the footer and the section numbers keep to the
      same column as the bar and the cards (they used to stay 80px from the screen edge). */
   @media (min-width:901px){
@@ -2550,6 +2637,8 @@
   html:not(.anim) .exp-list{ --lp:1; }
   html:not(.anim) .exp-item{ --p:1; }
   html.no-boot .boot{ display:none !important; }
+  html:not(.anim) .case-study{ grid-template-rows:1fr; opacity:1; visibility:visible; }
+  html:not(.anim) .case-toggle{ display:none; }
 </style>
 </head>
 <body>
@@ -2802,17 +2891,10 @@
       <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-sooth">
         <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
       </button>
-      <div class="case-study" id="case-sooth" data-open="false">
-        <dl>
-          <dt data-i18n="case-problem">Probleem</dt><dd data-i18n="p6-problem">Een flaky test houdt je op: de pipeline wordt rood, je draait hem opnieuw, hij wordt groen, en je weet nog steeds niet of de test onbetrouwbaar is of dat er echt iets stuk is. Tools die dit bijhouden, zoals ReportPortal of Allure, hebben een server en een dashboard nodig.</dd>
-          <dt data-i18n="case-solution">Oplossing</dt><dd data-i18n="p6-solution">sooth draait om het testcommando dat je al hebt en leest het JUnit-rapport dat dat schrijft. Elke run voegt per test één regel toe aan een lokaal geschiedenisbestand. Met <code>--verify</code> draait hij alleen de gefaalde tests opnieuw, om echte fouten van flaky tests te scheiden. Een fout verbergt hij nooit: de exitcode blijft wat je testrunner zei. Geen server, geen account, geen AI.</dd>
-          <dt data-i18n="case-result">Resultaat</dt><dd data-i18n="p6-result">Versie 0.3 staat op crates.io en is er als kant-en-klare binary. Het werkt met pytest, PHPUnit, Pest, Laravels artisan test, Jest en Go. Trage en volgorde-afhankelijke tests opsporen is de volgende stap op de roadmap.</dd>
-        </dl>
-      </div>
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--embed">
-        <iframe class="demo-frame demo-frame--sooth" data-src="demo/sooth-demo.html?v=4" title="sooth — terminal met echte output: een testrun, een bewezen flaky test, --verify en de geschiedenis"></iframe>
+        <iframe class="demo-frame demo-frame--sooth" data-src="demo/sooth-demo.html?v=5" title="sooth — terminal met echte output: een testrun, een bewezen flaky test, --verify en de geschiedenis"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="https://github.com/Bramvzw/sooth" target="_blank" rel="noopener" data-hoverable>
@@ -2835,13 +2917,43 @@
         </a>
       </div>
     </div>
+    <div class="case-study" id="case-sooth" data-open="false">
+      <div class="cs-clip"><div class="cs-wrap">
+        <div class="cs-flow">
+          <h4 data-i18n="case-steps">Zo werkt het</h4>
+          <ol class="cs-steps">
+            <li data-i18n="cs6-step1">Je eigen testcommando draait</li>
+            <li data-i18n="cs6-step2">sooth leest het JUnit-rapport</li>
+            <li data-i18n="cs6-step3">Eén regel per test in een lokaal bestand, met de commit</li>
+            <li data-i18n="cs6-step4">Vergelijken met eerdere runs</li>
+            <li data-i18n="cs6-step5">Rapport: flaky, kapot, of sinds welke commit</li>
+          </ol>
+        </div>
+        <div class="cs-col"><h4 data-i18n="case-problem">Probleem</h4><p data-i18n="cs6-problem">Een rode testrun zegt niet waarom hij rood is. Je draait hem opnieuw, hij wordt groen, en je weet nog steeds niet of de test onbetrouwbaar is of dat er echt iets stuk is. Tools die dit bijhouden, zoals ReportPortal of Allure, zijn opgezet rond een server met een dashboard.</p></div>
+        <div class="cs-col"><h4 data-i18n="case-approach">Aanpak</h4><p data-i18n="cs6-approach">sooth draait om het testcommando dat je al hebt en leest het JUnit-rapport dat dat schrijft. Elke run legt per test één regel vast in <code>.sooth/history.jsonl</code>, met de commit erbij. Slaagde en faalde een test op dezelfde schone commit, dan is hij aantoonbaar flaky. Was hij groen en is hij sinds een commit steeds rood, dan noemt sooth die commit. Met <code>--verify</code> draait hij alleen de gefaalde tests opnieuw.</p></div>
+        <div class="cs-col cs-col--wide"><h4 data-i18n="case-choices">Keuzes</h4><ul class="cs-choices">
+          <li data-i18n="cs6-choice1"><strong>Bewijs, geen vermoeden.</strong> Flaky heet een test pas als hij op één schone commit zowel slaagde als faalde. Wie een regressie flaky noemt, stuurt iemand op zoek naar toeval dat er niet is.</li>
+          <li data-i18n="cs6-choice2"><strong>Leren van runs die toch al gebeuren.</strong> Tien keer draaien om een flaky test te vinden maakt van een suite van vijf minuten vijftig minuten. Daarom groeit de geschiedenis met elke gewone run.</li>
+          <li data-i18n="cs6-choice3"><strong>Een fout blijft een fout.</strong> Faalt er een test, dan eindigt sooth met een foutcode, tenzij je die test zelf in quarantaine hebt gezet. "1 failed" tonen en toch met 0 eindigen zou twee waarheden tegelijk zijn, en CI leest exitcodes.</li>
+        </ul></div>
+        <div class="cs-result"><h4 data-i18n="case-result">Resultaat</h4><p data-i18n="cs6-result">Sinds juli 2026 zijn er zeven releases. Versie 0.3 staat op crates.io en is er als kant-en-klare binary voor macOS en Linux. Het werkt met pytest, PHPUnit en Pest (ook via <code>php artisan test</code>), Jest en Go. Trage tests over tijd en volgorde-afhankelijke tests zijn de volgende stap op de roadmap.</p></div>
+        <dl class="cs-facts">
+          <div><dt data-i18n="cs6-fact1-l">releases</dt><dd data-i18n="cs6-fact1-v">7</dd></div>
+          <div><dt data-i18n="cs6-fact2-l">tests</dt><dd data-i18n="cs6-fact2-v">411</dd></div>
+          <div><dt data-i18n="cs6-fact3-l">afhankelijkheden</dt><dd data-i18n="cs6-fact3-v">3</dd></div>
+          <div><dt data-i18n="cs6-fact4-l">binary op macOS</dt><dd data-i18n="cs6-fact4-v">1,2 MB</dd></div>
+        </dl>
+        <p class="cs-note" data-i18n="cs6-note">Cijfers bij versie 0.3.4.</p>
+        <button class="cs-close" type="button" data-case="case-sooth"><span data-i18n="case-toggle-hide">Verberg case study</span> <span aria-hidden="true">↑</span></button>
+      </div></div>
+    </div>
   </article>
 
   <article class="project from-right" data-dir="right" id="proj-hub">
     <div class="body">
       <div class="index" data-i18n="p5-index">Project 02 — Dagelijks in gebruik</div>
       <h3>Smart Home Hub <span class="year"> / 2025</span></h3>
-      <p class="desc" data-i18n="proj5-desc">Het dashboard op een Raspberry Pi in mijn woonkamer. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het daar een korte briefing van.</p>
+      <p class="desc" data-i18n="proj5-desc">Het dashboard op het Raspberry Pi-scherm in mijn woonkamer. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het een korte briefing over de dag.</p>
       <div class="tags">
         <a class="tag" href="#tech-laravel" data-jump data-lines="~36,500 lines written">Laravel</a><a class="tag" href="#tech-livewire" data-jump data-lines="12 modules">Livewire</a><span class="tag" data-lines="briefing + menu via Prism">Claude API</span><a class="tag" href="#tech-docker" data-jump data-lines="Docker on a Synology NAS">Docker</a>
       </div>
@@ -2853,13 +2965,6 @@
       <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-smarthome">
         <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
       </button>
-      <div class="case-study" id="case-smarthome" data-open="false">
-        <dl>
-          <dt data-i18n="case-problem">Probleem</dt><dd data-i18n="p5-problem">Self-hosted dashboards als Homepage of Dashy zijn vooral tegels met links. Ik wilde er een die dingen doet, en waarin de onderdelen van elkaar weten: regen in de verwachting moet de lampen aanpassen, en een deal die ik volg moet in het weekmenu terugkomen.</dd>
-          <dt data-i18n="case-solution">Oplossing</dt><dd data-i18n="p5-solution">Een modulaire monoliet: twaalf Laravel-modules (weer, agenda, verlichting, Spotify, deals, recepten en meer) op een gedeelde set contracten. Elke module kan bijdragen aan de ochtendbriefing, die Claude via Prism schrijft. Zonder API-key neemt een vast sjabloon het over. Lampen, winkels en concertbronnen zijn adapters achter een interface, dus een nieuw merk is één class.</dd>
-          <dt data-i18n="case-result">Resultaat</dt><dd data-i18n="p5-result">Draait in Docker op mijn Synology NAS, met een Raspberry Pi als scherm. 217 commits sinds mei 2025, met tests per module en CI op GitHub.</dd>
-        </dl>
-      </div>
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--embed">
@@ -2877,35 +2982,58 @@
         </a>
       </div>
     </div>
+    <div class="case-study" id="case-smarthome" data-open="false">
+      <div class="cs-clip"><div class="cs-wrap">
+        <div class="cs-flow">
+          <h4 data-i18n="case-steps">Zo werkt het</h4>
+          <ol class="cs-steps">
+            <li data-i18n="cs5-step1">Twaalf modules, elk met eigen code en tests</li>
+            <li data-i18n="cs5-step2">Vijf gedeelde contracten verbinden ze</li>
+            <li data-i18n="cs5-step3">Vijftien geplande taken draaien op de achtergrond</li>
+            <li data-i18n="cs5-step4">Briefing door Claude via Prism, of een vast sjabloon</li>
+            <li data-i18n="cs5-step5">Scherm op de Pi en een melding via ntfy</li>
+          </ol>
+        </div>
+        <div class="cs-col"><h4 data-i18n="case-problem">Probleem</h4><p data-i18n="cs5-problem">Self-hosted dashboards als Homepage of Dashy zijn vooral tegels met links. Ik wilde er een die dingen doet, en waarin de onderdelen van elkaar weten: de weersverwachting kan de lampen aansturen, en elke ochtend leveren acht modules hun deel van één briefing.</p></div>
+        <div class="cs-col"><h4 data-i18n="case-approach">Aanpak</h4><p data-i18n="cs5-approach">Een modulaire monoliet in Laravel. Elke module heeft zijn eigen acties, services, schermen en tests en meldt zich aan bij een centraal register. Modules kennen elkaar niet: ze werken samen via vijf gedeelde contracten, zoals <code>BriefingSource</code> voor de ochtendbriefing. Lampen, winkels, supermarkten en concertbronnen zitten als adapters achter een interface; een nieuw merk is een kleine class plus een regel configuratie.</p></div>
+        <div class="cs-col cs-col--wide"><h4 data-i18n="case-choices">Keuzes</h4><ul class="cs-choices">
+          <li data-i18n="cs5-choice1"><strong>Afspraken die een test bewaakt.</strong> Een architectuurtest laat een module alleen afhangen van zichzelf en van de gedeelde contracten. De twee uitzonderingen staan er met naam in: verlichting leest het weer, entertainment leest Spotify.</li>
+          <li data-i18n="cs5-choice2"><strong>Het werkt ook zonder AI.</strong> Ontbreekt de API-sleutel of mislukt de aanroep, dan neemt een vast sjabloon het over en komt de briefing er alsnog.</li>
+          <li data-i18n="cs5-choice3"><strong>Alleen binnen het thuisnetwerk.</strong> Het dashboard bedient apparaten en bewaart sleutels van betaalde diensten, dus het hangt niet aan het internet.</li>
+        </ul></div>
+        <div class="cs-result"><h4 data-i18n="case-result">Resultaat</h4><p data-i18n="cs5-result">Draait in Docker op mijn Synology NAS, met een Raspberry Pi als scherm. Acht versies sinds mei 2025, met tests per module, statische analyse op PHPStan-niveau 8 en CI op GitHub. Het is gebouwd voor één gebruiker en nog in ontwikkeling.</p></div>
+        <dl class="cs-facts">
+          <div><dt data-i18n="cs5-fact1-l">modules</dt><dd data-i18n="cs5-fact1-v">12</dd></div>
+          <div><dt data-i18n="cs5-fact2-l">gedeelde contracten</dt><dd data-i18n="cs5-fact2-v">5</dd></div>
+          <div><dt data-i18n="cs5-fact3-l">tests</dt><dd data-i18n="cs5-fact3-v">434</dd></div>
+          <div><dt data-i18n="cs5-fact4-l">geplande taken</dt><dd data-i18n="cs5-fact4-v">15</dd></div>
+        </dl>
+        <p class="cs-note" data-i18n="cs5-note">Cijfers van november 2026.</p>
+        <button class="cs-close" type="button" data-case="case-smarthome"><span data-i18n="case-toggle-hide">Verberg case study</span> <span aria-hidden="true">↑</span></button>
+      </div></div>
+    </div>
   </article>
 
   <article class="project from-left" data-dir="left" id="proj-skylanders">
     <div class="body">
       <div class="index" data-i18n="p4-index">Project 03 — Closed Beta</div>
       <h3>Skylanders Tracker <span class="year"> / 2026</span></h3>
-      <p class="desc" data-i18n="proj4-desc">Ik verzamel zelf Skylanders, en de goede koopjes zijn snel weg. Vroeger ververste ik de hele dag Marktplaats en Vinted; nu doet deze app dat. Nieuwe advertenties komen vanzelf binnen, Claude leest ze en schat wat een figuur echt waard is. De backend, het AI-deel en de Android-app bouwde ik zelf.</p>
+      <p class="desc" data-i18n="proj4-desc">Ik verzamel zelf Skylanders, en de goede koopjes zijn snel weg. Vroeger ververste ik de hele dag Marktplaats en Vinted; nu doet deze app dat. Nieuwe advertenties komen vanzelf binnen, de app herkent welke figuur het is en vergelijkt de vraagprijs met wat er op Vinted voor gevraagd wordt. De backend, het AI-deel en de Android-app bouwde ik zelf.</p>
       <div class="tags">
         <a class="tag" href="#tech-laravel" data-jump data-lines="~38,500 lines written">Laravel</a><a class="tag" href="#tech-react-native" data-jump data-lines="~21,400 lines written">React Native</a><span class="tag" data-lines="prompts + pipelines">Claude API</span><a class="tag" href="#tech-postgres" data-jump data-lines="single source of truth">Postgres</a>
       </div>
       <div class="meta">
         <div><span data-i18n="meta-role">Rol</span><span class="v" data-i18n="p4-role-v">Solo engineer</span></div>
-        <div><span data-i18n="meta-users">Gebruikers</span><span class="v" data-i18n="p4-users-v">Backend + mobile</span></div>
+        <div><span data-i18n="meta-parts">Onderdelen</span><span class="v" data-i18n="p4-users-v">Backend + Android-app</span></div>
         <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p4-status-v">Gesloten beta op Play</span></div>
       </div>
       <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-skylanders">
         <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
       </button>
-      <div class="case-study" id="case-skylanders" data-open="false">
-        <dl>
-          <dt data-i18n="case-problem">Probleem</dt><dd data-i18n="p4-problem">Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn. Dat kost uren, en je mist er alsnog.</dd>
-          <dt data-i18n="case-solution">Oplossing</dt><dd data-i18n="p4-solution">Scrapers halen nieuwe advertenties van Marktplaats en Vinted binnen, rustig aan zodat de sites niet dichtslaan. Claude leest er elke advertentie: welke figuur, welke staat, en is de vraagprijs redelijk? Alleen de interessante blijven hangen. Daarnaast houd ik in de app mijn eigen collectie bij, met per stuk wat ik betaalde en wat het nu waard is. Eén Postgres-database eronder, gehost op Coolify.</dd>
-          <dt data-i18n="case-result">Resultaat</dt><dd data-i18n="p4-result">Draait als closed beta op Google Play. Ik bouwde alles zelf, van de scrapers tot de app. Wil je het proberen? Mail me voor beta-toegang, of download de APK direct.</dd>
-        </dl>
-      </div>
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--phone">
-        <iframe class="demo-frame" data-src="demo/skylanders-demo.html?v=3" title="Skylanders Tracker — interactieve app-demo: de volledige flip-lifecycle van deal tot winst"></iframe>
+        <iframe class="demo-frame" data-src="demo/skylanders-demo.html?v=4" title="Skylanders Tracker — interactieve app-demo: de volledige flip-lifecycle van deal tot winst"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="mailto:bram@vanzwolle.net?subject=Skylanders%20Tracker%20%E2%80%94%20Play%20beta%20toegang" data-hoverable>
@@ -2927,6 +3055,36 @@
           </span>
         </a>
       </div>
+    </div>
+    <div class="case-study" id="case-skylanders" data-open="false">
+      <div class="cs-clip"><div class="cs-wrap">
+        <div class="cs-flow">
+          <h4 data-i18n="case-steps">Zo werkt het</h4>
+          <ol class="cs-steps">
+            <li data-i18n="cs4-step1">Ongeveer elk uur zoeken op Vinted en Marktplaats</li>
+            <li data-i18n="cs4-step2">Alleen nieuwe advertenties, zonder kleding en merchandise</li>
+            <li data-i18n="cs4-step3">Welke figuur? Eerst de titel, anders de foto</li>
+            <li data-i18n="cs4-step4">Gangbare prijs: mediaan van vraagprijzen op Vinted</li>
+            <li data-i18n="cs4-step5">Score van 1 tot 10; de beste geven een pushmelding</li>
+          </ol>
+        </div>
+        <div class="cs-col"><h4 data-i18n="case-problem">Probleem</h4><p data-i18n="cs4-problem">Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn.</p></div>
+        <div class="cs-col"><h4 data-i18n="case-approach">Aanpak</h4><p data-i18n="cs4-approach">Scrapers halen nieuwe advertenties van Vinted en Marktplaats binnen, alleen overdag en met wisselende tussenpozen. Claude leest de advertentie en de foto en bepaalt welke figuur het is en in welke staat. Zegt de titel niets, dan vergelijkt de app de foto met referentiebeelden uit de catalogus en legt de drie beste kandidaten voor. De gangbare prijs is de mediaan van vraagprijzen op Vinted; daaruit volgt een score van 1 tot 10. Losse figuren met een lage score verdwijnen vanzelf. Loten herkent de app aan de titel en zet ze apart; wat erin zit vul ik zelf in.</p></div>
+        <div class="cs-col cs-col--wide"><h4 data-i18n="case-choices">Keuzes</h4><ul class="cs-choices">
+          <li data-i18n="cs4-choice1"><strong>De foto is een voorstel, geen besluit.</strong> Een match op beeld koppelt de app nooit zelf aan een figuur; ik bevestig hem met één tik.</li>
+          <li data-i18n="cs4-choice2"><strong>Prijzen van de markt waar ik koop.</strong> De score rekent met vraagprijzen op Vinted. PriceCharting is alleen reserve: dat is een andere markt, en het dreef de scores eerder op.</li>
+          <li data-i18n="cs4-choice3"><strong>Een storing is geen "geen match".</strong> Mislukt de AI-aanroep, dan blijft de advertentie staan. Anders zouden goede deals verdwijnen door een storing bij de API.</li>
+        </ul></div>
+        <div class="cs-result"><h4 data-i18n="case-result">Resultaat</h4><p data-i18n="cs4-result">De app staat als gesloten beta op Google Play en is inmiddels versie 1.4. In ruim twee maanden kwamen er 342 commits, met meer dan duizend tests op de backend. Inloggen kan alleen met een account dat ik aanmaak; mail me als je het wilt proberen. De APK op GitHub is nog versie 1.0.</p></div>
+        <dl class="cs-facts">
+          <div><dt data-i18n="cs4-fact1-l">commits</dt><dd data-i18n="cs4-fact1-v">342</dd></div>
+          <div><dt data-i18n="cs4-fact2-l">tests op de backend</dt><dd data-i18n="cs4-fact2-v">1.073</dd></div>
+          <div><dt data-i18n="cs4-fact3-l">figuren in de basiscatalogus</dt><dd data-i18n="cs4-fact3-v">343</dd></div>
+          <div><dt data-i18n="cs4-fact4-l">versie van de app</dt><dd data-i18n="cs4-fact4-v">1.4</dd></div>
+        </dl>
+        <p class="cs-note" data-i18n="cs4-note">Cijfers van juli 2026.</p>
+        <button class="cs-close" type="button" data-case="case-skylanders"><span data-i18n="case-toggle-hide">Verberg case study</span> <span aria-hidden="true">↑</span></button>
+      </div></div>
     </div>
   </article>
 
@@ -3293,27 +3451,91 @@ const i18n = {
 
     'meta-role':'Role','meta-users':'Users','meta-status':'Status',
     'case-toggle':'Case study','case-toggle-hide':'Hide case study',
-    'case-problem':'Problem','case-solution':'Solution','case-result':'Result',
+    'case-steps':'How it works',
+    'case-approach':'Approach',
+    'case-choices':'Decisions',
+    'meta-parts':'Parts',
+    'cs6-step1':'Your own test command runs',
+    'cs6-step2':'sooth reads the JUnit report',
+    'cs6-step3':'One line per test in a local file, with the commit',
+    'cs6-step4':'Compared with earlier runs',
+    'cs6-step5':'Report: flaky, broken, or failing since which commit',
+    'cs6-problem':'A red test run does not say why it is red. You run it again, it turns green, and you still do not know whether the test is unreliable or something is really broken. Tools that keep track of this, such as ReportPortal or Allure, are built around a server with a dashboard.',
+    'cs6-approach':'sooth wraps the test command you already have and reads the JUnit report it writes. Every run records one line per test in <code>.sooth/history.jsonl</code>, with the commit. If a test both passed and failed on the same clean commit, it is provably flaky. If it was green and has been red ever since a commit, sooth names that commit. With <code>--verify</code> it re-runs only the failed tests.',
+    'cs6-choice1':'<strong>Proof, not a hunch.</strong> A test is only called flaky when it both passed and failed on one clean commit. Calling a regression flaky sends someone looking for randomness that is not there.',
+    'cs6-choice2':'<strong>Learning from runs that happen anyway.</strong> Running everything ten times to find a flaky test turns a five-minute suite into fifty minutes. So the history grows with every ordinary run.',
+    'cs6-choice3':'<strong>A failure stays a failure.</strong> When a test fails, sooth exits with an error code, unless you put that test in quarantine yourself. Printing "1 failed" and still exiting 0 would be two truths at once, and CI reads exit codes.',
+    'cs6-result':'Seven releases since July 2026. Version 0.3 is on crates.io and comes as a ready-made binary for macOS and Linux. It works with pytest, PHPUnit and Pest (also through <code>php artisan test</code>), Jest and Go. Slow tests over time and order-dependent tests are next on the roadmap.',
+    'cs6-fact1-v':'7',
+    'cs6-fact1-l':'releases',
+    'cs6-fact2-v':'411',
+    'cs6-fact2-l':'tests',
+    'cs6-fact3-v':'3',
+    'cs6-fact3-l':'dependencies',
+    'cs6-fact4-v':'1.2 MB',
+    'cs6-fact4-l':'binary on macOS',
+    'cs6-note':'Figures as of version 0.3.4.',
+    'cs5-step1':'Twelve modules, each with its own code and tests',
+    'cs5-step2':'Five shared contracts connect them',
+    'cs5-step3':'Fifteen scheduled jobs run in the background',
+    'cs5-step4':'Briefing by Claude through Prism, or a fixed template',
+    'cs5-step5':'Screen on the Pi and a notification through ntfy',
+    'cs5-problem':'Self-hosted dashboards such as Homepage or Dashy are mostly tiles with links. I wanted one that does things, and in which the parts know about each other: the weather forecast can drive the lamps, and every morning eight modules contribute their part to one briefing.',
+    'cs5-approach':'A modular monolith in Laravel. Each module has its own actions, services, screens and tests, and registers itself with a central registry. Modules do not know each other: they work together through five shared contracts, such as <code>BriefingSource</code> for the morning briefing. Lamps, shops, supermarkets and concert sources are adapters behind an interface; a new brand is a small class plus a line of configuration.',
+    'cs5-choice1':'<strong>Rules that a test guards.</strong> An architecture test lets a module depend only on itself and on the shared contracts. The two exceptions are in it by name: lighting reads the weather, entertainment reads Spotify.',
+    'cs5-choice2':'<strong>It also works without AI.</strong> If the API key is missing or the call fails, a fixed template takes over and the briefing still arrives.',
+    'cs5-choice3':'<strong>Inside the home network only.</strong> The dashboard controls devices and holds keys for paid services, so it is not exposed to the internet.',
+    'cs5-result':'Runs in Docker on my Synology NAS, with a Raspberry Pi as the screen. Eight versions since May 2025, with tests per module, static analysis at PHPStan level 8 and CI on GitHub. It is built for a single user and still in development.',
+    'cs5-fact1-v':'12',
+    'cs5-fact1-l':'modules',
+    'cs5-fact2-v':'5',
+    'cs5-fact2-l':'shared contracts',
+    'cs5-fact3-v':'434',
+    'cs5-fact3-l':'tests',
+    'cs5-fact4-v':'15',
+    'cs5-fact4-l':'scheduled jobs',
+    'cs5-note':'Figures as of November 2026.',
+    'cs4-step1':'Search Vinted and Marktplaats about every hour',
+    'cs4-step2':'Only new listings, without clothing and merchandise',
+    'cs4-step3':'Which figure? The title first, otherwise the photo',
+    'cs4-step4':'Going price: the median of asking prices on Vinted',
+    'cs4-step5':'A score from 1 to 10; the best send a push notification',
+    'cs4-problem':'Skylanders stopped making new figures back in 2017, so everything trades second-hand now. The rare pieces are usually buried in big mixed lots with a sloppy title and one blurry photo. To catch the good ones you sift through hundreds of listings a day and have to be quick.',
+    'cs4-approach':'Scrapers bring in new listings from Vinted and Marktplaats, in the daytime only and at varying intervals. Claude reads the listing and its photo and determines which figure it is and in what condition. If the title says nothing, the app compares the photo with reference images from the catalogue and puts forward the three best candidates. The going price is the median of asking prices on Vinted; a score from 1 to 10 follows from that. Single figures with a low score disappear by themselves. The app recognises lots by their title and sets them apart; what is in them I fill in myself.',
+    'cs4-choice1':'<strong>The photo is a suggestion, not a decision.</strong> The app never links an image match to a figure by itself; I confirm it with one tap.',
+    'cs4-choice2':'<strong>Prices from the market I buy on.</strong> The score uses asking prices on Vinted. PriceCharting is a fallback only: it is a different market, and it used to push the scores up.',
+    'cs4-choice3':'<strong>An outage is not "no match".</strong> If the AI call fails, the listing stays. Otherwise good deals would disappear because of an API failure.',
+    'cs4-result':'The app is in closed beta on Google Play and is now at version 1.4. A little over two months of work: 342 commits, with more than a thousand tests on the backend. Signing in needs an account that I create; mail me if you want to try it. The APK on GitHub is still version 1.0.',
+    'cs4-fact1-v':'342',
+    'cs4-fact1-l':'commits',
+    'cs4-fact2-v':'1,073',
+    'cs4-fact2-l':'backend tests',
+    'cs4-fact3-v':'343',
+    'cs4-fact3-l':'figures in the base catalogue',
+    'cs4-fact4-v':'1.4',
+    'cs4-fact4-l':'app version',
+    'cs4-note':'Figures as of July 2026.',
+    'case-problem':'Problem','case-result':'Result',
     'p4-index':'Project 03 — Closed Beta',
-    'proj4-desc':'I collect Skylanders myself, and the good deals disappear fast. I used to refresh Marktplaats and Vinted all day; now the app does that. New listings come in on their own, Claude reads them and estimates what a figure is really worth. I built the backend, the AI part and the Android app myself.',
-    'p4-role-v':'Solo engineer','p4-users-v':'Backend + mobile','p4-status-v':'Closed beta on Play',
-    'p4-problem':'Skylanders stopped making new figures back in 2017, so everything trades second-hand now. The rare pieces are usually buried in big mixed lots with a sloppy title and one blurry photo. To catch the good ones you sift through hundreds of listings a day and have to be quick. It costs hours, and you still miss some.',
-    'p4-solution':'Scrapers pull new listings from Marktplaats and Vinted, gently enough that the sites do not lock me out. Claude reads each one: which figure, what condition, and is the asking price reasonable? Only the interesting ones stick around. The app also tracks my own collection, with what I paid per piece and what it is worth today. One Postgres database underneath, hosted on Coolify.',
-    'p4-result':'Runs as a closed beta on Google Play. I built all of it myself, from the scrapers to the app. Want to try it? Email me for beta access, or download the APK directly.',
+    'proj4-desc':'I collect Skylanders myself, and the good deals disappear fast. I used to refresh Marktplaats and Vinted all day; now the app does that. New listings come in on their own, the app recognises which figure it is and compares the asking price with what is asked for it on Vinted. I built the backend, the AI part and the Android app myself.',
+    'p4-role-v':'Solo engineer','p4-users-v':'Backend + Android app','p4-status-v':'Closed beta on Play',
+    
+    
+    
     'cta-play':'Open on Google Play','cta-play-sub':'Closed beta · on request',
     'cta-apk':'Download APK directly','cta-apk-sub':'Latest release · GitHub',
     'p5-index':'Project 02 — In daily use',
-    'proj5-desc':'The dashboard on a Raspberry Pi in my living room. It controls the lights and Spotify, plans my week around my calendar, tracks prices and turns supermarket offers into a weekly menu. Every morning it writes a short briefing from all of that.',
+    'proj5-desc':'The dashboard on the Raspberry Pi screen in my living room. It controls the lights and Spotify, plans my week around my calendar, tracks prices and turns supermarket offers into a weekly menu. Every morning it writes a short briefing about the day.',
     'p5-role-v':'Solo engineer','p5-users-v':'My household','p5-status-v':'Open source · MIT',
-    'p5-problem':'Self-hosted dashboards like Homepage or Dashy are mostly tiles with links. I wanted one that does things, and where the parts know about each other: rain in the forecast should change the lights, and a deal I track should show up in the weekly menu.',
-    'p5-solution':'A modular monolith: twelve Laravel modules (weather, calendar, lighting, Spotify, deals, recipes and more) on top of a shared set of contracts. Each module can contribute to the morning briefing, which Claude writes via Prism. Without an API key a fixed template takes over. Lamps, shops and concert sources are adapters behind an interface, so a new brand is one class.',
-    'p5-result':'Runs in Docker on my Synology NAS, with a Raspberry Pi as the screen. 217 commits since May 2025, with tests per module and CI on GitHub.',
+    
+    
+    
     'p6-index':'Project 01 — v0.3 released',
     'proj6-desc':'A command-line tool that runs your existing test command and tells you which tests are flaky. It keeps a history per commit, so a test that both passed and failed on the same code is proven flaky, not guessed. My first project in Rust.',
     'p6-role-v':'Solo engineer','p6-users-v':'Developers','p6-status-v':'On crates.io',
-    'p6-problem':'A flaky test blocks you: the pipeline goes red, you re-run it, it turns green, and you still don\'t know whether the test is unreliable or something is really broken. Tools that track this, like ReportPortal or Allure, need a server and a dashboard.',
-    'p6-solution':'sooth wraps the test command you already have and reads the JUnit report it writes. Each run adds one line per test to a local history file. With <code>--verify</code> it re-runs only the failed tests to tell real failures from flaky ones. It never hides a failure: the exit code stays what your test runner said. No server, no account, no AI.',
-    'p6-result':'Version 0.3 is on crates.io and as a prebuilt binary. It works with pytest, PHPUnit, Pest, Laravel\'s artisan test, Jest and Go. Detecting slow and order-dependent tests is next on the roadmap.',
+    
+    
+    
     'cta-source':'View the source',
     'more-usage':'Reads the local Claude Code logs and shows token usage per prompt and per model, so you can see where the tokens go.',
     'xp-label':'Experience',
@@ -3381,27 +3603,91 @@ const i18n = {
 
     'meta-role':'Rol','meta-users':'Gebruikers','meta-status':'Status',
     'case-toggle':'Case study','case-toggle-hide':'Verberg case study',
-    'case-problem':'Probleem','case-solution':'Oplossing','case-result':'Resultaat',
+    'case-steps':'Zo werkt het',
+    'case-approach':'Aanpak',
+    'case-choices':'Keuzes',
+    'meta-parts':'Onderdelen',
+    'cs6-step1':'Je eigen testcommando draait',
+    'cs6-step2':'sooth leest het JUnit-rapport',
+    'cs6-step3':'Eén regel per test in een lokaal bestand, met de commit',
+    'cs6-step4':'Vergelijken met eerdere runs',
+    'cs6-step5':'Rapport: flaky, kapot, of sinds welke commit',
+    'cs6-problem':'Een rode testrun zegt niet waarom hij rood is. Je draait hem opnieuw, hij wordt groen, en je weet nog steeds niet of de test onbetrouwbaar is of dat er echt iets stuk is. Tools die dit bijhouden, zoals ReportPortal of Allure, zijn opgezet rond een server met een dashboard.',
+    'cs6-approach':'sooth draait om het testcommando dat je al hebt en leest het JUnit-rapport dat dat schrijft. Elke run legt per test één regel vast in <code>.sooth/history.jsonl</code>, met de commit erbij. Slaagde en faalde een test op dezelfde schone commit, dan is hij aantoonbaar flaky. Was hij groen en is hij sinds een commit steeds rood, dan noemt sooth die commit. Met <code>--verify</code> draait hij alleen de gefaalde tests opnieuw.',
+    'cs6-choice1':'<strong>Bewijs, geen vermoeden.</strong> Flaky heet een test pas als hij op één schone commit zowel slaagde als faalde. Wie een regressie flaky noemt, stuurt iemand op zoek naar toeval dat er niet is.',
+    'cs6-choice2':'<strong>Leren van runs die toch al gebeuren.</strong> Tien keer draaien om een flaky test te vinden maakt van een suite van vijf minuten vijftig minuten. Daarom groeit de geschiedenis met elke gewone run.',
+    'cs6-choice3':'<strong>Een fout blijft een fout.</strong> Faalt er een test, dan eindigt sooth met een foutcode, tenzij je die test zelf in quarantaine hebt gezet. "1 failed" tonen en toch met 0 eindigen zou twee waarheden tegelijk zijn, en CI leest exitcodes.',
+    'cs6-result':'Sinds juli 2026 zijn er zeven releases. Versie 0.3 staat op crates.io en is er als kant-en-klare binary voor macOS en Linux. Het werkt met pytest, PHPUnit en Pest (ook via <code>php artisan test</code>), Jest en Go. Trage tests over tijd en volgorde-afhankelijke tests zijn de volgende stap op de roadmap.',
+    'cs6-fact1-v':'7',
+    'cs6-fact1-l':'releases',
+    'cs6-fact2-v':'411',
+    'cs6-fact2-l':'tests',
+    'cs6-fact3-v':'3',
+    'cs6-fact3-l':'afhankelijkheden',
+    'cs6-fact4-v':'1,2 MB',
+    'cs6-fact4-l':'binary op macOS',
+    'cs6-note':'Cijfers bij versie 0.3.4.',
+    'cs5-step1':'Twaalf modules, elk met eigen code en tests',
+    'cs5-step2':'Vijf gedeelde contracten verbinden ze',
+    'cs5-step3':'Vijftien geplande taken draaien op de achtergrond',
+    'cs5-step4':'Briefing door Claude via Prism, of een vast sjabloon',
+    'cs5-step5':'Scherm op de Pi en een melding via ntfy',
+    'cs5-problem':'Self-hosted dashboards als Homepage of Dashy zijn vooral tegels met links. Ik wilde er een die dingen doet, en waarin de onderdelen van elkaar weten: de weersverwachting kan de lampen aansturen, en elke ochtend leveren acht modules hun deel van één briefing.',
+    'cs5-approach':'Een modulaire monoliet in Laravel. Elke module heeft zijn eigen acties, services, schermen en tests en meldt zich aan bij een centraal register. Modules kennen elkaar niet: ze werken samen via vijf gedeelde contracten, zoals <code>BriefingSource</code> voor de ochtendbriefing. Lampen, winkels, supermarkten en concertbronnen zitten als adapters achter een interface; een nieuw merk is een kleine class plus een regel configuratie.',
+    'cs5-choice1':'<strong>Afspraken die een test bewaakt.</strong> Een architectuurtest laat een module alleen afhangen van zichzelf en van de gedeelde contracten. De twee uitzonderingen staan er met naam in: verlichting leest het weer, entertainment leest Spotify.',
+    'cs5-choice2':'<strong>Het werkt ook zonder AI.</strong> Ontbreekt de API-sleutel of mislukt de aanroep, dan neemt een vast sjabloon het over en komt de briefing er alsnog.',
+    'cs5-choice3':'<strong>Alleen binnen het thuisnetwerk.</strong> Het dashboard bedient apparaten en bewaart sleutels van betaalde diensten, dus het hangt niet aan het internet.',
+    'cs5-result':'Draait in Docker op mijn Synology NAS, met een Raspberry Pi als scherm. Acht versies sinds mei 2025, met tests per module, statische analyse op PHPStan-niveau 8 en CI op GitHub. Het is gebouwd voor één gebruiker en nog in ontwikkeling.',
+    'cs5-fact1-v':'12',
+    'cs5-fact1-l':'modules',
+    'cs5-fact2-v':'5',
+    'cs5-fact2-l':'gedeelde contracten',
+    'cs5-fact3-v':'434',
+    'cs5-fact3-l':'tests',
+    'cs5-fact4-v':'15',
+    'cs5-fact4-l':'geplande taken',
+    'cs5-note':'Cijfers van november 2026.',
+    'cs4-step1':'Ongeveer elk uur zoeken op Vinted en Marktplaats',
+    'cs4-step2':'Alleen nieuwe advertenties, zonder kleding en merchandise',
+    'cs4-step3':'Welke figuur? Eerst de titel, anders de foto',
+    'cs4-step4':'Gangbare prijs: mediaan van vraagprijzen op Vinted',
+    'cs4-step5':'Score van 1 tot 10; de beste geven een pushmelding',
+    'cs4-problem':'Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn.',
+    'cs4-approach':'Scrapers halen nieuwe advertenties van Vinted en Marktplaats binnen, alleen overdag en met wisselende tussenpozen. Claude leest de advertentie en de foto en bepaalt welke figuur het is en in welke staat. Zegt de titel niets, dan vergelijkt de app de foto met referentiebeelden uit de catalogus en legt de drie beste kandidaten voor. De gangbare prijs is de mediaan van vraagprijzen op Vinted; daaruit volgt een score van 1 tot 10. Losse figuren met een lage score verdwijnen vanzelf. Loten herkent de app aan de titel en zet ze apart; wat erin zit vul ik zelf in.',
+    'cs4-choice1':'<strong>De foto is een voorstel, geen besluit.</strong> Een match op beeld koppelt de app nooit zelf aan een figuur; ik bevestig hem met één tik.',
+    'cs4-choice2':'<strong>Prijzen van de markt waar ik koop.</strong> De score rekent met vraagprijzen op Vinted. PriceCharting is alleen reserve: dat is een andere markt, en het dreef de scores eerder op.',
+    'cs4-choice3':'<strong>Een storing is geen "geen match".</strong> Mislukt de AI-aanroep, dan blijft de advertentie staan. Anders zouden goede deals verdwijnen door een storing bij de API.',
+    'cs4-result':'De app staat als gesloten beta op Google Play en is inmiddels versie 1.4. In ruim twee maanden kwamen er 342 commits, met meer dan duizend tests op de backend. Inloggen kan alleen met een account dat ik aanmaak; mail me als je het wilt proberen. De APK op GitHub is nog versie 1.0.',
+    'cs4-fact1-v':'342',
+    'cs4-fact1-l':'commits',
+    'cs4-fact2-v':'1.073',
+    'cs4-fact2-l':'tests op de backend',
+    'cs4-fact3-v':'343',
+    'cs4-fact3-l':'figuren in de basiscatalogus',
+    'cs4-fact4-v':'1.4',
+    'cs4-fact4-l':'versie van de app',
+    'cs4-note':'Cijfers van juli 2026.',
+    'case-problem':'Probleem','case-result':'Resultaat',
     'p4-index':'Project 03 — Closed Beta',
-    'proj4-desc':'Ik verzamel zelf Skylanders, en de goede koopjes zijn snel weg. Vroeger ververste ik de hele dag Marktplaats en Vinted; nu doet deze app dat. Nieuwe advertenties komen vanzelf binnen, Claude leest ze en schat wat een figuur echt waard is. De backend, het AI-deel en de Android-app bouwde ik zelf.',
-    'p4-role-v':'Solo engineer','p4-users-v':'Backend + mobile','p4-status-v':'Gesloten beta op Play',
-    'p4-problem':'Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn. Dat kost uren, en je mist er alsnog.',
-    'p4-solution':'Scrapers halen nieuwe advertenties van Marktplaats en Vinted binnen, rustig aan zodat de sites niet dichtslaan. Claude leest er elke advertentie: welke figuur, welke staat, en is de vraagprijs redelijk? Alleen de interessante blijven hangen. Daarnaast houd ik in de app mijn eigen collectie bij, met per stuk wat ik betaalde en wat het nu waard is. Eén Postgres-database eronder, gehost op Coolify.',
-    'p4-result':'Draait als closed beta op Google Play. Ik bouwde alles zelf, van de scrapers tot de app. Wil je het proberen? Mail me voor beta-toegang, of download de APK direct.',
+    'proj4-desc':'Ik verzamel zelf Skylanders, en de goede koopjes zijn snel weg. Vroeger ververste ik de hele dag Marktplaats en Vinted; nu doet deze app dat. Nieuwe advertenties komen vanzelf binnen, de app herkent welke figuur het is en vergelijkt de vraagprijs met wat er op Vinted voor gevraagd wordt. De backend, het AI-deel en de Android-app bouwde ik zelf.',
+    'p4-role-v':'Solo engineer','p4-users-v':'Backend + Android-app','p4-status-v':'Gesloten beta op Play',
+    
+    
+    
     'cta-play':'Open op Google Play','cta-play-sub':'Closed beta · op aanvraag',
     'cta-apk':'Download APK direct','cta-apk-sub':'Laatste release · GitHub',
     'p5-index':'Project 02 — Dagelijks in gebruik',
-    'proj5-desc':'Het dashboard op een Raspberry Pi in mijn woonkamer. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het daar een korte briefing van.',
+    'proj5-desc':'Het dashboard op het Raspberry Pi-scherm in mijn woonkamer. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het een korte briefing over de dag.',
     'p5-role-v':'Solo engineer','p5-users-v':'Mijn huishouden','p5-status-v':'Open source · MIT',
-    'p5-problem':'Self-hosted dashboards als Homepage of Dashy zijn vooral tegels met links. Ik wilde er een die dingen doet, en waarin de onderdelen van elkaar weten: regen in de verwachting moet de lampen aanpassen, en een deal die ik volg moet in het weekmenu terugkomen.',
-    'p5-solution':'Een modulaire monoliet: twaalf Laravel-modules (weer, agenda, verlichting, Spotify, deals, recepten en meer) op een gedeelde set contracten. Elke module kan bijdragen aan de ochtendbriefing, die Claude via Prism schrijft. Zonder API-key neemt een vast sjabloon het over. Lampen, winkels en concertbronnen zijn adapters achter een interface, dus een nieuw merk is één class.',
-    'p5-result':'Draait in Docker op mijn Synology NAS, met een Raspberry Pi als scherm. 217 commits sinds mei 2025, met tests per module en CI op GitHub.',
+    
+    
+    
     'p6-index':'Project 01 — v0.3 uitgebracht',
     'proj6-desc':'Een command-line tool die je bestaande testcommando draait en vertelt welke tests flaky zijn. Hij houdt per commit een geschiedenis bij, dus een test die op dezelfde code zowel slaagde als faalde is aantoonbaar flaky, niet gegokt. Mijn eerste project in Rust.',
     'p6-role-v':'Solo engineer','p6-users-v':'Developers','p6-status-v':'Op crates.io',
-    'p6-problem':'Een flaky test houdt je op: de pipeline wordt rood, je draait hem opnieuw, hij wordt groen, en je weet nog steeds niet of de test onbetrouwbaar is of dat er echt iets stuk is. Tools die dit bijhouden, zoals ReportPortal of Allure, hebben een server en een dashboard nodig.',
-    'p6-solution':'sooth draait om het testcommando dat je al hebt en leest het JUnit-rapport dat dat schrijft. Elke run voegt per test één regel toe aan een lokaal geschiedenisbestand. Met <code>--verify</code> draait hij alleen de gefaalde tests opnieuw, om echte fouten van flaky tests te scheiden. Een fout verbergt hij nooit: de exitcode blijft wat je testrunner zei. Geen server, geen account, geen AI.',
-    'p6-result':'Versie 0.3 staat op crates.io en is er als kant-en-klare binary. Het werkt met pytest, PHPUnit, Pest, Laravels artisan test, Jest en Go. Trage en volgorde-afhankelijke tests opsporen is de volgende stap op de roadmap.',
+    
+    
+    
     'cta-source':'Bekijk de broncode',
     'more-usage':'Leest de lokale logs van Claude Code en toont het tokengebruik per prompt en per model, zodat je ziet waar de tokens heen gaan.',
     'xp-label':'Ervaring',
@@ -3466,6 +3752,8 @@ function applyLang(lang) {
     });
   }
   renderLive();
+  // an open case study keeps its "hide" label in the new language
+  document.querySelectorAll('.case-toggle[aria-expanded="true"] .label-txt').forEach((t) => { t.textContent = i18n[lang]['case-toggle-hide']; });
 }
 
 /* --- Live project data: the latest version numbers from the public GitHub API.
@@ -3654,18 +3942,38 @@ if (currentLang !== 'nl') applyLang(currentLang);
   video.play().catch(() => { /* silently ignore autoplay policy blocks */ });
 })();
 
-// Case study toggles — expand/collapse below each project card
+// Case study toggles: the panel lies across the card, under its two columns
 document.querySelectorAll('.case-toggle').forEach((btn) => {
   btn.addEventListener('click', () => {
-    const id = btn.getAttribute('aria-controls');
-    const panel = document.getElementById(id);
+    const panel = document.getElementById(btn.getAttribute('aria-controls'));
     if (!panel) return;
     const open = btn.getAttribute('aria-expanded') === 'true';
     btn.setAttribute('aria-expanded', String(!open));
     panel.setAttribute('data-open', String(!open));
     const txt = btn.querySelector('.label-txt');
-    if (txt) txt.textContent = open ? i18n[currentLang]['case-toggle'] : i18n[currentLang]['case-toggle-hide'];
-    if (window.ScrollTrigger) setTimeout(() => ScrollTrigger.refresh(), 350);
+    if (txt) txt.textContent = i18n[currentLang][open ? 'case-toggle' : 'case-toggle-hide'];
+    if (!open) {
+      // The panel opens below the card's columns, which can be below the fold: bring its start into view.
+      const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setTimeout(() => {
+        if (panel.dataset.open !== 'true') return;   // closed again in the meantime
+        const top = panel.getBoundingClientRect().top;
+        // 'instant', not 'auto': 'auto' follows the page's own smooth scrolling
+        if (top > innerHeight * 0.6) window.scrollTo({ top: scrollY + top - innerHeight * 0.28, behavior: calm ? 'instant' : 'smooth' });
+      }, 140);
+    }
+    if (window.ScrollTrigger) setTimeout(() => ScrollTrigger.refresh(), 620);
+  });
+});
+// The panel's own "hide" button: on narrow screens the button that opened it is far above by then.
+document.querySelectorAll('.cs-close').forEach((close) => {
+  close.addEventListener('click', () => {
+    const btn = document.querySelector('.case-toggle[aria-controls="' + close.dataset.case + '"]');
+    if (!btn) return;
+    if (btn.getAttribute('aria-expanded') === 'true') btn.click();
+    btn.focus({ preventScroll: true });
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: scrollY + btn.getBoundingClientRect().top - innerHeight * 0.4, behavior: calm ? 'instant' : 'smooth' });
   });
 });
 

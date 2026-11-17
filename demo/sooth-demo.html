@@ -140,7 +140,7 @@ const beats = [
     I(["t-warn", "~"], ["", " "], ["t-dim", "Tests."], ["", "OrderTest::test_ships — "], ["t-warn", "flaky or order-dependent (passed on re-run in isolation)"], ["", ", "], ["t-warn", "known flake (4 of 10 in history, 40%)"]),
     L(["t-bad", "result: ✗ FAILED — 1 of 1 runs failed (90.38ms total)"]),
   ]},
-  { at: 22500, eyebrow: 'Exitcode', caption: 'De exitcode blijft wat je testrunner zei. sooth legt een fout uit, maar verbergt hem niet.', keep: true, cmd: 'echo $?', out: [
+  { at: 22500, eyebrow: 'Exitcode', caption: 'Een falende test blijft een foutcode geven. sooth legt een fout uit, maar verbergt hem niet.', keep: true, cmd: 'echo $?', out: [
     L(['t-bad', '1']),
   ]},
   { at: 27000, eyebrow: 'sooth history', caption: 'Wat sooth tot nu toe weet, zonder iets te draaien. Geen server, geen account.', cmd: 'sooth history', out: [
