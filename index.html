@@ -139,6 +139,15 @@
       radial-gradient(120% 80% at 50% 100%, transparent 50%, rgba(0,0,0,.4) 100%);
   }
 
+  /* The vignette, the aurora blobs and the hairlines sit behind the sections, and every section
+     has had its own opaque paper or ember background for a while now: measured pixel by pixel,
+     the page looks the same with and without them. They were still full-screen fixed layers
+     (two of them animated) that every scrolled frame had to carry, so they are switched off. */
+  .vignette, .aurora, .hairlines{ display:none; }
+  /* The loose grain on top changes a light page by at most one or two steps in 255, for a
+     full-screen blend on every frame. The paper already has its grain in the section backgrounds. */
+  html.light .grain{ display:none; }
+
   /* ---------- Custom cursor ---------- */
   .cursor-dot{
     position:fixed;top:0;left:0;
@@ -225,11 +234,13 @@
     84%  { opacity:1;   transform:translateY(12px); }
     100% { opacity:0;   transform:translateY(12px); }
   }
-  .topbar .mark .dot{width:6px;height:6px;background:var(--amber);border-radius:50%;display:inline-block;animation:dot-pulse 2.4s ease-in-out infinite;}
-  @keyframes dot-pulse{
-    0%,100%{box-shadow:0 0 0 0 rgba(232,150,42,.5);opacity:1;}
-    50%{box-shadow:0 0 0 5px rgba(232,150,42,0);opacity:.7;}
-  }
+  /* The pulse is a ring that grows and fades. It only changes transform and opacity, so the
+     browser animates it without repainting the bar on every frame. */
+  .topbar .mark .dot{width:6px;height:6px;background:var(--amber);border-radius:50%;display:inline-block;position:relative;animation:dot-pulse 2.4s ease-in-out infinite;}
+  .topbar .mark .dot::before{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(232,150,42,.5);animation:dot-ring 2.4s ease-in-out infinite;}
+  .topbar .mark .dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;}   /* the dot again, on top: at rest the ring is hidden behind it */
+  @keyframes dot-pulse{ 0%,100%{opacity:1;} 50%{opacity:.7;} }
+  @keyframes dot-ring{ 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(2.67);opacity:0;} }
   .topbar nav{display:flex;gap:28px;position:absolute;left:50%;transform:translateX(-50%);}
   .topbar nav a{
     color:var(--ink-dim);text-decoration:none;position:relative;
@@ -467,12 +478,12 @@
     min-width:160px;
     font-family:'Space Grotesk',sans-serif;
     font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-    opacity:0;pointer-events:none;
+    opacity:0;pointer-events:none;visibility:hidden;
     transform:translateY(-6px);
-    transition:opacity .2s ease, transform .2s ease;
+    transition:opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
     z-index:100;
   }
-  .settings-dropdown.open{ opacity:1;pointer-events:auto;transform:translateY(0); }
+  .settings-dropdown.open{ opacity:1;pointer-events:auto;visibility:visible;transform:translateY(0);transition:opacity .2s ease, transform .2s ease, visibility 0s; }
   .sd-group{ display:flex;flex-direction:column;gap:8px; }
   .sd-label{ color:var(--ink-mute);font-size:11px;letter-spacing:.2em; }
   .sd-options{ display:flex;align-items:center;gap:8px; }
@@ -1861,10 +1872,17 @@
     height:2px; pointer-events:none;
     background:rgba(232,150,42,0.10);
   }
+  /* The fill is scaled, never resized: a width change would redo the page layout on every
+     scrolled frame. Where the browser can tie an animation to the scroll position it runs
+     without any script; elsewhere the script below sets the same transform. */
   .scroll-progress .sp-fill{
-    height:100%; width:0%; background:var(--amber);
+    height:100%; width:100%; background:var(--amber);
     box-shadow:0 0 10px rgba(232,150,42,0.5);
-    transition:width .12s linear;
+    transform:scaleX(0); transform-origin:0 50%;
+  }
+  @supports (animation-timeline: scroll()){
+    .scroll-progress .sp-fill{ animation:sp-grow linear both; animation-timeline:scroll(root block); }
+    @keyframes sp-grow{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
   }
 
   /* --- Terminal boot loader --- */
@@ -2072,8 +2090,11 @@
     .project .mockup-col { order:4; width:100%; margin:16px 0; }
     .project .mockup { height:auto; position:relative; width:100%; margin:0; }
     .project .mockup-ui { inset:24px 20px; }
-    .project .tags   { order:5; justify-content:center; width:100%; align-self:stretch; }
-    .project .tag    { padding:6px 10px; font-size:11px; }
+    /* One centred line under the buttons. The three tags stay on that line down to a 360px
+       phone: below 430px the letter-spacing and the side padding give way a little with the
+       screen, the 11px type does not. */
+    .project .tags   { order:5; justify-content:center; gap:6px; width:100%; align-self:stretch; }
+    .project .tag    { padding:6px clamp(7px, calc((100vw - 300px) * .1), 9px); font-size:11px; letter-spacing:clamp(.7px, calc((100vw - 330px) * .02), 1.32px); }
     .project .tags .tag:nth-child(n+4) { display:none; }
     .project .meta   { display:none; }
     .project .case-toggle { order:7; margin-top:28px; }
@@ -2091,6 +2112,12 @@
 
   /* ---------- Theme switch: the new theme grows as a circle from the button ---------- */
   ::view-transition-old(root), ::view-transition-new(root){ animation:none; mix-blend-mode:normal; }
+  /* While the theme changes, no element fades by itself. Otherwise some 150 links, tags, cards and
+     borders each start their own colour transition at the same moment, on top of the switch
+     animation, and the page has to restyle and repaint all of them on every frame. The worst one
+     is the text colour on the page itself: it is inherited, so while it fades every element on
+     the page is restyled on every frame. The switch in the settings menu keeps its slide. */
+  html.theme-switching, html.theme-switching *:not(.sd-options), html.theme-switching *:not(.sd-options)::before, html.theme-switching *:not(.sd-options)::after{ transition:none !important; }
   ::view-transition-old(root){ z-index:1; }
   ::view-transition-new(root){ z-index:2; }
 
@@ -2211,6 +2238,9 @@
     }
     html.light .hero-atmos .texture{ mix-blend-mode:normal; opacity:.06; }
     html.light .project{ box-shadow:0 1px 0 rgba(255,255,255,.5) inset; }
+    /* Both themes: the hero's drifting texture stands still. As a moving layer it is about
+       three screens wide and high, and a phone keeps all of it in memory for the whole visit. */
+    .hero-atmos .texture2{ animation:none; will-change:auto; }
   }
   .about, .work, .expertise, .contact, footer{ --base:var(--bg); }
   .about{
@@ -2894,7 +2924,7 @@
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--embed">
-        <iframe class="demo-frame demo-frame--sooth" data-src="demo/sooth-demo.html?v=5" title="sooth — terminal met echte output: een testrun, een bewezen flaky test, --verify en de geschiedenis"></iframe>
+        <iframe class="demo-frame demo-frame--sooth" data-src="demo/sooth-demo.html?v=6" title="sooth — terminal met echte output: een testrun, een bewezen flaky test, --verify en de geschiedenis"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="https://github.com/Bramvzw/sooth" target="_blank" rel="noopener" data-hoverable>
@@ -2968,7 +2998,7 @@
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--embed">
-        <iframe class="demo-frame demo-frame--shh" data-src="demo/smart-home-hub-demo.html?v=3" title="Smart Home Hub — rondleiding: briefing, dashboard, agenda, weekmenu, prijzen en filmtips"></iframe>
+        <iframe class="demo-frame demo-frame--shh" data-src="demo/smart-home-hub-demo.html?v=4" title="Smart Home Hub — rondleiding: briefing, dashboard, agenda, weekmenu, prijzen en filmtips"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="https://github.com/Bramvzw/smart-home-hub" target="_blank" rel="noopener" data-hoverable>
@@ -3033,7 +3063,7 @@
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--phone">
-        <iframe class="demo-frame" data-src="demo/skylanders-demo.html?v=4" title="Skylanders Tracker — interactieve app-demo: de volledige flip-lifecycle van deal tot winst"></iframe>
+        <iframe class="demo-frame" data-src="demo/skylanders-demo.html?v=5" title="Skylanders Tracker — interactieve app-demo: de volledige flip-lifecycle van deal tot winst"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="mailto:bram@vanzwolle.net?subject=Skylanders%20Tracker%20%E2%80%94%20Play%20beta%20toegang" data-hoverable>
@@ -3307,7 +3337,10 @@ const store = {
   if (!dot || !ring) return;
   let x=innerWidth/2, y=innerHeight/2, rx=x, ry=y;
   let tx=x, ty=y;
-  window.addEventListener('mousemove', (e)=>{ tx=e.clientX; ty=e.clientY; });
+  // Frames only run while the ring is still catching up with the pointer; a resting mouse costs nothing.
+  let moving = false;
+  const kick = () => { if (!moving) { moving = true; requestAnimationFrame(loop); } };
+  window.addEventListener('mousemove', (e)=>{ tx=e.clientX; ty=e.clientY; kick(); });
   const loop = () => {
     x += (tx-x)*0.9;
     y += (ty-y)*0.9;
@@ -3315,9 +3348,10 @@ const store = {
     ry += (ty-ry)*0.18;
     dot.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%)`;
     ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    if (Math.abs(tx-rx) + Math.abs(ty-ry) < 0.05) { moving = false; return; }
     requestAnimationFrame(loop);
   };
-  loop();
+  kick();
   const hovSel = 'a,[data-hoverable],button,.project';
   document.addEventListener('mouseover', (e)=>{
     if (e.target.closest(hovSel)){ dot.classList.add('hov'); ring.classList.add('hov'); }
@@ -3371,7 +3405,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // About body paragraphs
   gsap.to('.about-body p', {
     y: 0, opacity: 1, duration: 0.9, ease: 'power2.out', stagger: 0.12,
-    scrollTrigger: { trigger: '.about-body', start: 'top 80%' }
+    scrollTrigger: { trigger: '.about-body', start: 'top 80%', once: true }
   });
 
   // Project cards slide in alternating
@@ -3381,32 +3415,34 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.fromTo(el,
       { x: isMobileAnim ? 0 : dir, opacity: 0 },
       { x: 0, opacity: 1, duration: 1.1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 82%' } }
+        // a card keeps its own layer only while it slides in; three card-sized layers are a lot for a phone
+        onComplete: () => { el.style.willChange = 'auto'; },
+        scrollTrigger: { trigger: el, start: 'top 82%', once: true } }
     );
   });
 
   // Expertise top hairline draw
   gsap.fromTo('.exp-list', { '--lp': 0 }, {
     '--lp': 1, duration: 1.2, ease: 'power3.out',
-    scrollTrigger: { trigger: '.exp-list', start: 'top 85%' }
+    scrollTrigger: { trigger: '.exp-list', start: 'top 85%', once: true }
   });
 
   // Expertise hairline draw + text reveal
   document.querySelectorAll('.exp-item').forEach((el, i) => {
     gsap.to(el.querySelector('.text'), {
       y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', delay: i*0.05,
-      scrollTrigger: { trigger: el, start: 'top 85%' }
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
     });
     gsap.to(el.querySelector('.kw'), {
       opacity: 1, duration: 0.8, ease: 'power2.out', delay: i*0.05 + 0.2,
-      scrollTrigger: { trigger: el, start: 'top 85%' }
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
     });
     gsap.fromTo(el,
       { '--p': 0 },
       {
         '--p': 1,
         duration: 1.1, ease: 'power3.out', delay: i*0.05 + 0.1,
-        scrollTrigger: { trigger: el, start: 'top 85%' }
+        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
       }
     );
   });
@@ -3416,7 +3452,7 @@ document.addEventListener('DOMContentLoaded', () => {
   gsap.utils.toArray('.sec-num').forEach((el) => {
     gsap.fromTo(el, { opacity: 0, y: -6 }, {
       opacity: 1, y: 0, duration: 0.8, ease: 'power2.out',
-      scrollTrigger: { trigger: el.parentElement, start: 'top 90%' }
+      scrollTrigger: { trigger: el.parentElement, start: 'top 90%', once: true }
     });
   });
 });
@@ -3798,15 +3834,33 @@ if (currentLang !== 'nl') applyLang(currentLang);
   function setThemeActive(t) { setSwitch('sdDark', 'sdLight', t === 'light'); }
   function setLangActive(l) { setSwitch('sdNl', 'sdEn', l === 'en'); }
 
-  // Toggle dropdown
-  btn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const open = drop.classList.toggle('open');
-    btn.setAttribute('aria-expanded', open);
+  // Open and close. The menu closes on a click outside it, on Escape and as soon as the page scrolls.
+  let openedAt = 0, settleUntil = 0;
+  const isOpen = () => drop.classList.contains('open');
+  const setOpen = (open) => {
+    if (open === isOpen()) return;
+    if (!open && drop.contains(document.activeElement)) btn.focus({ preventScroll: true });   // never leave focus in a hidden menu
+    drop.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+    if (open) openedAt = window.scrollY;
+  };
+  btn?.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!isOpen()); });
+  document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) setOpen(false); });
+  // Escape closes the menu, unless the command palette is open on top of it: then Escape is for the palette.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !isOpen()) return;
+    if (document.getElementById('cpRoot')?.classList.contains('open')) return;
+    setOpen(false);   // moves focus to the button only when it was inside the menu
   });
-  document.addEventListener('click', (e) => {
-    if (!wrap.contains(e.target)) drop.classList.remove('open');
-  });
+  document.addEventListener('portfolio:overlay', () => setOpen(false));   // the command palette opened
+  // Switching language reflows the page, which can move it a little by itself: that is not the
+  // visitor scrolling, so the menu stays open for a moment after a choice inside it.
+  drop?.addEventListener('click', () => { settleUntil = performance.now() + 600; });
+  window.addEventListener('scroll', () => {
+    if (!isOpen()) return;
+    if (performance.now() < settleUntil) { openedAt = window.scrollY; return; }
+    if (Math.abs(window.scrollY - openedAt) > 8) setOpen(false);
+  }, { passive: true });
 
   // Language options
   drop?.querySelectorAll('[data-lang]').forEach(opt => {
@@ -3818,6 +3872,9 @@ if (currentLang !== 'nl') applyLang(currentLang);
 
   // Theme options
   const applyTheme = (t) => {
+    // Elements take their new colours at once (see .theme-switching in the stylesheet). The class
+    // comes off again at the end of this function, after the new styles have been worked out.
+    html.classList.add('theme-switching');
     html.classList.toggle('light', t === 'light');
     store.set('theme', t);
     setThemeActive(t);
@@ -3827,6 +3884,10 @@ if (currentLang !== 'nl') applyLang(currentLang);
     document.querySelectorAll('iframe.demo-frame').forEach((f) => {
       try { if (f.src && f.contentWindow) f.contentWindow.postMessage({ type: 'portfolio-theme', theme: t }, '*'); } catch (e) {}
     });
+    // Reading a size makes the browser work out every new style now, while transitions are off;
+    // taking the class away afterwards changes no colour, so nothing starts to fade.
+    void document.body.offsetWidth;
+    html.classList.remove('theme-switching');
   };
   // The theme a running switch is heading for. The class on <html> only changes when the view
   // transition's callback runs, so a second request in the same frame must not read the class.
@@ -4007,14 +4068,17 @@ document.querySelectorAll('.cs-close').forEach((close) => {
 (() => {
   const fill = document.getElementById('spFill');
   if (!fill) return;
-  const update = () => {
-    const h = document.documentElement;
-    const max = h.scrollHeight - h.clientHeight;
-    const p = max > 0 ? Math.min(1, (h.scrollTop || document.body.scrollTop) / max) : 0;
-    fill.style.width = (p * 100) + '%';
-  };
-  document.addEventListener('scroll', update, { passive:true });
-  window.addEventListener('resize', update);
+  // Browsers with scroll-driven animations move the bar from the stylesheet, off the main thread.
+  if (window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()')) return;
+  // Elsewhere: measure the page only when its size changes, and write one transform per frame.
+  let max = 1, queued = false;
+  const draw = () => { queued = false; fill.style.transform = 'scaleX(' + Math.min(1, Math.max(0, window.scrollY / max)) + ')'; };
+  const measure = () => { const h = document.documentElement; max = Math.max(1, h.scrollHeight - h.clientHeight); draw(); };
+  document.addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(draw); } }, { passive:true });
+  window.addEventListener('resize', measure);
+  window.addEventListener('load', measure);
+  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(document.body);   // a case study opening makes the page longer
+  measure();
 })();
 
 /* --- 1. Terminal boot loader --- */
@@ -4119,6 +4183,7 @@ document.querySelectorAll('.cs-close').forEach((close) => {
   };
 
   const open = () => {
+    document.dispatchEvent(new Event('portfolio:overlay'));   // an open settings menu makes way
     root.classList.add('open');
     root.setAttribute('aria-hidden','false');
     input.value = '';

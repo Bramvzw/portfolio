@@ -199,7 +199,7 @@
     border-radius: 3px;
     position: relative;
     cursor: none;
-    touch-action: none;
+    touch-action: pan-y;
   }
   #progress-bar::before { content: ''; position: absolute; left: 0; right: 0; top: -10px; bottom: -10px; }
   #progress-fill {
@@ -268,6 +268,8 @@
   html.light .beat-dot.active { background: #a85f12; }
   html.light #play-toggle { color: #7d430a; border-color: rgba(125,67,10,.45); background: rgba(125,67,10,.08); }
   html.light #play-toggle:hover { background: rgba(125,67,10,.16); border-color: rgba(125,67,10,.6); }
+/* Out of view in the portfolio: every animation holds still (see setAway in the script). */
+html.away *, html.away *::before, html.away *::after{ animation-play-state:paused !important; }
 </style>
 <script>
 /* The theme follows the page that embeds this demo: ?theme=light when it loads, a message when it switches. */
@@ -375,7 +377,7 @@ for (let i = 0; i < NUM_BEATS; i++) {
   dotsEl.appendChild(d);
 }
 
-let elapsed = 0, lastNow = null, currentBeat = -1, paused = false, seeking = false, rafHandle = null;
+let elapsed = 0, lastNow = null, currentBeat = -1, paused = false, seeking = false, rafHandle = null, away = false, begun = false;
 
 function setCaption(eyebrow, main) {
   capEyebrow.classList.remove('show');
@@ -434,8 +436,10 @@ function updateProgress(beatIdx, progress) {
 }
 
 function tick(now) {
+  rafHandle = null;
+  if (away) return;   // out of view: the loop stops here, setAway starts it again
   if (lastNow === null) lastNow = now;
-  const delta = now - lastNow;
+  const delta = Math.min(now - lastNow, 100);   // a long gap (out of view, another tab) is not demo time
   lastNow = now;
   if (!paused && !seeking) elapsed += delta;
 
@@ -468,7 +472,32 @@ function runTimeline() {
   if (rafHandle) cancelAnimationFrame(rafHandle);
   resetAll();
   elapsed = 0; lastNow = null; currentBeat = -1;
+  begun = true;
   rafHandle = requestAnimationFrame(tick);
+}
+
+// Out of view (scrolled away in the portfolio): stop the clock and the frame loop, so the page
+// around the demo scrolls freely. The demo carries on from the same moment when it is back.
+function setAway(a) {
+  if (a === away) return;
+  away = a;
+  document.documentElement.classList.toggle('away', a);
+  if (!a) lastNow = null;   // also when a frame is still waiting: it must not count the time away
+  // The slow zoom is a CSS transition, which would run on by itself: hold it where it is, and
+  // on the way back let the beat pick it up for the time that is left.
+  if (currentBeat >= 0 && !paused) {
+    if (a) {
+      const c = canvases[currentBeat], m = getComputedStyle(c).transform;
+      c.style.transition = 'none';
+      c.style.transform = m === 'none' ? '' : m;
+    } else {
+      playBeat(currentBeat, elapsed - currentBeat * BEAT_MS);
+    }
+  }
+  if (!a && begun && !rafHandle) rafHandle = requestAnimationFrame(tick);
+}
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver((es) => setAway(!es[es.length - 1].isIntersecting)).observe(document.documentElement);
 }
 
 // ── Play / pause ───────────────────────────────────────────────────
@@ -502,37 +531,70 @@ function seekFromClientX(x) {
   const r = progressBar.getBoundingClientRect();
   seekTo((x - r.left) / r.width);
 }
-progressBar.addEventListener('pointerdown', (e) => {
-  e.preventDefault();
+// A finger (or pen) that lands on the bar is usually scrolling the page past the demo. So it
+// only scrubs once it moves sideways, and a plain tap jumps to that spot; up-and-down swipes are
+// left to the page (touch-action: pan-y). A mouse scrubs from the first press, as before.
+let touchStart = null, tapPending = false, scrubId = null;
+const beginScrub = (e) => {
   seeking = true;
+  scrubId = e.pointerId;
   progressBar.classList.add('scrubbing');
   try { progressBar.setPointerCapture(e.pointerId); } catch (_) {}
   seekFromClientX(e.clientX);
+};
+progressBar.addEventListener('pointerdown', (e) => {
+  if (e.pointerType !== 'mouse') {                 // finger or pen: wait and see what it does
+    if (seeking || touchStart) return;             // one pointer at a time
+    touchStart = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    tapPending = true;
+    return;
+  }
+  tapPending = false;
+  e.preventDefault();
+  beginScrub(e);
 });
-progressBar.addEventListener('pointermove', (e) => { if (seeking) seekFromClientX(e.clientX); });
+progressBar.addEventListener('pointermove', (e) => {
+  if (touchStart && e.pointerId === touchStart.id && !seeking) {
+    const dx = Math.abs(e.clientX - touchStart.x), dy = Math.abs(e.clientY - touchStart.y);
+    if (dx > 6 || dy > 6) tapPending = false;
+    if (dx > 8 && dx > dy) { touchStart = null; beginScrub(e); }
+    return;
+  }
+  if (seeking && e.pointerId === scrubId) seekFromClientX(e.clientX);
+});
 function endScrub() {
   if (!seeking) return;
   seeking = false;
   progressBar.classList.remove('scrubbing');
   if (currentBeat >= 0) playBeat(currentBeat, elapsed - currentBeat * BEAT_MS);
 }
-progressBar.addEventListener('pointerup', endScrub);
-progressBar.addEventListener('pointercancel', endScrub);
+const release = (e, cancelled) => {
+  if (touchStart && e.pointerId === touchStart.id) { touchStart = null; if (cancelled) tapPending = false; }
+  if (seeking && e.pointerId === scrubId) { scrubId = null; endScrub(); }
+};
+progressBar.addEventListener('pointerup', (e) => release(e, false));
+progressBar.addEventListener('pointercancel', (e) => release(e, true));   // the page took the gesture
+// The browser sends no click for a tap that only stops a scroll, so this is a deliberate tap.
+progressBar.addEventListener('click', (e) => { if (!tapPending) return; tapPending = false; e.stopPropagation(); seekFromClientX(e.clientX); });
 
 // ── Custom cursor ──────────────────────────────────────────────────
 (() => {
   if (window.matchMedia('(hover: none)').matches) return;
   const dot = document.getElementById('cdot'), ring = document.getElementById('cring');
   let x = innerWidth/2, y = innerHeight/2, rx = x, ry = y, tx = x, ty = y;
-  window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; });
+  // Frames only run while the ring is still catching up with the pointer.
+  let moving = false;
+  const kick = () => { if (!moving) { moving = true; requestAnimationFrame(loop); } };
+  window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; kick(); });
   const loop = () => {
     x += (tx - x) * 0.9; y += (ty - y) * 0.9;
     rx += (tx - rx) * 0.18; ry += (ty - ry) * 0.18;
     dot.style.transform  = `translate(${x}px,${y}px) translate(-50%,-50%)`;
     ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    if (Math.abs(tx - rx) + Math.abs(ty - ry) < 0.05) { moving = false; return; }
     requestAnimationFrame(loop);
   };
-  loop();
+  kick();
   const hovSel = '#browser, #progress-bar, #play-toggle';
   document.addEventListener('mouseover', (e) => { if (e.target.closest(hovSel)) { dot.classList.add('hov'); ring.classList.add('hov'); } });
   document.addEventListener('mouseout',  (e) => { if (e.target.closest(hovSel)) { dot.classList.remove('hov'); ring.classList.remove('hov'); } });
