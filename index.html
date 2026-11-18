@@ -226,6 +226,7 @@
     display:flex;align-items:center;gap:10px;color:var(--ink);
     font-weight:500;cursor:pointer;position:relative;
   }
+  .topbar .mark-in{ display:flex; align-items:center; gap:10px; }
   @keyframes hint-tap{
     0%   { opacity:0;   transform:translateY(12px); }
     18%  { opacity:1;   transform:translateY(12px); }
@@ -2079,7 +2080,6 @@
     .register-entry .value { font-size:clamp(18px,5vw,22px); }
 
     /* Topbar: name truncates gracefully */
-    .topbar .mark-name { max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
     /* Project cards: titel → desc → foto → tags → case study */
     .project { gap:0; margin-bottom:20px; display:flex; flex-direction:column; align-items:flex-start; text-align:left; }
@@ -2097,7 +2097,7 @@
     .project .tag    { padding:6px clamp(7px, calc((100vw - 300px) * .1), 9px); font-size:11px; letter-spacing:clamp(.7px, calc((100vw - 330px) * .02), 1.32px); }
     .project .tags .tag:nth-child(n+4) { display:none; }
     .project .meta   { display:none; }
-    .project .case-toggle { order:7; margin-top:28px; }
+    .project .case-toggle { order:7; margin-top:28px; align-self:center; }
     .project .case-study  { order:8; }
 
     /* Stack: 2-column compact grid */
@@ -2397,7 +2397,18 @@
     .topbar{ --bar-h:48px; --bar-pl:16px; --bar-pr:7px; top:10px; }
     body::before{ height:84px; }
   }
-  @media (max-width:600px){ .topbar{ left:20px; right:20px; } }
+  @media (max-width:600px){
+    .topbar{ left:20px; right:20px; }
+    /* The name sits in the middle of the bar and the whole bar opens the menu under it; only the
+       settings button keeps its own corner. While the name is typed it stays put: the full name,
+       invisible, reserves its width (the ::after), and the typed part fills it from the left. */
+    .topbar .mark{ position:absolute; inset:0; display:grid; place-content:center; border-radius:inherit; -webkit-tap-highlight-color:transparent; }
+    .topbar .mark-in, .topbar .mark::after{ grid-area:1 / 1; }
+    .topbar .mark-in{ justify-self:start; }
+    .topbar .mark::after{ content:"Bram van Zwolle"; padding-left:16px; visibility:hidden; white-space:nowrap; }   /* 16px = the dot and its gap */
+    .topbar .brand-caret{ margin-right:-4px; }   /* takes no room, so the name does not move when it goes */
+    .topbar .topbar-right{ position:relative; z-index:1; margin-left:auto; }
+  }
 
   /* --- menus, command palette, tooltips --- */
   .settings-dropdown, .brand-tip, .cp-modal, .tag-tip{
@@ -2592,14 +2603,24 @@
     .cs-steps{ max-width:none; }
   }
   /* the button that opens it: a real button, not a line of small text */
-  .case-toggle{
-    align-self:flex-start; margin-top:8px; padding:10px 14px; border-radius:var(--r-in);
+  .case-toggle{ align-self:flex-start; margin-top:8px; }
+  /* ...and the panel's own close button at the end looks the same */
+  .case-toggle, .cs-close{
+    padding:10px 14px; border-radius:var(--r-in);
     border:1px solid rgba(232,150,42,.42); background:rgba(232,150,42,.12);
     transition:background .2s ease, border-color .2s ease, color .2s ease;
   }
-  html.light .case-toggle{ border-color:rgba(115,60,7,.42); background:rgba(115,60,7,.11); }
-  .case-toggle:hover{ opacity:1; background:var(--amber); border-color:var(--amber); color:#0d0b08; }
-  html.light .case-toggle:hover{ color:#faf4e6; }
+  html.light .case-toggle, html.light .cs-close{ border-color:rgba(115,60,7,.42); background:rgba(115,60,7,.11); }
+  .case-toggle:hover, .cs-close:hover{ opacity:1; background:var(--amber); border-color:var(--amber); color:#0d0b08; }
+  html.light .case-toggle:hover, html.light .cs-close:hover{ color:#faf4e6; }
+  @media (max-width:600px){
+    .case-study .cs-close{ justify-self:center; }
+    /* Two tiles side by side leave little room: a long Dutch word like "afhankelijkheden" was
+       cut in the middle. Slightly less padding and letter-spacing make it fit from 360px; on
+       anything narrower it is hyphenated instead of cut. */
+    .cs-facts > div{ padding:14px 12px 12px; }
+    .cs-facts dt{ letter-spacing:.04em; -webkit-hyphens:auto; hyphens:auto; }
+  }
   .case-toggle:focus-visible{ outline:1px solid var(--amber); outline-offset:2px; }
   @media (prefers-reduced-motion:reduce){ .case-study, .case-study[data-open="true"]{ transition:none; } }
 
@@ -2760,7 +2781,7 @@
 
 <!-- Topbar -->
 <header class="topbar">
-  <div class="mark"><span class="dot"></span> <span class="brand-name" id="brandName"></span><span class="brand-caret" id="brandCaret"></span></div>
+  <div class="mark"><span class="mark-in"><span class="dot"></span> <span class="brand-name" id="brandName"></span><span class="brand-caret" id="brandCaret"></span></span></div>
   <nav>
     <a href="#index"      data-num="00" data-kbd="⌘ 0" data-hoverable>Index</a>
     <a href="#about"      data-num="01" data-kbd="⌘ 1" data-hoverable data-i18n="nav-about">Over</a>
@@ -4041,10 +4062,28 @@ document.querySelectorAll('.cs-close').forEach((close) => {
   close.addEventListener('click', () => {
     const btn = document.querySelector('.case-toggle[aria-controls="' + close.dataset.case + '"]');
     if (!btn) return;
-    if (btn.getAttribute('aria-expanded') === 'true') btn.click();
-    btn.focus({ preventScroll: true });
+    const fold = () => {
+      if (btn.getAttribute('aria-expanded') === 'true') btn.click();
+      btn.focus({ preventScroll: true });
+    };
+    const target = Math.max(0, Math.round(scrollY + btn.getBoundingClientRect().top - innerHeight * 0.4));
     const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: scrollY + btn.getBoundingClientRect().top - innerHeight * 0.4, behavior: calm ? 'instant' : 'smooth' });
+    if (calm || Math.abs(target - scrollY) < 4) { window.scrollTo({ top: target, behavior: 'instant' }); fold(); return; }
+    // First scroll back up with the case study still open, then fold it away under its button.
+    // Scrolling while the panel shrank made the two fight, and the page stuttered on the way up.
+    window.scrollTo({ top: target, behavior: 'smooth' });
+    const t0 = performance.now();
+    let lastY = scrollY, still = 0;
+    const wait = () => {
+      const y = scrollY;
+      still = y === lastY ? still + 1 : 0;
+      lastY = y;
+      const arrived = Math.abs(y - target) < 2;
+      const stopped = still >= 6 && performance.now() - t0 > 250;   // the visitor took over, or the page could not go further
+      if (arrived || stopped || performance.now() - t0 > 2500) fold();
+      else requestAnimationFrame(wait);
+    };
+    requestAnimationFrame(wait);
   });
 });
 
@@ -4322,7 +4361,10 @@ document.querySelectorAll('.cs-close').forEach((close) => {
     if (!open) document.dispatchEvent(new CustomEvent('portfolio:overlay', { detail: 'brand' }));   // only one menu open at a time
     open = true; tip.classList.add('visible'); tip.setAttribute('aria-hidden','false');
   };
-  const hide = () => { open = false; locked = false; tip.classList.remove('visible'); tip.setAttribute('aria-hidden','true'); };
+  const hide = () => {
+    if (tip.contains(document.activeElement)) document.activeElement.blur();   // never leave focus in a hidden menu
+    open = false; locked = false; tip.classList.remove('visible'); tip.setAttribute('aria-hidden','true');
+  };
   const toggle = () => { if (open) { hide(); } else { show(); locked = true; } };
   const isTouch = () => window.matchMedia('(hover:none)').matches;
   // Desktop: hover (only when not locked open by click)
