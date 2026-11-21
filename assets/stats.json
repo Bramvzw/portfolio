@@ -1,0 +1,15 @@
+{
+  "sooth": {
+    "version": "0.4.0",
+    "minor": "0.4",
+    "releases": 8,
+    "binary_mb": 1.5,
+    "deps": 3,
+    "tests": 519
+  },
+  "hub": {
+    "versions": 9,
+    "since": "juli 2026"
+  },
+  "updated": "2026-11-21"
+}

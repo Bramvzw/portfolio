@@ -1144,6 +1144,46 @@ function setCaption(eyebrow, main) {
   }));
 }
 
+// The page that embeds this demo passes its language (&lang=en on load, a 'portfolio-lang' message on a
+// switch). The captions are written in Dutch above; DEMO_EN holds their English versions.
+const DEMO_EN = {
+ "AUTOMATISCH BINNENGEHAALD": "FETCHED AUTOMATICALLY",
+ "Ongeveer elk uur zoekt de app op Vinted en Marktplaats": "About every hour the app searches Vinted and Marktplaats",
+ "AI-BEELDHERKENNING": "AI IMAGE RECOGNITION",
+ "Geen titel? De app stelt Spyro voor op basis van de foto — 71% match": "No title? The app suggests Spyro based on the photo — 71% match",
+ "DEAL-ANALYSE": "DEAL ANALYSIS",
+ "Vraagprijs €24 tegenover €92 marktwaarde — +€68 marge": "Asking price €24 against €92 market value — +€68 margin",
+ "LIVE PRIJSLIJST": "LIVE PRICE LIST",
+ "Die €92 komt uit een prijslijst die continu wordt ververst": "That €92 comes from a price list that is refreshed continuously",
+ "SNEL TRIËREN": "QUICK TRIAGE",
+ "Veeg deals weg of bewaar ze met één beweging": "Swipe deals away or save them in one move",
+ "ONDERHANDELEN": "NEGOTIATING",
+ "Chat met de verkoper en koop de Spyro voor €24": "Chat with the seller and buy the Spyro for €24",
+ "GEKOCHT": "BOUGHT",
+ "Nu in je collectie — €24 betaald, €92 waard (+283%)": "Now in your collection — €24 paid, worth €92 (+283%)",
+ "WEER TE KOOP": "LISTED AGAIN",
+ "Direct relisten op Vinted — vraagprijs €95 (+€71)": "Relisted on Vinted right away — asking €95 (+€71)",
+ "BOD ONTVANGEN": "OFFER RECEIVED",
+ "Een koper biedt €90 — geaccepteerd met één tik": "A buyer offers €90 — accepted with one tap",
+ "VERKOCHT": "SOLD",
+ "Geflipt voor €90 — €66 winst op één figuur": "Flipped for €90 — €66 profit on one figure",
+ "Alles bij elkaar: €531 winst · ROI 188% · top-flip Spyro": "All together: €531 profit · ROI 188% · top flip Spyro"
+};
+let demoLang = (() => { try { return new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'nl'; } catch (e) { return 'nl'; } })();
+document.documentElement.lang = demoLang;
+const setCaptionNl = setCaption;
+let lastCaption = null;
+const tr = (t) => (demoLang === 'en' && DEMO_EN[t]) || t;
+setCaption = function (eyebrow, main) { lastCaption = [eyebrow, main]; setCaptionNl(tr(eyebrow), tr(main)); };
+window.addEventListener('message', (e) => {
+  const d = e.data;
+  if (!d || d.type !== 'portfolio-lang') return;
+  demoLang = d.lang === 'en' ? 'en' : 'nl'; document.documentElement.lang = demoLang;
+  if (lastCaption) setCaptionNl(tr(lastCaption[0]), tr(lastCaption[1]));
+});
+// the caption written in the markup (shown before the first beat) follows the language too
+if (demoLang === 'en') { capEyebrow.textContent = tr(capEyebrow.textContent); capMain.textContent = tr(capMain.textContent); }
+
 // ── Screen transitions ─────────────────────────────────────────────
 function showScreen(id) {
   if (activeScreenId === id) return;

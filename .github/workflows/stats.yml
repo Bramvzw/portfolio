@@ -1,0 +1,39 @@
+name: Update project figures
+
+# Measures the figures on the case study pages (sooth, Smart Home Hub) and commits
+# assets/stats.json when one of them changed. The pages read that file.
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: stats
+  cancel-in-progress: false
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Measure
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 .github/stats/update.py
+      - name: Commit when changed
+        run: |
+          if git diff --quiet -- assets/stats.json; then echo "No change."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/stats.json
+          git commit -m "Update project figures"
+          git push
+          # a push by this workflow's token may not start a Pages build by itself
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

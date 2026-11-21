@@ -14,7 +14,7 @@
   :root {
     --amber: #E8962A; --ink: #efe8dc; --term-bg: #0b0a08;
     --t-text: #cfc6b6; --t-dim: #7d7568; --t-ok: #7fc96d; --t-bad: #e06c5a;
-    --term-font: 12px; --controls-h: 150px;
+    --term-font: 12px; --controls-h: 190px;
   }
   html, body { height: 100%; overflow: hidden; background: transparent; font-family: 'Lora', Georgia, serif; color: var(--ink); -webkit-font-smoothing: antialiased; cursor: none; }
   .cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; border-radius: 50%; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); will-change: transform, width, height; }
@@ -39,19 +39,19 @@
   .caret { display: inline-block; width: .6em; height: 1.1em; vertical-align: -0.18em; background: var(--t-dim); margin-left: 1px; animation: blink 1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
 
-  #under { flex: 0 0 var(--controls-h); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
+  #under { flex: 0 0 var(--controls-h); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 26px; }
   #caption-area { text-align: center; min-height: 62px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 12px; max-width: 520px; }
   .caption-eyebrow { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 2.4px; color: var(--amber); opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .35s ease; }
   .caption-main { font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--ink); text-wrap: balance; opacity: 0; transform: translateY(6px); transition: opacity .35s ease .08s, transform .35s ease .08s; }
   .caption-eyebrow.show, .caption-main.show { opacity: 1; transform: translateY(0); }
 
-  #progress-bar { width: min(300px, 80%); height: 3px; background: rgba(255,255,255,.08); border-radius: 3px; margin-top: 12px; position: relative; cursor: none; touch-action: pan-y; }
+  #progress-bar { width: min(300px, 80%); height: 3px; background: rgba(255,255,255,.08); border-radius: 3px; margin-top: 18px; position: relative; cursor: none; touch-action: pan-y; }
   #progress-bar::before { content: ''; position: absolute; left: 0; right: 0; top: -10px; bottom: -10px; }
   #progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--amber), #f4b85f); border-radius: 3px; pointer-events: none; }
   #progress-thumb { position: absolute; top: 50%; left: 0%; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.55), 0 0 0 2px rgba(232,150,42,.55); transform: translate(-50%, -50%); opacity: 0; transition: opacity .2s ease, transform .15s ease; pointer-events: none; }
   #progress-bar:hover #progress-thumb, #progress-bar.scrubbing #progress-thumb { opacity: 1; }
   #progress-bar.scrubbing #progress-thumb { transform: translate(-50%, -50%) scale(1.15); }
-  #controls { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+  #controls { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
   #play-toggle { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(232,150,42,.30); background: rgba(232,150,42,.10); color: var(--amber); display: flex; align-items: center; justify-content: center; cursor: none; padding: 0; transition: background .2s ease, border-color .2s ease, transform .15s ease; -webkit-tap-highlight-color: transparent; }
   #play-toggle:hover { background: rgba(232,150,42,.18); border-color: rgba(232,150,42,.5); }
   #play-toggle:active { transform: scale(.92); }
@@ -60,7 +60,7 @@
   #beat-dots { display: flex; gap: 5px; align-items: center; }
   .beat-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,.15); transition: background .3s ease, transform .3s ease; }
   .beat-dot.active { background: var(--amber); transform: scale(1.3); }
-  @media (max-width: 560px) { :root { --term-font: 10.5px; --controls-h: 160px; } #screen { padding: 12px; } .caption-main { font-size: 15px; } }
+  @media (max-width: 560px) { :root { --term-font: 10.5px; --controls-h: 200px; } #screen { padding: 12px; } .caption-main { font-size: 15px; } }
   @media (prefers-reduced-motion: reduce) { .caret { animation: none; } .caption-eyebrow, .caption-main { transition: none; } }
 
   /* Light theme of the page that embeds this demo: dark text for the caption and the controls.
@@ -184,6 +184,31 @@ function setCaption(eyebrow, main) {
   capEye.classList.remove('show'); capMain.classList.remove('show');
   setTimeout(() => { capEye.textContent = eyebrow; capMain.textContent = main; capEye.classList.add('show'); capMain.classList.add('show'); }, reduceMotion ? 0 : 160);
 }
+
+// The page that embeds this demo passes its language (&lang=en on load, a 'portfolio-lang' message on a
+// switch). The captions are written in Dutch above; DEMO_EN holds their English versions.
+const DEMO_EN = {
+ "Eerste run": "First run",
+ "sooth draait je eigen testcommando en leest het rapport. Eén test faalt.": "sooth runs your own test command and reads the report. One test fails.",
+ "Geschiedenis": "History",
+ "Elke run komt in een lokaal logbestand. Na een paar runs is test_ships aantoonbaar flaky, en de mailtest faalt sinds commit 9cc8049.": "Every run goes into a local log file. After a few runs test_ships is provably flaky, and the mail test fails since commit 9cc8049.",
+ "Met --verify draait sooth alleen de gefaalde tests opnieuw. De mailtest is echt kapot, test_ships niet.": "With --verify, sooth re-runs only the failed tests. The mail test is really broken, test_ships is not.",
+ "Exitcode": "Exit code",
+ "Een falende test blijft een foutcode geven. sooth legt een fout uit, maar verbergt hem niet.": "A failing test still gives an error code. sooth explains a failure, but does not hide it.",
+ "Wat sooth tot nu toe weet, zonder iets te draaien. Geen server, geen account.": "What sooth knows so far, without running anything. No server, no account."
+};
+let demoLang = (() => { try { return new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'nl'; } catch (e) { return 'nl'; } })();
+document.documentElement.lang = demoLang;
+const setCaptionNl = setCaption;
+let lastCaption = null;
+const tr = (t) => (demoLang === 'en' && DEMO_EN[t]) || t;
+setCaption = function (eyebrow, main) { lastCaption = [eyebrow, main]; setCaptionNl(tr(eyebrow), tr(main)); };
+window.addEventListener('message', (e) => {
+  const d = e.data;
+  if (!d || d.type !== 'portfolio-lang') return;
+  demoLang = d.lang === 'en' ? 'en' : 'nl'; document.documentElement.lang = demoLang;
+  if (lastCaption) setCaptionNl(tr(lastCaption[0]), tr(lastCaption[1]));
+});
 
 let renderToken = 0;
 const wait = (ms) => new Promise(r => setTimeout(r, ms));

@@ -64,7 +64,7 @@
     // again if it cannot start after all.
     try{ if(matchMedia('(min-width:821px) and (hover:hover)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('shade-soon'); }catch(e){}
     var t=null; try{ t=localStorage.getItem('theme'); }catch(e){}
-    if(t==='light'){
+    if(t!=='dark'){   // light is the default; dark only when the visitor chose it
       document.documentElement.classList.add('light');
       document.getElementById('themeColor').setAttribute('content','#ebe2cc');
       document.getElementById('favicon').href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f5eedd'/><rect x='6' y='6' width='88' height='88' fill='none' stroke='%23b66a15' stroke-width='1.5'/><text x='10' y='72' font-family='Georgia,serif' font-size='56' font-weight='bold' fill='%231a1510'>B</text><text x='47' y='67' font-family='Georgia,serif' font-size='18' font-style='italic' fill='%23b66a15'>v</text><text x='55' y='72' font-family='Georgia,serif' font-size='56' font-weight='bold' fill='%231a1510'>Z</text></svg>";
@@ -451,6 +451,8 @@
     background: repeating-linear-gradient(45deg, rgba(182,106,21,0.04) 0 2px, transparent 2px 14px),
                 linear-gradient(180deg, var(--bg-hi,#faf4e6), var(--bg-3));
   }
+  /* An embedded demo sits straight on the card, in both themes (the rule above outranked their background:none). */
+  html.light .mockup.mockup--embed, html.light .mockup.mockup--phone{ background:none; }
   html.light .mockup-ui{ background:rgba(255,255,255,.3); }
   html.light .mockup-ui .bar{ background:rgba(255,255,255,.22); }
   html.light .mockup-ui .cell{
@@ -1096,22 +1098,6 @@
     box-shadow:0 0 6px rgba(232,150,42,0.6);
   }
 
-  /* Expandable case study */
-  .case-toggle{
-    margin-top:24px;
-    background:transparent;border:none;
-    font-family:'Space Grotesk',sans-serif;
-    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-    color:var(--amber);
-    cursor:pointer;padding:0;
-    display:inline-flex;align-items:center;gap:10px;
-    transition:opacity .2s ease;
-  }
-  .case-toggle .chev{
-    display:inline-block;transition:transform .3s ease;
-  }
-  .case-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
-  .case-toggle:hover{opacity:.75;}
   .mockup-col{
     display:flex;flex-direction:column;gap:18px;min-width:0;max-width:100%;
   }
@@ -1326,10 +1312,10 @@
   .mockup.mockup--embed::before,
   .mockup.mockup--embed::after{ display:none; }
   .demo-frame.demo-frame--shh{ height:560px; }
-  .demo-frame.demo-frame--sooth{ height:490px; }
+  .demo-frame.demo-frame--sooth{ height:530px; }
   @media (max-width: 600px){
     .demo-frame.demo-frame--shh{ height:420px; }
-    .demo-frame.demo-frame--sooth{ height:560px; }
+    .demo-frame.demo-frame--sooth{ height:600px; }
   }
 
   /* Amber glow behind the phone — punchy but not garish */
@@ -1511,35 +1497,45 @@
     gap:20px; margin-top:28px;
   }
   @media(max-width:600px){ .cred-cards{ grid-template-columns:1fr; } }
+  /* The certificates as cards in the style of the case studies' Keuze cards: the code as a big
+     outlined label, the name as the heading, the issuer as the small line; the edge, a glow that
+     follows the pointer and a slight lift on hover. */
   .cred-card{
-    position:relative;
-    border:1px solid rgba(232,150,42,.2);
-    padding:36px 32px;
-    background:linear-gradient(135deg,rgba(232,150,42,.05) 0%,transparent 55%);
-    display:flex; flex-direction:column; gap:10px;
-    transition:border-color .2s ease, background .2s ease;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+    padding:28px;
+    border:1px solid var(--edge);
+    background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0));
     text-decoration:none; cursor:pointer;
+    transition:transform .35s cubic-bezier(.3,.8,.2,1), border-color .3s ease, box-shadow .35s ease;
   }
-  .cred-card:hover{ border-color:rgba(232,150,42,.5); background:linear-gradient(135deg,rgba(232,150,42,.09) 0%,transparent 55%); }
   .cred-card::before{
-    content:''; position:absolute; top:0; left:0;
-    width:3px; height:100%; background:var(--amber);
+    content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0; transition:opacity .3s ease;
+    background:radial-gradient(360px circle at var(--mx,-999px) var(--my,-999px), rgba(232,150,42,.12), transparent 70%);
+  }
+  @media (hover:hover) and (pointer:fine){
+    .cred-card:hover{ transform:translateY(-4px); border-color:rgba(232,150,42,.45); box-shadow:0 30px 60px -40px rgba(232,150,42,.35); }
+    .cred-card:hover::before{ opacity:1; }
   }
   .cred-card .cc-badge{
-    font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
-    color:var(--amber);
+    display:block; font-family:'Space Grotesk',sans-serif; font-weight:500;
+    font-size:clamp(56px,6vw,88px); line-height:.85; letter-spacing:-.04em; white-space:nowrap;
+    color:transparent; -webkit-text-stroke:1px var(--amber); opacity:.85;
   }
   .cred-card .cc-title{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(18px,1.8vw,24px); color:var(--ink);
-    letter-spacing:-.02em; line-height:1.15; margin-top:4px;
+    font-family:'Space Grotesk',sans-serif; font-weight:500;
+    font-size:clamp(22px,2.1vw,29px); line-height:1.12; letter-spacing:-.018em; color:var(--ink);
+    margin-top:28px;
   }
   .cred-card .cc-issuer{
     font-family:'JetBrains Mono',ui-monospace,monospace;
     font-size:11px; letter-spacing:.16em; text-transform:uppercase;
-    color:var(--ink-mute); margin-top:auto; padding-top:24px;
+    color:var(--ink-mute); margin-top:auto; padding-top:20px;
   }
+  @media (max-width:600px){
+    .cred-card{ align-items:center; text-align:center; }
+  }
+  @media (prefers-reduced-motion:reduce){ .cred-card:hover{ transform:none; } }
   .cred-card .cc-verify{
     display:inline-block; align-self:flex-start;
     font-family:'JetBrains Mono',ui-monospace,monospace;
@@ -1694,6 +1690,7 @@
     overflow:hidden;
     padding-bottom:60px;
   }
+  @media (max-width:900px){ .contact{ padding-bottom:32px; } }   /* phones: the page ends right under the last column */
   .contact-inner{width:100%;}
   .contact .kicker{
     font-family:'Space Grotesk',sans-serif;
@@ -1728,6 +1725,7 @@
   }
   .contact .email:hover{color:var(--amber);}
   .contact .email .at{font-family:'Lora',serif;font-style:italic;color:var(--amber);}
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
   .contact .email .dot-sep{color:var(--amber);}
 
   .contact .rule{height:1px;background:var(--rule);margin:60px 0 40px}
@@ -1744,10 +1742,9 @@
   }
   .contact .cv-link:hover{border-bottom-color:var(--amber);}
   .register-list{
-    display:grid; grid-template-columns:repeat(3,1fr);
+    display:grid; grid-template-columns:repeat(4,1fr);
     gap:0; margin-top:48px; list-style:none; padding:0;
   }
-  @media (max-width:900px){ .register-list{ grid-template-columns:1fr; } }
   .register-entry{
     padding:30px 32px 30px 0;
     border-right:1px solid var(--rule-2);
@@ -1775,8 +1772,8 @@
   }
   .register-entry .value em{ font-family:'Lora',serif; font-style:italic; color:var(--amber); font-weight:400; }
   .register-entry .note{
-    font-family:'Lora',serif; font-style:italic;
-    font-size:14px; color:var(--ink-dim); line-height:1.5; margin-top:4px;
+    font-family:'Lora',serif; font-style:normal;
+    font-size:15px; color:var(--ink); opacity:.82; line-height:1.55; margin-top:4px; max-width:36ch;
   }
   .register-entry .links{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
   .register-entry .links a{
@@ -1799,6 +1796,46 @@
     transition:opacity .2s ease;
   }
   .register-entry .links a.cv-link:hover{ opacity:.85; color:#0d0b08; }
+  /* Four columns on one set of rows (label / heading / text / actions) through subgrid, so the
+     buttons and the clock line up at the bottom of the block. Four columns only where the three
+     buttons of "Elders" fit on one line; two by two below that; stacked and centred on phones. */
+  .register-list{ grid-template-rows:auto auto 1fr auto; }
+  .register-entry{ display:grid; grid-row:span 4; grid-template-rows:subgrid; row-gap:10px; align-content:start; }
+  .register-entry > .num{ grid-row:1; } .register-entry > .value{ grid-row:2; } .register-entry > .note{ grid-row:3; margin-top:0; }
+  .register-entry > .links, .register-entry > .clock{ grid-row:4; align-self:end; margin-top:16px; }
+  .register-entry .links{ flex-wrap:nowrap; gap:6px; }
+  .register-entry .links a, .register-entry .links a.cv-link{ height:34px; padding:0 9px; letter-spacing:.06em; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+  /* More air: a wide gutter on both sides of every divider. Columns in the markup: Reactietijd,
+     Elders, Op deze site, Gevestigd — the two that matter most sit in the middle, where the eye lands. */
+  @media (min-width:1600px){
+    .register-entry{ padding:36px 44px 36px 44px; }
+    .register-entry:first-child{ padding-left:0; }
+    .register-entry:last-child{ padding-right:0; }
+  }
+  @media (max-width:1599px) and (min-width:901px){
+    .register-list{ grid-template-columns:repeat(2,1fr); grid-template-rows:auto auto 1fr auto auto auto 1fr auto; }
+    /* two by two: Elders and Op deze site on the first row, Reactietijd and Gevestigd below */
+    .register-entry:nth-child(2){ order:1; } .register-entry:nth-child(3){ order:2; }
+    .register-entry:nth-child(1){ order:3; } .register-entry:nth-child(4){ order:4; }
+    .register-entry{ padding:36px 48px 36px 0; }
+    .register-entry:nth-child(3), .register-entry:nth-child(4){ border-right:0; padding-right:0; padding-left:48px; }
+    .register-entry:nth-child(2), .register-entry:nth-child(3){ border-bottom:1px solid var(--rule-2); padding-top:0; padding-bottom:40px; }
+    .register-entry:nth-child(1), .register-entry:nth-child(4){ padding-top:40px; padding-bottom:0; }
+  }
+  @media (max-width:900px){
+    .register-list{ grid-template-columns:1fr; grid-template-rows:none; }
+    .register-entry{ display:flex; grid-row:auto; flex-direction:column; align-items:center; text-align:center; gap:10px; padding:28px 0; }
+    .register-entry:nth-child(2){ order:1; } .register-entry:nth-child(3){ order:2; }
+    .register-entry:nth-child(1){ order:3; } .register-entry:nth-child(4){ order:4; }
+    .register-entry:last-child{ border-bottom:1px solid var(--rule-2); }
+    .register-entry:nth-child(4){ border-bottom:0; padding-bottom:0; }   /* Gevestigd is shown last: no rule or air under it */
+    .register-entry .num{ justify-content:center; }
+    .register-entry .num::after{ display:none; }
+    .register-entry .links{ justify-content:center; flex-wrap:wrap; }
+    .register-entry > .links, .register-entry > .clock{ margin-top:6px; align-self:center; }
+  }
+  .contact .clock{ display:block; white-space:nowrap; height:34px; line-height:34px; font-family:'JetBrains Mono', ui-monospace, monospace; font-size:12px; letter-spacing:.05em; color:var(--ink-mute); font-variant-numeric:tabular-nums; }
+  .contact .clock .ctime{ color:var(--ink); }
 
   /* --- Ping / cron block (Contact) --- */
   .ping-block{
@@ -1850,29 +1887,102 @@
     animation:gPulse 2.4s ease-in-out infinite;
   }
 
+  /* Edges of cards and buttons: in dark --rule-2 is 1.1:1 against the page and the cards hardly read
+     as cards; --edge is 1.7:1. Light keeps its edges (already 1.6:1 or more). */
+  :root{ --edge:#40392f; }
+  html.light{ --edge:var(--rule-2); }
+  html:not(.light) .project:not(:hover), html:not(.light) .case-cta:not(:hover), html:not(.light) .project .tag{ border-color:var(--edge); }
+
   /* ---------- Footer ---------- */
+  /* The name as a wordmark drawn with the hero's ink lines (a soft light follows a fine pointer
+     through the letters), then a row of buttons and the clock. Same footer on every page. */
   footer{
-    padding:40px 80px;
-    border-top:none;
-    display:flex;justify-content:space-between;align-items:center;gap:20px;
+    padding:0 80px;
     font-family:'JetBrains Mono', ui-monospace, monospace;
-    font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mute);
+    font-size:11px;letter-spacing:.12em;color:var(--ink-mute);
     background:var(--bg);
     position:relative;z-index:2;
   }
-  footer .mark{display:flex;align-items:center;gap:10px;color:var(--ink-dim);}
-  footer .mark .dot{width:5px;height:5px;background:var(--amber);border-radius:50%;display:inline-block;}
-  footer .vuln{ color:var(--ink-mute); font-size:11px; margin-left:8px; letter-spacing:0; text-transform:none; }
+  .wm-inner{max-width:1400px;margin:0 auto;padding-top:72px;}
+  .wm{display:block;width:100%;height:auto;}
+  .wm-text{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:212px;letter-spacing:-.045em;text-transform:none;}
+  .wm-tint{fill:var(--ink);opacity:.055;}
+  /* the stroke sits on the wrapper, so the brighter copy (.wm-hot) can give its lines another colour */
+  .wm-move{fill:none;stroke:var(--ink);stroke-width:1;}
+  .wm-lines use{opacity:.8;}
+  .wm-lines .wm-lines-2{opacity:.38;}
+  .wm-hot{stroke:#9c560f;stroke-width:1.7;opacity:0;transition:opacity .45s ease;}
+  .wm.lit .wm-hot, .wm.lit .wm-glow{opacity:1;}
+  .wm-glow{opacity:0;transition:opacity .45s ease;}
+  .wm-glow-a{stop-color:#fffaf0;stop-opacity:.95;}
+  .wm-glow-b{stop-color:#fffaf0;stop-opacity:0;}
+  .wm-outline{fill:none;stroke:var(--rule);stroke-width:1;}
+  html:not(.light) .wm-tint{fill:var(--amber);opacity:.07;}
+  html:not(.light) .wm-move{stroke:var(--amber);}
+  html:not(.light) .wm-lines use{opacity:.75;}
+  html:not(.light) .wm-lines .wm-lines-2{stroke:#a04a1a;opacity:.7;}
+  html:not(.light) .wm-hot{stroke:#ffc46b;}
+  html:not(.light) .wm-glow-a{stop-color:#e8962a;stop-opacity:.32;}
+  html:not(.light) .wm-glow-b{stop-color:#a04a1a;stop-opacity:0;}
+  html:not(.light) .wm-outline{stroke:rgba(232,150,42,.3);}
+  .wm-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px;padding:24px 0 40px;border-top:1px solid var(--rule);}
+  footer .foot-links{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:8px;}
+  footer .fb-btn{
+    height:38px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;border-radius:var(--r-in);
+    font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;letter-spacing:0;text-transform:none;
+    color:var(--ink);text-decoration:none;background:transparent;border:1px solid var(--edge);
+    transition:background .2s ease, border-color .2s ease, color .2s ease;
+  }
+  html.light footer .fb-btn{border-color:var(--rule);background:rgba(255,255,255,.22);}
+  footer .fb-btn:hover, html.light footer .fb-btn:hover{border-color:var(--amber);background:var(--amber-soft);color:var(--ink);}
+  footer .fb-btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  footer .fb-primary, html.light footer .fb-primary{background:rgba(232,150,42,.12);border-color:rgba(232,150,42,.42);color:var(--ink);}
+  html.light footer .fb-primary{background:rgba(115,60,7,.11);border-color:rgba(115,60,7,.42);}
+  footer .fb-primary:hover, html.light footer .fb-primary:hover{background:var(--amber);border-color:var(--amber);color:#0d0b08;}
+  html.light footer .fb-primary:hover{color:#faf4e6;}
+  .fb-ico{width:14px;height:14px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;color:var(--amber);}
+  .fb-primary:hover .fb-ico{color:inherit;}
   footer .clock{
-    text-align:right;
     font-family:'JetBrains Mono', ui-monospace, monospace;
     color:var(--ink-mute);
     font-variant-numeric:tabular-nums;
     letter-spacing:.05em; font-size:12px;
-    text-transform:none;
   }
   footer .clock .ctime{ color:var(--ink); }
-  @media (max-width:700px){ footer{flex-direction:column;align-items:flex-start;padding:30px 28px} footer .clock{text-align:left;} footer .vuln{display:block; margin:4px 0 0;} }
+  @media (max-width:900px){ footer{padding:0 28px;} }
+  .wm-row--home{justify-content:space-between;}
+  .wm-foot--home .wm-inner{padding-top:56px;}
+  @media (max-width:600px){
+    /* phones: centred and stacked, the buttons in centred rows; one layer of lines is enough */
+    footer{padding:0 20px;}
+    .wm-inner{padding-top:56px;}
+    .wm-row{flex-direction:column;justify-content:center;text-align:center;}
+    footer .foot-links{justify-content:center;}
+    .wm-lines .wm-lines-2{display:none;}
+  }
+  @media (prefers-reduced-motion:reduce){ .wm-hot, .wm-glow{transition:none;} }
+
+  /* The e-mail (contact section here, footer on the subpages): solid in the contact e-mail's own type, with an
+     amber "@" in Lora italic and an amber "."; on a fine pointer the letters fill with the ink lines and a
+     soft light. One SVG at the real font size, so the address keeps its width and stays on one line. */
+  .email-ink{ display:block; position:relative; text-decoration:none; color:var(--ink); line-height:0; --fs:clamp(36px, 8.2vw, 148px); }
+  @media (max-width:900px){ .email-ink{ --fs:clamp(32px, 8.5vw, 52px); } }
+  .email-ink svg{ display:block; width:100%; height:calc(var(--fs) * 1.2); overflow:visible; font-size:var(--fs); }
+  .ei-text{ font-family:'Space Grotesk',sans-serif; font-weight:400; letter-spacing:-.04em; }
+  .ei-at{ font-family:'Lora',serif; font-style:italic; }
+  .ei-solid{ fill:var(--ink); transition:opacity .45s ease; }
+  .ei-solid .ei-at, .ei-solid .ei-dot{ fill:var(--amber); }
+  .ei-ink, .ei-outline{ opacity:0; transition:opacity .45s ease; }
+  .ei-outline{ fill:none; stroke:var(--rule); stroke-width:1; }
+  html:not(.light) .ei-outline{ stroke:rgba(232,150,42,.3); }
+  .ei-outline .ei-at, .ei-outline .ei-dot{ stroke:var(--amber); }
+  @media (hover:hover) and (pointer:fine){
+    .email-ink:hover .ei-ink, .email-ink:hover .ei-outline{ opacity:1; }
+    .email-ink:hover .ei-solid{ opacity:.08; }
+  }
+  .email-ink:focus-visible{ outline:2px solid var(--amber); outline-offset:10px; border-radius:var(--r-in); }
+  .email-ink .sr-only{ font-size:16px; line-height:1.4; }
+  @media (prefers-reduced-motion:reduce){ .ei-solid, .ei-ink, .ei-outline{ transition:none; } }
 
   /* selection */
   ::selection{background:var(--amber);color:#0d0b09}
@@ -1943,13 +2053,13 @@
   .bt-row{
     display:flex; justify-content:space-between; align-items:center;
     padding:11px 14px;
-    color:var(--ink-dim); text-decoration:none;
+    color:var(--ink); text-decoration:none;
     border-bottom:1px solid rgba(255,255,255,.05);
     transition:color .15s ease, background .15s ease;
     gap:24px;
   }
   .bt-row:last-child{ border-bottom:none; }
-  .bt-row:hover{ color:var(--ink); background:rgba(232,150,42,.06); }
+  .bt-row:hover{ color:var(--amber); background:rgba(232,150,42,.06); }
   .bt-action{ color:var(--amber); flex-shrink:0; font-size:11px; letter-spacing:.1em; }
   .bt-copy{
     width:100%; background:transparent; border:none; cursor:pointer;
@@ -2092,7 +2202,7 @@
     .exp-h2, [data-i18n="exp-h2"] { font-size:clamp(20px,6vw,32px); }
 
     /* Credentials: smaller card padding */
-    .cred-card { padding:24px 20px; }
+    .cred-card { padding:24px; }
 
     /* Contact value text */
     .register-entry .value { font-size:clamp(18px,5vw,22px); }
@@ -2115,8 +2225,6 @@
     .project .tag    { padding:6px clamp(7px, calc((100vw - 300px) * .1), 9px); font-size:11px; letter-spacing:clamp(.7px, calc((100vw - 330px) * .02), 1.32px); }
     .project .tags .tag:nth-child(n+4) { display:none; }
     .project .meta   { display:none; }
-    .project .case-toggle { order:7; margin-top:28px; align-self:center; }
-    .project .case-study  { order:8; }
 
     /* Stack: 2-column compact grid */
     .tech-grid { grid-template-columns:repeat(2,1fr); }
@@ -2208,11 +2316,13 @@
   html.light .cp-foot{ border-top-color:var(--rule-2); }
   html.light .cp-scrim{ background:rgba(60,46,26,.38); }
   html.light .cred-card{
-    background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,.26));
+    background:linear-gradient(180deg, rgba(255,255,255,.44), rgba(255,255,255,.16));
     border-color:var(--rule);
-    box-shadow:0 18px 40px -34px rgba(91,70,30,.45);
   }
-  html.light .cred-card:hover{ border-color:var(--amber); background:linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.36)); }
+  html.light .cred-card::before{ background:radial-gradient(360px circle at var(--mx,-999px) var(--my,-999px), rgba(115,60,7,.08), transparent 70%); }
+  @media (hover:hover) and (pointer:fine){
+    html.light .cred-card:hover{ border-color:rgba(115,60,7,.45); box-shadow:0 30px 60px -40px rgba(91,70,30,.45); }
+  }
   html.light em{ color:var(--amber-display); }
   html.light .uptime-line .um{ opacity:1; color:var(--ink-dim); }
   html.light .hero .sec-num{ color:var(--ink-dim); }
@@ -2287,7 +2397,6 @@
   }
   .contact{
     background:var(--surface-layers),
-      var(--contour) no-repeat left -280px bottom -140px / 880px auto,
       radial-gradient(58% 52% at 86% 44%, var(--ember-a), transparent 70%),
       radial-gradient(50% 46% at 6% 62%, var(--ember-b), transparent 70%),
       var(--base);
@@ -2309,12 +2418,9 @@
     --glass-solid:rgba(24,19,14,.97);
     --glass-tint:rgba(30,24,17,.64);
     --glass-tint-strong:rgba(28,22,16,.72);
-    --glass-line:rgba(255,236,205,.16);
-    /* light on the edge: a streak top left, a fainter return bottom right, a general top light */
-    --glass-edge:
-      radial-gradient(40% 90% at 12% 0%, rgba(255,244,224,.50), transparent 70%),
-      radial-gradient(40% 90% at 88% 100%, rgba(255,244,224,.20), transparent 70%),
-      linear-gradient(180deg, rgba(255,244,224,.24), transparent 55%);
+    --glass-line:#40392f;   /* the same flat edge as the cards and buttons (--edge in the dark theme) */
+    /* no light streaks on the edge: the bar and menus read like the rest of the site's surfaces */
+    --glass-edge:linear-gradient(transparent, transparent);
     --glass-sheen:rgba(255,240,215,.07);
     --glass-fill:rgba(255,240,215,.08);
     --glass-fill-hover:rgba(255,240,215,.13);
@@ -2326,10 +2432,7 @@
     --glass-tint:rgba(251,246,234,.56);
     --glass-tint-strong:rgba(251,246,234,.78);
     --glass-line:rgba(70,48,18,.22);
-    --glass-edge:
-      radial-gradient(40% 90% at 12% 0%, rgba(255,255,255,.95), transparent 70%),
-      radial-gradient(40% 90% at 88% 100%, rgba(255,255,255,.60), transparent 70%),
-      linear-gradient(180deg, rgba(255,255,255,.85), transparent 55%);
+    --glass-edge:linear-gradient(transparent, transparent);
     --glass-sheen:rgba(255,255,255,.30);
     --glass-fill:rgba(70,48,18,.07);
     --glass-fill-hover:rgba(70,48,18,.12);
@@ -2518,7 +2621,6 @@
      ===================================================================================== */
   .project, .cred-card, .about-card, .profile-photo, .tech-grid{ border-radius:var(--r); }
   .project::before{ border-radius:inherit; }          /* the pointer glow stays inside the rounded card */
-  .cred-card{ overflow:hidden; }                       /* so the amber bar on the left follows the corner */
   /* The stack is one rounded block of cells: the block is clipped, the cells stay straight. A ring
      drawn outside a cell would be cut off by that clip, so the two rings on a cell go inside it. */
   .tech-grid{ overflow:hidden; }
@@ -2534,113 +2636,23 @@
   .project .tag, .build-badge{ border-radius:var(--r-xs); }
 
   /* =====================================================================================
-     CASE STUDIES: a panel across the full width of a project card, under its two columns.
-     It opens by growing a grid row, so it is as tall as its content at every width (the old
-     panel had a fixed maximum height and was cut off on phones).
+     CASE STUDY LINK: each card's main action goes to the case study's own page.
      ===================================================================================== */
-  .project{ row-gap:0; }   /* a row gap would stay under a closed panel: the rows are spaced by margins instead */
+  .project{ row-gap:0; }   /* the rows are spaced by margins, as before */
   @media (min-width:601px) and (max-width:1000px){ .project .mockup-col{ margin-top:40px; } }
-  .case-study{
-    grid-column:1 / -1; width:100%; min-width:0;
-    display:grid; grid-template-rows:0fr;
-    opacity:0; visibility:hidden;
-    transition:grid-template-rows .5s cubic-bezier(.3,.8,.2,1), opacity .35s ease, visibility 0s linear .5s;
-  }
-  .case-study[data-open="true"]{
-    grid-template-rows:1fr; opacity:1; visibility:visible;
-    transition:grid-template-rows .5s cubic-bezier(.3,.8,.2,1), opacity .35s ease .1s, visibility 0s;
-  }
-  .cs-clip{ overflow:hidden; min-height:0; }
-  .cs-wrap{
-    margin-top:44px; padding-top:38px; border-top:1px solid var(--rule-2);
-    display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:40px 56px;
-  }
-  .cs-wrap h4{
-    font-family:'Space Grotesk',sans-serif; font-weight:500;
-    font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--amber); margin:0 0 14px;
-  }
-  .cs-wrap p, .cs-wrap li{ font-family:'Lora',serif; font-size:15px; line-height:1.65; color:var(--ink-dim); margin:0; }
-  .cs-wrap p + p{ margin-top:12px; }
-  .cs-wrap strong{ color:var(--ink); font-weight:500; }
-  .cs-wrap code{ font-family:'JetBrains Mono',ui-monospace,monospace; font-size:.88em; color:var(--ink); }
-  .cs-wrap a{ color:var(--amber); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
-  .cs-col{ grid-column:span 4; min-width:0; }
-  .cs-choices{ list-style:none; padding:0; margin:0; display:grid; gap:14px; }
-  .cs-choices li{ padding-left:16px; border-left:1px solid var(--rule); }
-  /* how it works, as a row of steps */
-  .cs-flow{ grid-column:1 / -1; min-width:0; }
-  .cs-steps{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:0 34px; counter-reset:step; }
-  .cs-steps li{
-    counter-increment:step; display:flex; align-items:baseline; gap:10px;
-    font-family:'Space Grotesk',sans-serif; font-size:13px; line-height:1.4; letter-spacing:.01em; color:var(--ink);
-    padding:10px 14px; border:1px solid var(--rule-2); border-radius:var(--r-in);
-    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-  }
-  html.light .cs-steps li{ background:rgba(255,255,255,.32); }
-  .cs-steps li::before{
-    content:counter(step, decimal-leading-zero);
-    font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; color:var(--amber);
-  }
-  .cs-steps li{ position:relative; }
-  .cs-steps li + li::after{
-    content:"→"; position:absolute; left:-25px; top:50%; transform:translateY(-52%);
-    font-family:'JetBrains Mono',ui-monospace,monospace; font-size:13px; color:var(--ink-mute);
-  }
-  /* what came of it, with the figures beside it */
-  .cs-result{ grid-column:span 5; min-width:0; }
-  .cs-facts{ grid-column:span 7; min-width:0; margin:0; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:1px; background:var(--rule-2); border:1px solid var(--rule-2); border-radius:var(--r-in); overflow:hidden; align-self:start; }
-  .cs-facts > div{ background:var(--bg); padding:16px 16px 14px; display:flex; flex-direction:column; gap:6px; }
-  .cs-facts dd{ order:1; }   /* the figure first, its label under it, so the figures line up across the tiles */
-  .cs-facts dt{ order:2; }
-  html.light .cs-facts > div{ background:#f3ecda; }
-  .cs-facts dd{ margin:0; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:26px; line-height:1; letter-spacing:-.02em; color:var(--ink); font-variant-numeric:tabular-nums; }
-  .cs-facts dt{ font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-mute); line-height:1.35; overflow-wrap:anywhere; }
-  .cs-close{
-    grid-column:1 / -1; justify-self:start; cursor:pointer;
+  .case-page{
+    align-self:flex-start; margin-top:8px;
+    display:inline-flex; align-items:center; gap:10px; padding:10px 14px; border-radius:var(--r-in);
     font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:.22em; text-transform:uppercase;
-    color:var(--amber); background:transparent; border:0; padding:6px 0; display:inline-flex; gap:10px; align-items:center;
-  }
-  .cs-close:hover{ opacity:.75; }
-  .cs-close:focus-visible{ outline:1px solid var(--amber); outline-offset:3px; }
-  .cs-note{ grid-column:1 / -1; font-family:'Space Grotesk',sans-serif !important; font-size:12px !important; letter-spacing:.02em; color:var(--ink-mute) !important; }
-  @media (max-width:1100px){
-    .cs-wrap{ gap:34px 40px; }
-    .cs-col{ grid-column:span 6; }
-    .cs-col--wide{ grid-column:1 / -1; }
-    .cs-result, .cs-facts{ grid-column:1 / -1; }
-    /* the steps stand under each other, each arrow pointing down */
-    .cs-steps{ grid-template-columns:minmax(0,1fr); gap:0; max-width:560px; }
-    .cs-steps li + li{ margin-top:26px; }
-    .cs-steps li + li::after{ content:"↓"; left:18px; top:-22px; transform:none; }
-  }
-  @media (max-width:700px){
-    .cs-wrap{ margin-top:28px; padding-top:26px; gap:28px 0; }
-    .cs-col, .cs-col--wide{ grid-column:1 / -1; }
-    .cs-facts{ grid-template-columns:repeat(2, minmax(0,1fr)); }
-    .cs-facts dd{ font-size:22px; }
-    .cs-steps{ max-width:none; }
-  }
-  /* the button that opens it: a real button, not a line of small text */
-  .case-toggle{ align-self:flex-start; margin-top:8px; }
-  /* ...and the panel's own close button at the end looks the same */
-  .case-toggle, .cs-close{
-    padding:10px 14px; border-radius:var(--r-in);
+    color:var(--amber); text-decoration:none;
     border:1px solid rgba(232,150,42,.42); background:rgba(232,150,42,.12);
     transition:background .2s ease, border-color .2s ease, color .2s ease;
   }
-  html.light .case-toggle, html.light .cs-close{ border-color:rgba(115,60,7,.42); background:rgba(115,60,7,.11); }
-  .case-toggle:hover, .cs-close:hover{ opacity:1; background:var(--amber); border-color:var(--amber); color:#0d0b08; }
-  html.light .case-toggle:hover, html.light .cs-close:hover{ color:#faf4e6; }
-  @media (max-width:600px){
-    .case-study .cs-close{ justify-self:center; }
-    /* Two tiles side by side leave little room: a long Dutch word like "afhankelijkheden" was
-       cut in the middle. Slightly less padding and letter-spacing make it fit from 360px; on
-       anything narrower it is hyphenated instead of cut. */
-    .cs-facts > div{ padding:14px 12px 12px; }
-    .cs-facts dt{ letter-spacing:.04em; -webkit-hyphens:auto; hyphens:auto; }
-  }
-  .case-toggle:focus-visible{ outline:1px solid var(--amber); outline-offset:2px; }
-  @media (prefers-reduced-motion:reduce){ .case-study, .case-study[data-open="true"]{ transition:none; } }
+  html.light .case-page{ border-color:rgba(115,60,7,.42); background:rgba(115,60,7,.11); }
+  .case-page:hover{ background:var(--amber); border-color:var(--amber); color:#0d0b08; }
+  html.light .case-page:hover{ color:#faf4e6; }
+  .case-page:focus-visible{ outline:1px solid var(--amber); outline-offset:2px; }
+  @media (max-width:600px){ .project .case-page{ order:7; margin-top:28px; align-self:center; } }
 
   /* Wide screens: the hero, the contact block, the footer and the section numbers keep to the
      same column as the bar and the cards (they used to stay 80px from the screen edge). */
@@ -2648,7 +2660,6 @@
     .hero-inner, .contact-inner{ width:100%; max-width:1400px; margin-left:auto; margin-right:auto; }
     .sec-num{ right:var(--gutter); }
     .hero-meta{ left:var(--gutter); right:var(--gutter); }
-    footer{ padding-left:var(--gutter); padding-right:var(--gutter); }
   }
 
   /* Settings menu: each choice is a two-part switch whose thumb slides to the chosen side
@@ -2706,8 +2717,6 @@
   html:not(.anim) .exp-list{ --lp:1; }
   html:not(.anim) .exp-item{ --p:1; }
   html.no-boot .boot{ display:none !important; }
-  html:not(.anim) .case-study{ grid-template-rows:1fr; opacity:1; visibility:visible; }
-  html:not(.anim) .case-toggle{ display:none; }
 </style>
 </head>
 <body>
@@ -2957,13 +2966,11 @@
         <div><span data-i18n="meta-users">Gebruikers</span><span class="v" data-i18n="p6-users-v">Developers</span></div>
         <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p6-status-v">Op crates.io</span></div>
       </div>
-      <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-sooth">
-        <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
-      </button>
+      <a class="case-page" href="sooth/" data-hoverable><span data-i18n="case-page">Lees de case study</span> <span aria-hidden="true">→</span></a>
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--embed">
-        <iframe class="demo-frame demo-frame--sooth" data-src="demo/sooth-demo.html?v=6" title="sooth — terminal met echte output: een testrun, een bewezen flaky test, --verify en de geschiedenis"></iframe>
+        <iframe class="demo-frame demo-frame--sooth" data-src="demo/sooth-demo.html?v=8" title="sooth — terminal met echte output: een testrun, een bewezen flaky test, --verify en de geschiedenis"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="https://github.com/Bramvzw/sooth" target="_blank" rel="noopener" data-hoverable>
@@ -2986,43 +2993,13 @@
         </a>
       </div>
     </div>
-    <div class="case-study" id="case-sooth" data-open="false">
-      <div class="cs-clip"><div class="cs-wrap">
-        <div class="cs-flow">
-          <h4 data-i18n="case-steps">Zo werkt het</h4>
-          <ol class="cs-steps">
-            <li data-i18n="cs6-step1">Je eigen testcommando draait</li>
-            <li data-i18n="cs6-step2">sooth leest het JUnit-rapport</li>
-            <li data-i18n="cs6-step3">Eén regel per test in een lokaal bestand, met de commit</li>
-            <li data-i18n="cs6-step4">Vergelijken met eerdere runs</li>
-            <li data-i18n="cs6-step5">Rapport: flaky, kapot, of sinds welke commit</li>
-          </ol>
-        </div>
-        <div class="cs-col"><h4 data-i18n="case-problem">Probleem</h4><p data-i18n="cs6-problem">Een rode testrun zegt niet waarom hij rood is. Je draait hem opnieuw, hij wordt groen, en je weet nog steeds niet of de test onbetrouwbaar is of dat er echt iets stuk is. Tools die dit bijhouden, zoals ReportPortal of Allure, zijn opgezet rond een server met een dashboard.</p></div>
-        <div class="cs-col"><h4 data-i18n="case-approach">Aanpak</h4><p data-i18n="cs6-approach">sooth draait om het testcommando dat je al hebt en leest het JUnit-rapport dat dat schrijft. Elke run legt per test één regel vast in <code>.sooth/history.jsonl</code>, met de commit erbij. Slaagde en faalde een test op dezelfde schone commit, dan is hij aantoonbaar flaky. Was hij groen en is hij sinds een commit steeds rood, dan noemt sooth die commit. Met <code>--verify</code> draait hij alleen de gefaalde tests opnieuw.</p></div>
-        <div class="cs-col cs-col--wide"><h4 data-i18n="case-choices">Keuzes</h4><ul class="cs-choices">
-          <li data-i18n="cs6-choice1"><strong>Bewijs, geen vermoeden.</strong> Flaky heet een test pas als hij op één schone commit zowel slaagde als faalde. Wie een regressie flaky noemt, stuurt iemand op zoek naar toeval dat er niet is.</li>
-          <li data-i18n="cs6-choice2"><strong>Leren van runs die toch al gebeuren.</strong> Tien keer draaien om een flaky test te vinden maakt van een suite van vijf minuten vijftig minuten. Daarom groeit de geschiedenis met elke gewone run.</li>
-          <li data-i18n="cs6-choice3"><strong>Een fout blijft een fout.</strong> Faalt er een test, dan eindigt sooth met een foutcode, tenzij je die test zelf in quarantaine hebt gezet. "1 failed" tonen en toch met 0 eindigen zou twee waarheden tegelijk zijn, en CI leest exitcodes.</li>
-        </ul></div>
-        <div class="cs-result"><h4 data-i18n="case-result">Resultaat</h4><p data-i18n="cs6-result">Sinds juli 2026 zijn er zeven releases. Versie 0.3 staat op crates.io en is er als kant-en-klare binary voor macOS en Linux. Het werkt met pytest, PHPUnit en Pest (ook via <code>php artisan test</code>), Jest en Go. Trage tests over tijd en volgorde-afhankelijke tests zijn de volgende stap op de roadmap.</p></div>
-        <dl class="cs-facts">
-          <div><dt data-i18n="cs6-fact1-l">releases</dt><dd data-i18n="cs6-fact1-v">7</dd></div>
-          <div><dt data-i18n="cs6-fact2-l">tests</dt><dd data-i18n="cs6-fact2-v">411</dd></div>
-          <div><dt data-i18n="cs6-fact3-l">afhankelijkheden</dt><dd data-i18n="cs6-fact3-v">3</dd></div>
-          <div><dt data-i18n="cs6-fact4-l">binary op macOS</dt><dd data-i18n="cs6-fact4-v">1,2 MB</dd></div>
-        </dl>
-        <p class="cs-note" data-i18n="cs6-note">Cijfers bij versie 0.3.4.</p>
-        <button class="cs-close" type="button" data-case="case-sooth"><span data-i18n="case-toggle-hide">Verberg case study</span> <span aria-hidden="true">↑</span></button>
-      </div></div>
-    </div>
   </article>
 
   <article class="project from-right" data-dir="right" id="proj-hub">
     <div class="body">
       <div class="index" data-i18n="p5-index">Project 02 — Dagelijks in gebruik</div>
       <h3>Smart Home Hub <span class="year"> / 2025</span></h3>
-      <p class="desc" data-i18n="proj5-desc">Het dashboard op het Raspberry Pi-scherm in mijn woonkamer. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het een korte briefing over de dag.</p>
+      <p class="desc" data-i18n="proj5-desc">Het dashboard dat een Raspberry Pi in mijn woonkamer op een scherm toont. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het een korte briefing over de dag.</p>
       <div class="tags">
         <a class="tag" href="#tech-laravel" data-jump data-lines="~36,500 lines written">Laravel</a><a class="tag" href="#tech-livewire" data-jump data-lines="12 modules">Livewire</a><span class="tag" data-lines="briefing + menu via Prism">Claude API</span><a class="tag" href="#tech-docker" data-jump data-lines="Docker on a Synology NAS">Docker</a>
       </div>
@@ -3031,13 +3008,11 @@
         <div><span data-i18n="meta-users">Gebruikers</span><span class="v" data-i18n="p5-users-v">Mijn huishouden</span></div>
         <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p5-status-v">Open source · MIT</span></div>
       </div>
-      <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-smarthome">
-        <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
-      </button>
+      <a class="case-page" href="smart-home-hub/" data-hoverable><span data-i18n="case-page">Lees de case study</span> <span aria-hidden="true">→</span></a>
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--embed">
-        <iframe class="demo-frame demo-frame--shh" data-src="demo/smart-home-hub-demo.html?v=4" title="Smart Home Hub — rondleiding: briefing, dashboard, agenda, weekmenu, prijzen en filmtips"></iframe>
+        <iframe class="demo-frame demo-frame--shh" data-src="demo/smart-home-hub-demo.html?v=5" title="Smart Home Hub — rondleiding: briefing, dashboard, agenda, weekmenu, prijzen en filmtips"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="https://github.com/Bramvzw/smart-home-hub" target="_blank" rel="noopener" data-hoverable>
@@ -3050,36 +3025,6 @@
           </span>
         </a>
       </div>
-    </div>
-    <div class="case-study" id="case-smarthome" data-open="false">
-      <div class="cs-clip"><div class="cs-wrap">
-        <div class="cs-flow">
-          <h4 data-i18n="case-steps">Zo werkt het</h4>
-          <ol class="cs-steps">
-            <li data-i18n="cs5-step1">Twaalf modules, elk met eigen code en tests</li>
-            <li data-i18n="cs5-step2">Vijf gedeelde contracten verbinden ze</li>
-            <li data-i18n="cs5-step3">Vijftien geplande taken draaien op de achtergrond</li>
-            <li data-i18n="cs5-step4">Briefing door Claude via Prism, of een vast sjabloon</li>
-            <li data-i18n="cs5-step5">Scherm op de Pi en een melding via ntfy</li>
-          </ol>
-        </div>
-        <div class="cs-col"><h4 data-i18n="case-problem">Probleem</h4><p data-i18n="cs5-problem">Self-hosted dashboards als Homepage of Dashy zijn vooral tegels met links. Ik wilde er een die dingen doet, en waarin de onderdelen van elkaar weten: de weersverwachting kan de lampen aansturen, en elke ochtend leveren acht modules hun deel van één briefing.</p></div>
-        <div class="cs-col"><h4 data-i18n="case-approach">Aanpak</h4><p data-i18n="cs5-approach">Een modulaire monoliet in Laravel. Elke module heeft zijn eigen acties, services, schermen en tests en meldt zich aan bij een centraal register. Modules kennen elkaar niet: ze werken samen via vijf gedeelde contracten, zoals <code>BriefingSource</code> voor de ochtendbriefing. Lampen, winkels, supermarkten en concertbronnen zitten als adapters achter een interface; een nieuw merk is een kleine class plus een regel configuratie.</p></div>
-        <div class="cs-col cs-col--wide"><h4 data-i18n="case-choices">Keuzes</h4><ul class="cs-choices">
-          <li data-i18n="cs5-choice1"><strong>Afspraken die een test bewaakt.</strong> Een architectuurtest laat een module alleen afhangen van zichzelf en van de gedeelde contracten. De twee uitzonderingen staan er met naam in: verlichting leest het weer, entertainment leest Spotify.</li>
-          <li data-i18n="cs5-choice2"><strong>Het werkt ook zonder AI.</strong> Ontbreekt de API-sleutel of mislukt de aanroep, dan neemt een vast sjabloon het over en komt de briefing er alsnog.</li>
-          <li data-i18n="cs5-choice3"><strong>Alleen binnen het thuisnetwerk.</strong> Het dashboard bedient apparaten en bewaart sleutels van betaalde diensten, dus het hangt niet aan het internet.</li>
-        </ul></div>
-        <div class="cs-result"><h4 data-i18n="case-result">Resultaat</h4><p data-i18n="cs5-result">Draait in Docker op mijn Synology NAS, met een Raspberry Pi als scherm. Acht versies sinds mei 2025, met tests per module, statische analyse op PHPStan-niveau 8 en CI op GitHub. Het is gebouwd voor één gebruiker en nog in ontwikkeling.</p></div>
-        <dl class="cs-facts">
-          <div><dt data-i18n="cs5-fact1-l">modules</dt><dd data-i18n="cs5-fact1-v">12</dd></div>
-          <div><dt data-i18n="cs5-fact2-l">gedeelde contracten</dt><dd data-i18n="cs5-fact2-v">5</dd></div>
-          <div><dt data-i18n="cs5-fact3-l">tests</dt><dd data-i18n="cs5-fact3-v">434</dd></div>
-          <div><dt data-i18n="cs5-fact4-l">geplande taken</dt><dd data-i18n="cs5-fact4-v">15</dd></div>
-        </dl>
-        <p class="cs-note" data-i18n="cs5-note">Cijfers van november 2026.</p>
-        <button class="cs-close" type="button" data-case="case-smarthome"><span data-i18n="case-toggle-hide">Verberg case study</span> <span aria-hidden="true">↑</span></button>
-      </div></div>
     </div>
   </article>
 
@@ -3096,13 +3041,11 @@
         <div><span data-i18n="meta-parts">Onderdelen</span><span class="v" data-i18n="p4-users-v">Backend + Android-app</span></div>
         <div><span data-i18n="meta-status">Status</span><span class="v" data-i18n="p4-status-v">Gesloten beta op Play</span></div>
       </div>
-      <button class="case-toggle" type="button" aria-expanded="false" aria-controls="case-skylanders">
-        <span class="label-txt" data-i18n="case-toggle">Case study</span> <span class="chev">↓</span>
-      </button>
+      <a class="case-page" href="skylanders-tracker/" data-hoverable><span data-i18n="case-page">Lees de case study</span> <span aria-hidden="true">→</span></a>
     </div>
     <div class="mockup-col">
       <div class="mockup mockup--phone">
-        <iframe class="demo-frame" data-src="demo/skylanders-demo.html?v=5" title="Skylanders Tracker — interactieve app-demo: de volledige flip-lifecycle van deal tot winst"></iframe>
+        <iframe class="demo-frame" data-src="demo/skylanders-demo.html?v=6" title="Skylanders Tracker — interactieve app-demo: de volledige flip-lifecycle van deal tot winst"></iframe>
       </div>
       <div class="case-ctas">
         <a class="case-cta" href="mailto:bram@vanzwolle.net?subject=Skylanders%20Tracker%20%E2%80%94%20Play%20beta%20toegang" data-hoverable>
@@ -3124,36 +3067,6 @@
           </span>
         </a>
       </div>
-    </div>
-    <div class="case-study" id="case-skylanders" data-open="false">
-      <div class="cs-clip"><div class="cs-wrap">
-        <div class="cs-flow">
-          <h4 data-i18n="case-steps">Zo werkt het</h4>
-          <ol class="cs-steps">
-            <li data-i18n="cs4-step1">Ongeveer elk uur zoeken op Vinted en Marktplaats</li>
-            <li data-i18n="cs4-step2">Alleen nieuwe advertenties, zonder kleding en merchandise</li>
-            <li data-i18n="cs4-step3">Welke figuur? Eerst de titel, anders de foto</li>
-            <li data-i18n="cs4-step4">Gangbare prijs: mediaan van vraagprijzen op Vinted</li>
-            <li data-i18n="cs4-step5">Score van 1 tot 10; de beste geven een pushmelding</li>
-          </ol>
-        </div>
-        <div class="cs-col"><h4 data-i18n="case-problem">Probleem</h4><p data-i18n="cs4-problem">Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn.</p></div>
-        <div class="cs-col"><h4 data-i18n="case-approach">Aanpak</h4><p data-i18n="cs4-approach">Scrapers halen nieuwe advertenties van Vinted en Marktplaats binnen, alleen overdag en met wisselende tussenpozen. Claude leest de advertentie en de foto en bepaalt welke figuur het is en in welke staat. Zegt de titel niets, dan vergelijkt de app de foto met referentiebeelden uit de catalogus en legt de drie beste kandidaten voor. De gangbare prijs is de mediaan van vraagprijzen op Vinted; daaruit volgt een score van 1 tot 10. Losse figuren met een lage score verdwijnen vanzelf. Loten herkent de app aan de titel en zet ze apart; wat erin zit vul ik zelf in.</p></div>
-        <div class="cs-col cs-col--wide"><h4 data-i18n="case-choices">Keuzes</h4><ul class="cs-choices">
-          <li data-i18n="cs4-choice1"><strong>De foto is een voorstel, geen besluit.</strong> Een match op beeld koppelt de app nooit zelf aan een figuur; ik bevestig hem met één tik.</li>
-          <li data-i18n="cs4-choice2"><strong>Prijzen van de markt waar ik koop.</strong> De score rekent met vraagprijzen op Vinted. PriceCharting is alleen reserve: dat is een andere markt, en het dreef de scores eerder op.</li>
-          <li data-i18n="cs4-choice3"><strong>Een storing is geen "geen match".</strong> Mislukt de AI-aanroep, dan blijft de advertentie staan. Anders zouden goede deals verdwijnen door een storing bij de API.</li>
-        </ul></div>
-        <div class="cs-result"><h4 data-i18n="case-result">Resultaat</h4><p data-i18n="cs4-result">De app staat als gesloten beta op Google Play en is inmiddels versie 1.4. In ruim twee maanden kwamen er 342 commits, met meer dan duizend tests op de backend. Inloggen kan alleen met een account dat ik aanmaak; mail me als je het wilt proberen. De APK op GitHub is nog versie 1.0.</p></div>
-        <dl class="cs-facts">
-          <div><dt data-i18n="cs4-fact1-l">commits</dt><dd data-i18n="cs4-fact1-v">342</dd></div>
-          <div><dt data-i18n="cs4-fact2-l">tests op de backend</dt><dd data-i18n="cs4-fact2-v">1.073</dd></div>
-          <div><dt data-i18n="cs4-fact3-l">figuren in de basiscatalogus</dt><dd data-i18n="cs4-fact3-v">343</dd></div>
-          <div><dt data-i18n="cs4-fact4-l">versie van de app</dt><dd data-i18n="cs4-fact4-v">1.4</dd></div>
-        </dl>
-        <p class="cs-note" data-i18n="cs4-note">Cijfers van juli 2026.</p>
-        <button class="cs-close" type="button" data-case="case-skylanders"><span data-i18n="case-toggle-hide">Verberg case study</span> <span aria-hidden="true">↑</span></button>
-      </div></div>
     </div>
   </article>
 
@@ -3211,12 +3124,12 @@
       <div class="cred-cards">
         <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cred-card" data-hoverable>
           <span class="cc-badge">PSPO I</span>
-          <div class="cc-title">Professional Scrum<br>Product Owner</div>
+          <div class="cc-title">Professional Scrum<br>Product Owner I</div>
           <span class="cc-issuer">Scrum.org</span>
         </a>
         <a href="https://www.scrum.org/user/1456962" target="_blank" rel="noopener" class="cred-card" data-hoverable>
           <span class="cc-badge">PSPO II</span>
-          <div class="cc-title">Professional Scrum<br>Product Owner</div>
+          <div class="cc-title">Professional Scrum<br>Product Owner II</div>
           <span class="cc-issuer">Scrum.org</span>
         </a>
       </div>
@@ -3328,9 +3241,7 @@
     <div class="sec-label" data-i18n="contact-label">Correspondentie</div>
     <div class="kicker" data-i18n="contact-kicker">Laten we <em>praten.</em><span class="hand"></span></div>
 
-    <a class="email" href="mailto:bram@vanzwolle.net" data-hoverable id="emailLink">
-      <span class="line">bram<span class="at">@</span>vanzwolle<span class="dot-sep">.</span>net</span>
-    </a>
+    <a class="email-ink" href="mailto:bram@vanzwolle.net" aria-label="bram@vanzwolle.net" data-hoverable id="emailLink"><svg class="wm wm--ink" aria-hidden="true" focusable="false"><defs><clipPath id="eiClip"><text class="ei-text" x="0" y="1em">bram<tspan class="ei-at">@</tspan>vanzwolle<tspan class="ei-dot">.</tspan>net</text></clipPath><path id="eiPath" d="M1240 4q-8 3 -16 9q-8 6 -16 18q-8 12 -21 39q-13 26 -13 30q-1 4 0 8q1 4 4 8q3 4 8 7q6 3 18 7q12 3 36 5q24 2 53 1q29 0 52 -4q23 -3 32 -8q9 -4 11 -8q3 -4 3 -8q0 -4 -2 -12q-2 -8 -7 -16q-4 -8 -10 -16q-6 -8 -14 -16q-9 -8 -20 -16q-12 -8 -23 -14q-11 -5 -23 -10q-12 -4 -20 -6q-8 -1 -16 0q-8 0 -16 2zM416 348q-8 3 -15 8q-7 4 -11 8q-3 4 -6 8q-2 4 -12 28q-9 24 -14 32q-6 7 -11 12q-5 4 -20 12q-15 9 -63 26q-48 17 -73 28q-25 10 -36 16q-11 6 -19 12q-8 6 -15 14q-7 8 -9 12q-1 4 0 12q0 8 4 16q4 8 11 16q7 8 16 16q9 8 21 16q12 9 24 15q12 6 27 11q15 6 28 9q13 3 29 3q16 0 32 -4q16 -3 34 -10q17 -8 40 -22q22 -14 58 -42q36 -28 48 -39q12 -11 20 -22q8 -11 12 -19q4 -8 6 -16q2 -8 2 -24q1 -16 -2 -32q-3 -16 -10 -33q-8 -17 -18 -32q-11 -15 -20 -23q-10 -7 -14 -9q-4 -2 -12 -3q-8 -2 -16 -2q-8 0 -16 2zM1440 1008q-56 -51 -72 -64q-16 -12 -28 -18q-12 -7 -20 -9q-8 -2 -12 -3q-4 0 -8 1q-4 1 -7 3q-3 2 -5 6q-1 4 0 8q0 4 32 76M1112 0q-20 40 -34 60q-13 20 -17 28q-4 8 -7 20q-3 12 -2 24q1 12 4 20q3 8 6 12q3 4 6 8q4 4 12 10q8 5 20 10q12 5 54 14q41 10 50 14q10 4 12 8q2 4 0 8q-3 4 -18 16q-14 12 -22 20q-8 8 -13 16q-5 8 -7 16q-2 8 0 28q1 20 4 32q4 12 12 24q7 12 16 20q8 8 14 12q6 3 14 6q8 3 28 5q20 2 80 3q60 2 80 2q20 -1 40 -4q20 -2 40 -8q20 -5 32 -10q12 -5 20 -10q8 -4 24 -16q16 -13 48 -47M1385 0q44 32 58 44q14 12 25 24q10 12 24 32q13 20 17 28q4 8 5 16q2 8 0 16q-1 8 -6 20q-4 12 -5 16q-1 4 1 8q1 4 5 8q4 4 7 6q4 2 32 16q29 14 36 18q8 5 24 17M392 300q-32 3 -56 8q-24 4 -33 8q-9 4 -14 8q-5 4 -10 12q-5 8 -10 28q-5 20 -8 28q-3 8 -5 12q-3 4 -10 12q-6 7 -16 16q-11 8 -24 16q-14 8 -26 14q-12 5 -59 24q-47 18 -65 26q-17 8 -29 16q-12 8 -15 12q-4 4 -6 8q-3 4 -4 8q-1 4 0 8q0 4 4 12q3 8 13 20q10 12 23 24q13 12 29 24q16 12 41 28q26 16 49 28q23 13 47 24q24 11 44 16q20 5 32 6q12 1 24 0q12 0 40 -5q28 -5 42 -9q15 -4 28 -9q14 -5 34 -17q20 -11 32 -20q12 -9 24 -20q12 -10 26 -26q13 -16 20 -28q6 -11 9 -20q3 -8 6 -20q3 -12 5 -28q1 -16 0 -32q0 -16 -3 -32q-3 -16 -7 -32q-4 -16 -10 -32q-6 -16 -16 -36q-10 -19 -18 -32q-8 -12 -14 -20q-7 -8 -12 -12q-6 -5 -12 -8q-7 -4 -12 -6q-6 -2 -14 -3q-8 -1 -20 -1q-12 -1 -44 2zM1477 1008q-53 -48 -85 -80q-32 -31 -44 -42q-12 -10 -24 -18q-12 -8 -24 -15q-12 -7 -24 -13q-12 -5 -20 -6q-8 -2 -12 -1q-4 1 -8 4q-4 3 -8 11q-4 7 -6 16q-1 8 0 20q0 12 2 20q2 8 6 16q3 8 20 36q17 28 29 52M871 0q47 104 68 172q21 68 33 95q12 27 32 59q20 33 36 56q16 23 50 64q33 42 60 77q26 35 34 41q8 7 12 8q4 1 8 0q4 -2 24 -16q20 -15 28 -18q8 -4 16 -6q8 -2 24 -2q16 -1 48 2q32 2 48 2q16 0 36 -2q20 -1 36 -4q16 -4 32 -9q16 -5 32 -12q16 -7 32 -15q16 -9 48 -32M1441 0q41 32 53 44q13 12 114 138M0 56q40 13 54 18q14 6 28 14q14 7 22 13q8 6 14 13q7 6 12 14q6 8 10 20q4 12 6 24q2 12 1 20q-1 8 -3 12q-1 4 -6 8q-4 4 -11 6q-7 1 -31 0q-24 -1 -96 -12M508 1008q30 -24 72 -56q43 -32 66 -52q24 -20 41 -36q17 -16 25 -26q8 -11 13 -20q5 -10 9 -22q4 -12 5 -28q1 -16 1 -36q-1 -20 -4 -44q-3 -24 -6 -40q-2 -15 -6 -28q-4 -12 -8 -20q-4 -7 -8 -12q-4 -4 -8 -6q-4 -2 -20 -2q-16 -1 -20 -3q-4 -2 -8 -5q-4 -3 -8 -8q-4 -6 -10 -21q-7 -15 -22 -59q-15 -44 -24 -64q-8 -20 -30 -63q-22 -43 -30 -56q-9 -13 -13 -17q-4 -4 -11 -8q-8 -5 -20 -8q-12 -3 -68 -2q-56 2 -116 -2q-60 -5 -68 -5q-8 0 -16 1q-8 2 -12 4q-4 3 -6 6q-2 2 -3 6q-1 4 1 36q1 32 0 48q-2 16 -5 24q-3 8 -9 16q-6 8 -16 16q-10 8 -28 16q-18 9 -38 16q-20 6 -100 27M0 660q120 67 172 98q52 31 68 39q16 8 46 21q31 14 43 22q12 8 18 16q6 8 8 16q2 8 2 40q0 32 10 96M1514 1008q-42 -31 -60 -48q-18 -16 -30 -28q-11 -12 -50 -57q-38 -45 -65 -72q-27 -27 -52 -54q-25 -27 -29 -30q-4 -3 -8 -4q-4 -1 -8 1q-4 2 -4 3q-1 1 -4 9q-4 8 -6 16q-2 8 -9 52q-7 44 -7 64q-1 20 2 32q2 12 6 20q3 8 8 16q4 8 20 32q17 24 30 48M118 0q50 29 78 50q29 22 46 38q16 16 34 40q18 24 25 32q7 8 17 16q10 9 22 16q12 6 28 10q16 4 32 4q16 1 32 -2q16 -3 40 -11q24 -8 36 -11q12 -2 20 -1q8 1 12 2q4 1 11 5q7 4 12 10q5 6 7 12q3 6 12 38q10 32 16 48q6 16 24 49q18 33 26 43q8 11 16 18q8 8 26 17q18 9 24 13q6 3 14 12q8 8 12 14q4 7 12 26q8 20 14 46q7 26 23 110q16 84 19 104q2 20 2 36q0 16 -2 32q-3 16 -10 35q-6 19 -18 42q-12 23 -30 53q-19 30 -33 62M638 0q10 11 14 14q4 2 12 5q8 3 20 5q12 1 36 2q24 1 32 3q8 2 14 7q7 4 12 10q6 5 16 20q9 14 32 54q24 40 74 140q50 100 95 176q45 76 57 100q13 24 20 44q8 20 14 40q6 20 11 44q5 24 7 40q2 16 1 32q-1 16 -3 24q-3 8 -8 14q-6 7 -18 16q-13 10 -16 16q-4 5 -6 16q-3 10 -3 18q0 8 2 20q2 12 13 52q10 40 18 96M1608 609q-40 16 -60 27q-20 10 -39 23q-19 13 -32 25q-13 12 -23 24q-9 12 -15 24q-6 12 -9 24q-3 12 -4 28q-2 16 0 32q1 16 6 32q4 16 12 32q8 16 17 28q9 12 22 24q13 12 25 20q12 9 32 20q20 10 68 30M139 1008q9 -48 9 -60q-1 -12 -2 -20q-2 -9 -6 -20q-4 -12 -12 -26q-8 -15 -20 -28q-12 -14 -23 -22q-11 -8 -19 -12q-7 -4 -16 -8q-10 -3 -18 -4q-8 -2 -16 -2q-8 0 -16 3M0 945q19 39 29 63M227 0q69 63 93 90q24 28 32 36q8 7 20 14q12 8 20 11q8 3 16 4q8 1 20 -1q12 -1 24 -5q12 -4 72 -33q61 -28 64 -32q4 -3 6 -8q1 -4 0 -20q-1 -16 -3 -28q-2 -12 -8 -28M1042 1008q-1 -24 -4 -40q-2 -16 -14 -64q-11 -48 -14 -72q-4 -24 -4 -40q0 -16 2 -32q3 -16 6 -28q2 -12 10 -36q9 -24 11 -36q2 -12 1 -24q-1 -12 -2 -24q-2 -12 -9 -36q-7 -24 -15 -44q-8 -20 -18 -40q-9 -20 -46 -88q-38 -68 -72 -136q-34 -69 -57 -108q-23 -40 -32 -53q-9 -13 -17 -21q-8 -7 -16 -11q-8 -4 -16 -5q-8 -2 -16 -2q-8 0 -24 1q-16 1 -36 4q-20 3 -30 5q-10 2 -19 6q-9 4 -10 8q-1 4 -1 8q0 4 2 44q3 40 5 60q2 20 4 32q2 12 5 24q4 12 10 26q6 13 18 31q12 18 20 26q8 8 16 13q8 5 24 12q16 6 24 11q7 5 12 10q4 5 12 16q7 11 12 23q6 12 11 28q5 16 9 32q4 16 13 68q9 52 24 120q15 68 17 84q3 16 4 32q1 16 -1 32q-2 16 -7 36q-5 20 -20 58q-14 38 -38 90M1608 676q-32 11 -44 18q-12 6 -24 14q-12 9 -21 18q-9 10 -17 22q-9 12 -14 24q-5 12 -9 28q-4 16 -5 28q-1 12 0 24q2 12 4 20q3 8 10 20q6 12 13 20q7 8 17 16q9 8 22 16q12 8 24 14q12 6 44 18M344 0q22 40 31 52q9 12 13 16q4 4 12 10q8 5 15 8q7 2 12 2q5 1 13 0q8 -1 20 -6q12 -5 20 -12q9 -6 16 -14q6 -8 8 -16q2 -8 2 -12q0 -4 -2 -8q-1 -4 -14 -20M996 1008q4 -24 3 -36q-1 -12 -7 -32q-5 -20 -16 -56q-12 -36 -16 -56q-3 -20 -2 -44q0 -24 6 -112q5 -88 4 -108q-1 -20 -5 -36q-4 -16 -8 -28q-4 -12 -11 -28q-8 -16 -42 -76q-34 -60 -60 -116q-26 -57 -45 -92q-19 -36 -28 -49q-9 -13 -17 -19q-8 -7 -16 -10q-8 -2 -16 -3q-8 -1 -16 0q-8 1 -16 3q-8 3 -16 8q-8 4 -14 11q-7 7 -12 15q-4 8 -6 16q-2 8 -4 20q-1 12 0 24q1 12 2 20q2 9 6 19q4 10 8 17q4 6 8 10q4 5 12 10q8 6 32 16q24 9 40 19q16 10 24 15q7 6 17 18q10 12 15 20q4 8 8 20q5 12 8 32q4 20 7 68q3 48 7 76q3 28 10 60q8 31 26 92q19 60 22 80q3 20 2 32q0 12 -3 24q-3 12 -19 56q-16 44 -31 100M1608 757q-16 5 -24 9q-8 4 -16 10q-8 6 -12 10q-4 5 -10 14q-5 8 -9 16q-4 8 -7 16q-2 8 -3 16q-1 8 1 20q1 12 5 20q4 8 7 13q4 5 12 12q7 7 13 11q6 4 43 22" vector-effect="non-scaling-stroke"/><radialGradient id="eiGlowGrad"><stop offset="0" class="wm-glow-a"/><stop offset="1" class="wm-glow-b"/></radialGradient><radialGradient id="eiSpotGrad"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="eiSpot" maskUnits="userSpaceOnUse" x="-400" y="-400" width="3000" height="1200"><circle class="wm-spot" cx="-999" cy="-999" r="150" fill="url(#eiSpotGrad)"/></mask></defs><text class="ei-text ei-solid" x="0" y="1em">bram<tspan class="ei-at">@</tspan>vanzwolle<tspan class="ei-dot">.</tspan>net</text><g class="ei-ink" clip-path="url(#eiClip)"><rect class="wm-tint" x="0" y="0" width="100%" height="100%"/><circle class="wm-glow" cx="-999" cy="-999" r="190" fill="url(#eiGlowGrad)"/><g class="wm-move"><g class="wm-lines" id="eiLinesSet"><use href="#eiPath" transform="translate(-80 -90) scale(.32)"/><use href="#eiPath" transform="translate(160 -140) scale(.32)" class="wm-lines-2"/><use href="#eiPath" transform="translate(400 -130) scale(.32)"/><use href="#eiPath" transform="translate(640 -110) scale(.32)" class="wm-lines-2"/><use href="#eiPath" transform="translate(880 -90) scale(.32)"/><use href="#eiPath" transform="translate(1120 -140) scale(.32)" class="wm-lines-2"/><use href="#eiPath" transform="translate(1360 -130) scale(.32)"/><use href="#eiPath" transform="translate(1600 -110) scale(.32)" class="wm-lines-2"/><use href="#eiPath" transform="translate(1840 -90) scale(.32)"/><use href="#eiPath" transform="translate(2080 -140) scale(.32)" class="wm-lines-2"/></g><use href="#eiLinesSet" class="wm-hot" mask="url(#eiSpot)"/></g></g><text class="ei-text ei-outline" x="0" y="1em">bram<tspan class="ei-at">@</tspan>vanzwolle<tspan class="ei-dot">.</tspan>net</text></svg><span class="sr-only">bram@vanzwolle.net</span></a>
     <ol class="register-list">
       <li class="register-entry">
         <span class="num" data-i18n="contact-response-k">Reactietijd</span>
@@ -3347,20 +3258,23 @@
         </div>
       </li>
       <li class="register-entry">
+        <span class="num" data-i18n="contact-site-k">Op deze site</span>
+        <span class="value" data-i18n="contact-site-v">Werk en <em>artikelen.</em></span>
+        <div class="links">
+          <a href="werk/" data-hoverable><span data-i18n="nav-work">Werk</span> →</a>
+          <a href="artikelen/" data-hoverable><span data-i18n="footer-articles">Artikelen</span> →</a>
+        </div>
+      </li>
+      <li class="register-entry">
         <span class="num" data-i18n="contact-based-k">Gevestigd</span>
         <span class="value" data-i18n="contact-based-v">Zwolle, NL — <em>op locatie of hybride.</em></span>
         <span class="note" data-i18n="contact-based-note">Open voor rollen in en rond Zwolle. Tijdzone: CET.</span>
+        <span class="clock" id="utcClock" aria-label="Zwolle time">UTC+2 · --:--:--</span>
       </li>
     </ol>
   </div>
 </section>
 </main>
-
-<footer>
-  <div class="mark"><span class="dot"></span> Bram van Zwolle</div>
-  <div class="clock" id="utcClock" aria-label="Zwolle time">UTC+2 · --:--:--</div>
-</footer>
-
 <script>
 /* Storage can be blocked (private mode, strict settings): that must never break the page. */
 const store = {
@@ -3415,7 +3329,7 @@ const store = {
   const frames = document.querySelectorAll('iframe[data-src]');
   // The ?v= on each data-src changes whenever a demo or its images change, so a browser never
   // pairs a cached old demo page with images that no longer exist.
-  const load = (f) => { if (!f.src) f.src = f.dataset.src + '&theme=' + (document.documentElement.classList.contains('light') ? 'light' : 'dark'); };
+  const load = (f) => { if (!f.src) f.src = f.dataset.src + '&theme=' + (document.documentElement.classList.contains('light') ? 'light' : 'dark') + '&lang=' + (document.documentElement.lang === 'en' ? 'en' : 'nl'); };
   if (!('IntersectionObserver' in window)) { frames.forEach(load); return; }
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) { load(e.target); io.unobserve(e.target); } });
@@ -3525,72 +3439,8 @@ const i18n = {
     'p6-index-live':'Project 01 — {v} released','live-version':'{v} · GitHub','live-crate':'{v} · crates.io',
 
     'meta-role':'Role','meta-users':'Users','meta-status':'Status',
-    'case-toggle':'Case study','case-toggle-hide':'Hide case study',
-    'case-steps':'How it works',
-    'case-approach':'Approach',
-    'case-choices':'Decisions',
+    'case-page':'Read the case study','footer-articles':'Articles',
     'meta-parts':'Parts',
-    'cs6-step1':'Your own test command runs',
-    'cs6-step2':'sooth reads the JUnit report',
-    'cs6-step3':'One line per test in a local file, with the commit',
-    'cs6-step4':'Compared with earlier runs',
-    'cs6-step5':'Report: flaky, broken, or failing since which commit',
-    'cs6-problem':'A red test run does not say why it is red. You run it again, it turns green, and you still do not know whether the test is unreliable or something is really broken. Tools that keep track of this, such as ReportPortal or Allure, are built around a server with a dashboard.',
-    'cs6-approach':'sooth wraps the test command you already have and reads the JUnit report it writes. Every run records one line per test in <code>.sooth/history.jsonl</code>, with the commit. If a test both passed and failed on the same clean commit, it is provably flaky. If it was green and has been red ever since a commit, sooth names that commit. With <code>--verify</code> it re-runs only the failed tests.',
-    'cs6-choice1':'<strong>Proof, not a hunch.</strong> A test is only called flaky when it both passed and failed on one clean commit. Calling a regression flaky sends someone looking for randomness that is not there.',
-    'cs6-choice2':'<strong>Learning from runs that happen anyway.</strong> Running everything ten times to find a flaky test turns a five-minute suite into fifty minutes. So the history grows with every ordinary run.',
-    'cs6-choice3':'<strong>A failure stays a failure.</strong> When a test fails, sooth exits with an error code, unless you put that test in quarantine yourself. Printing "1 failed" and still exiting 0 would be two truths at once, and CI reads exit codes.',
-    'cs6-result':'Seven releases since July 2026. Version 0.3 is on crates.io and comes as a ready-made binary for macOS and Linux. It works with pytest, PHPUnit and Pest (also through <code>php artisan test</code>), Jest and Go. Slow tests over time and order-dependent tests are next on the roadmap.',
-    'cs6-fact1-v':'7',
-    'cs6-fact1-l':'releases',
-    'cs6-fact2-v':'411',
-    'cs6-fact2-l':'tests',
-    'cs6-fact3-v':'3',
-    'cs6-fact3-l':'dependencies',
-    'cs6-fact4-v':'1.2 MB',
-    'cs6-fact4-l':'binary on macOS',
-    'cs6-note':'Figures as of version 0.3.4.',
-    'cs5-step1':'Twelve modules, each with its own code and tests',
-    'cs5-step2':'Five shared contracts connect them',
-    'cs5-step3':'Fifteen scheduled jobs run in the background',
-    'cs5-step4':'Briefing by Claude through Prism, or a fixed template',
-    'cs5-step5':'Screen on the Pi and a notification through ntfy',
-    'cs5-problem':'Self-hosted dashboards such as Homepage or Dashy are mostly tiles with links. I wanted one that does things, and in which the parts know about each other: the weather forecast can drive the lamps, and every morning eight modules contribute their part to one briefing.',
-    'cs5-approach':'A modular monolith in Laravel. Each module has its own actions, services, screens and tests, and registers itself with a central registry. Modules do not know each other: they work together through five shared contracts, such as <code>BriefingSource</code> for the morning briefing. Lamps, shops, supermarkets and concert sources are adapters behind an interface; a new brand is a small class plus a line of configuration.',
-    'cs5-choice1':'<strong>Rules that a test guards.</strong> An architecture test lets a module depend only on itself and on the shared contracts. The two exceptions are in it by name: lighting reads the weather, entertainment reads Spotify.',
-    'cs5-choice2':'<strong>It also works without AI.</strong> If the API key is missing or the call fails, a fixed template takes over and the briefing still arrives.',
-    'cs5-choice3':'<strong>Inside the home network only.</strong> The dashboard controls devices and holds keys for paid services, so it is not exposed to the internet.',
-    'cs5-result':'Runs in Docker on my Synology NAS, with a Raspberry Pi as the screen. Eight versions since May 2025, with tests per module, static analysis at PHPStan level 8 and CI on GitHub. It is built for a single user and still in development.',
-    'cs5-fact1-v':'12',
-    'cs5-fact1-l':'modules',
-    'cs5-fact2-v':'5',
-    'cs5-fact2-l':'shared contracts',
-    'cs5-fact3-v':'434',
-    'cs5-fact3-l':'tests',
-    'cs5-fact4-v':'15',
-    'cs5-fact4-l':'scheduled jobs',
-    'cs5-note':'Figures as of November 2026.',
-    'cs4-step1':'Search Vinted and Marktplaats about every hour',
-    'cs4-step2':'Only new listings, without clothing and merchandise',
-    'cs4-step3':'Which figure? The title first, otherwise the photo',
-    'cs4-step4':'Going price: the median of asking prices on Vinted',
-    'cs4-step5':'A score from 1 to 10; the best send a push notification',
-    'cs4-problem':'Skylanders stopped making new figures back in 2017, so everything trades second-hand now. The rare pieces are usually buried in big mixed lots with a sloppy title and one blurry photo. To catch the good ones you sift through hundreds of listings a day and have to be quick.',
-    'cs4-approach':'Scrapers bring in new listings from Vinted and Marktplaats, in the daytime only and at varying intervals. Claude reads the listing and its photo and determines which figure it is and in what condition. If the title says nothing, the app compares the photo with reference images from the catalogue and puts forward the three best candidates. The going price is the median of asking prices on Vinted; a score from 1 to 10 follows from that. Single figures with a low score disappear by themselves. The app recognises lots by their title and sets them apart; what is in them I fill in myself.',
-    'cs4-choice1':'<strong>The photo is a suggestion, not a decision.</strong> The app never links an image match to a figure by itself; I confirm it with one tap.',
-    'cs4-choice2':'<strong>Prices from the market I buy on.</strong> The score uses asking prices on Vinted. PriceCharting is a fallback only: it is a different market, and it used to push the scores up.',
-    'cs4-choice3':'<strong>An outage is not "no match".</strong> If the AI call fails, the listing stays. Otherwise good deals would disappear because of an API failure.',
-    'cs4-result':'The app is in closed beta on Google Play and is now at version 1.4. A little over two months of work: 342 commits, with more than a thousand tests on the backend. Signing in needs an account that I create; mail me if you want to try it. The APK on GitHub is still version 1.0.',
-    'cs4-fact1-v':'342',
-    'cs4-fact1-l':'commits',
-    'cs4-fact2-v':'1,073',
-    'cs4-fact2-l':'backend tests',
-    'cs4-fact3-v':'343',
-    'cs4-fact3-l':'figures in the base catalogue',
-    'cs4-fact4-v':'1.4',
-    'cs4-fact4-l':'app version',
-    'cs4-note':'Figures as of July 2026.',
-    'case-problem':'Problem','case-result':'Result',
     'p4-index':'Project 03 — Closed Beta',
     'proj4-desc':'I collect Skylanders myself, and the good deals disappear fast. I used to refresh Marktplaats and Vinted all day; now the app does that. New listings come in on their own, the app recognises which figure it is and compares the asking price with what is asked for it on Vinted. I built the backend, the AI part and the Android app myself.',
     'p4-role-v':'Solo engineer','p4-users-v':'Backend + Android app','p4-status-v':'Closed beta on Play',
@@ -3600,7 +3450,7 @@ const i18n = {
     'cta-play':'Open on Google Play','cta-play-sub':'Closed beta · on request',
     'cta-apk':'Download APK directly','cta-apk-sub':'Latest release · GitHub',
     'p5-index':'Project 02 — In daily use',
-    'proj5-desc':'The dashboard on the Raspberry Pi screen in my living room. It controls the lights and Spotify, plans my week around my calendar, tracks prices and turns supermarket offers into a weekly menu. Every morning it writes a short briefing about the day.',
+    'proj5-desc':'The dashboard that a Raspberry Pi shows on a screen in my living room. It controls the lights and Spotify, plans my week around my calendar, tracks prices and turns supermarket offers into a weekly menu. Every morning it writes a short briefing about the day.',
     'p5-role-v':'Solo engineer','p5-users-v':'My household','p5-status-v':'Open source · MIT',
     
     
@@ -3637,7 +3487,7 @@ const i18n = {
     'contact-response-note':'Monday to Friday, 09:00–18:00 CET. Slower on weekends — I read, but rarely respond.',
     'contact-elsewhere-k':'Elsewhere','contact-elsewhere-v':'Also on <em>GitHub and LinkedIn.</em>',
     'contact-avail-k':'Availability',
-    'contact-based-k':'Based','contact-based-v':'Zwolle, NL — <em>on site or hybrid.</em>',
+    'contact-based-k':'Based','contact-site-k':'On this site','contact-site-v':'Work and <em>articles.</em>','contact-based-v':'Zwolle, NL — <em>on site or hybrid.</em>',
     'contact-based-note':'Open to roles in and around Zwolle. Timezone: CET.',
 
     'sec-0':'00 / Index','sec-1':'01 / About','sec-2':'02 / Work','sec-3':'03 / Expertise','sec-4':'04 / Contact',
@@ -3647,7 +3497,7 @@ const i18n = {
     'cp-hint-nav':'navigate','cp-hint-sel':'select','cp-hint-esc':'close',
     'cp-nav-index':'Go to Index','cp-nav-about':'Go to About','cp-nav-work':'Go to Work',
     'cp-nav-expertise':'Go to Expertise','cp-nav-contact':'Go to Contact',
-    'copy-confirm':'Email address copied',
+    'copy-confirm':'Email address copied','cp-werk':'Work — all case studies',
     'cp-email':'Copy email','cp-cv':'Download CV',
   },
   nl: {
@@ -3677,72 +3527,8 @@ const i18n = {
     'p6-index-live':'Project 01 — {v} uitgebracht','live-version':'{v} · GitHub','live-crate':'{v} · crates.io',
 
     'meta-role':'Rol','meta-users':'Gebruikers','meta-status':'Status',
-    'case-toggle':'Case study','case-toggle-hide':'Verberg case study',
-    'case-steps':'Zo werkt het',
-    'case-approach':'Aanpak',
-    'case-choices':'Keuzes',
+    'case-page':'Lees de case study','footer-articles':'Artikelen',
     'meta-parts':'Onderdelen',
-    'cs6-step1':'Je eigen testcommando draait',
-    'cs6-step2':'sooth leest het JUnit-rapport',
-    'cs6-step3':'Eén regel per test in een lokaal bestand, met de commit',
-    'cs6-step4':'Vergelijken met eerdere runs',
-    'cs6-step5':'Rapport: flaky, kapot, of sinds welke commit',
-    'cs6-problem':'Een rode testrun zegt niet waarom hij rood is. Je draait hem opnieuw, hij wordt groen, en je weet nog steeds niet of de test onbetrouwbaar is of dat er echt iets stuk is. Tools die dit bijhouden, zoals ReportPortal of Allure, zijn opgezet rond een server met een dashboard.',
-    'cs6-approach':'sooth draait om het testcommando dat je al hebt en leest het JUnit-rapport dat dat schrijft. Elke run legt per test één regel vast in <code>.sooth/history.jsonl</code>, met de commit erbij. Slaagde en faalde een test op dezelfde schone commit, dan is hij aantoonbaar flaky. Was hij groen en is hij sinds een commit steeds rood, dan noemt sooth die commit. Met <code>--verify</code> draait hij alleen de gefaalde tests opnieuw.',
-    'cs6-choice1':'<strong>Bewijs, geen vermoeden.</strong> Flaky heet een test pas als hij op één schone commit zowel slaagde als faalde. Wie een regressie flaky noemt, stuurt iemand op zoek naar toeval dat er niet is.',
-    'cs6-choice2':'<strong>Leren van runs die toch al gebeuren.</strong> Tien keer draaien om een flaky test te vinden maakt van een suite van vijf minuten vijftig minuten. Daarom groeit de geschiedenis met elke gewone run.',
-    'cs6-choice3':'<strong>Een fout blijft een fout.</strong> Faalt er een test, dan eindigt sooth met een foutcode, tenzij je die test zelf in quarantaine hebt gezet. "1 failed" tonen en toch met 0 eindigen zou twee waarheden tegelijk zijn, en CI leest exitcodes.',
-    'cs6-result':'Sinds juli 2026 zijn er zeven releases. Versie 0.3 staat op crates.io en is er als kant-en-klare binary voor macOS en Linux. Het werkt met pytest, PHPUnit en Pest (ook via <code>php artisan test</code>), Jest en Go. Trage tests over tijd en volgorde-afhankelijke tests zijn de volgende stap op de roadmap.',
-    'cs6-fact1-v':'7',
-    'cs6-fact1-l':'releases',
-    'cs6-fact2-v':'411',
-    'cs6-fact2-l':'tests',
-    'cs6-fact3-v':'3',
-    'cs6-fact3-l':'afhankelijkheden',
-    'cs6-fact4-v':'1,2 MB',
-    'cs6-fact4-l':'binary op macOS',
-    'cs6-note':'Cijfers bij versie 0.3.4.',
-    'cs5-step1':'Twaalf modules, elk met eigen code en tests',
-    'cs5-step2':'Vijf gedeelde contracten verbinden ze',
-    'cs5-step3':'Vijftien geplande taken draaien op de achtergrond',
-    'cs5-step4':'Briefing door Claude via Prism, of een vast sjabloon',
-    'cs5-step5':'Scherm op de Pi en een melding via ntfy',
-    'cs5-problem':'Self-hosted dashboards als Homepage of Dashy zijn vooral tegels met links. Ik wilde er een die dingen doet, en waarin de onderdelen van elkaar weten: de weersverwachting kan de lampen aansturen, en elke ochtend leveren acht modules hun deel van één briefing.',
-    'cs5-approach':'Een modulaire monoliet in Laravel. Elke module heeft zijn eigen acties, services, schermen en tests en meldt zich aan bij een centraal register. Modules kennen elkaar niet: ze werken samen via vijf gedeelde contracten, zoals <code>BriefingSource</code> voor de ochtendbriefing. Lampen, winkels, supermarkten en concertbronnen zitten als adapters achter een interface; een nieuw merk is een kleine class plus een regel configuratie.',
-    'cs5-choice1':'<strong>Afspraken die een test bewaakt.</strong> Een architectuurtest laat een module alleen afhangen van zichzelf en van de gedeelde contracten. De twee uitzonderingen staan er met naam in: verlichting leest het weer, entertainment leest Spotify.',
-    'cs5-choice2':'<strong>Het werkt ook zonder AI.</strong> Ontbreekt de API-sleutel of mislukt de aanroep, dan neemt een vast sjabloon het over en komt de briefing er alsnog.',
-    'cs5-choice3':'<strong>Alleen binnen het thuisnetwerk.</strong> Het dashboard bedient apparaten en bewaart sleutels van betaalde diensten, dus het hangt niet aan het internet.',
-    'cs5-result':'Draait in Docker op mijn Synology NAS, met een Raspberry Pi als scherm. Acht versies sinds mei 2025, met tests per module, statische analyse op PHPStan-niveau 8 en CI op GitHub. Het is gebouwd voor één gebruiker en nog in ontwikkeling.',
-    'cs5-fact1-v':'12',
-    'cs5-fact1-l':'modules',
-    'cs5-fact2-v':'5',
-    'cs5-fact2-l':'gedeelde contracten',
-    'cs5-fact3-v':'434',
-    'cs5-fact3-l':'tests',
-    'cs5-fact4-v':'15',
-    'cs5-fact4-l':'geplande taken',
-    'cs5-note':'Cijfers van november 2026.',
-    'cs4-step1':'Ongeveer elk uur zoeken op Vinted en Marktplaats',
-    'cs4-step2':'Alleen nieuwe advertenties, zonder kleding en merchandise',
-    'cs4-step3':'Welke figuur? Eerst de titel, anders de foto',
-    'cs4-step4':'Gangbare prijs: mediaan van vraagprijzen op Vinted',
-    'cs4-step5':'Score van 1 tot 10; de beste geven een pushmelding',
-    'cs4-problem':'Skylanders maakt sinds 2017 geen nieuwe figuren meer, dus alles gaat tweedehands. De zeldzame stukken zitten meestal verstopt in grote loten met een slordige titel en één wazige foto. Wie de goede koopjes wil, spit elke dag honderden advertenties door en moet er snel bij zijn.',
-    'cs4-approach':'Scrapers halen nieuwe advertenties van Vinted en Marktplaats binnen, alleen overdag en met wisselende tussenpozen. Claude leest de advertentie en de foto en bepaalt welke figuur het is en in welke staat. Zegt de titel niets, dan vergelijkt de app de foto met referentiebeelden uit de catalogus en legt de drie beste kandidaten voor. De gangbare prijs is de mediaan van vraagprijzen op Vinted; daaruit volgt een score van 1 tot 10. Losse figuren met een lage score verdwijnen vanzelf. Loten herkent de app aan de titel en zet ze apart; wat erin zit vul ik zelf in.',
-    'cs4-choice1':'<strong>De foto is een voorstel, geen besluit.</strong> Een match op beeld koppelt de app nooit zelf aan een figuur; ik bevestig hem met één tik.',
-    'cs4-choice2':'<strong>Prijzen van de markt waar ik koop.</strong> De score rekent met vraagprijzen op Vinted. PriceCharting is alleen reserve: dat is een andere markt, en het dreef de scores eerder op.',
-    'cs4-choice3':'<strong>Een storing is geen "geen match".</strong> Mislukt de AI-aanroep, dan blijft de advertentie staan. Anders zouden goede deals verdwijnen door een storing bij de API.',
-    'cs4-result':'De app staat als gesloten beta op Google Play en is inmiddels versie 1.4. In ruim twee maanden kwamen er 342 commits, met meer dan duizend tests op de backend. Inloggen kan alleen met een account dat ik aanmaak; mail me als je het wilt proberen. De APK op GitHub is nog versie 1.0.',
-    'cs4-fact1-v':'342',
-    'cs4-fact1-l':'commits',
-    'cs4-fact2-v':'1.073',
-    'cs4-fact2-l':'tests op de backend',
-    'cs4-fact3-v':'343',
-    'cs4-fact3-l':'figuren in de basiscatalogus',
-    'cs4-fact4-v':'1.4',
-    'cs4-fact4-l':'versie van de app',
-    'cs4-note':'Cijfers van juli 2026.',
-    'case-problem':'Probleem','case-result':'Resultaat',
     'p4-index':'Project 03 — Closed Beta',
     'proj4-desc':'Ik verzamel zelf Skylanders, en de goede koopjes zijn snel weg. Vroeger ververste ik de hele dag Marktplaats en Vinted; nu doet deze app dat. Nieuwe advertenties komen vanzelf binnen, de app herkent welke figuur het is en vergelijkt de vraagprijs met wat er op Vinted voor gevraagd wordt. De backend, het AI-deel en de Android-app bouwde ik zelf.',
     'p4-role-v':'Solo engineer','p4-users-v':'Backend + Android-app','p4-status-v':'Gesloten beta op Play',
@@ -3752,7 +3538,7 @@ const i18n = {
     'cta-play':'Open op Google Play','cta-play-sub':'Closed beta · op aanvraag',
     'cta-apk':'Download APK direct','cta-apk-sub':'Laatste release · GitHub',
     'p5-index':'Project 02 — Dagelijks in gebruik',
-    'proj5-desc':'Het dashboard op het Raspberry Pi-scherm in mijn woonkamer. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het een korte briefing over de dag.',
+    'proj5-desc':'Het dashboard dat een Raspberry Pi in mijn woonkamer op een scherm toont. Het bedient de lampen en Spotify, plant mijn week rond mijn agenda, volgt prijzen en maakt van supermarktaanbiedingen een weekmenu. Elke ochtend schrijft het een korte briefing over de dag.',
     'p5-role-v':'Solo engineer','p5-users-v':'Mijn huishouden','p5-status-v':'Open source · MIT',
     
     
@@ -3789,7 +3575,7 @@ const i18n = {
     'contact-response-note':'Maandag tot vrijdag, 09:00–18:00 CET. In het weekend reageer ik trager — ik lees, maar reageer zelden.',
     'contact-elsewhere-k':'Elders','contact-elsewhere-v':'Ook te vinden op <em>GitHub en LinkedIn.</em>',
     'contact-avail-k':'Beschikbaarheid',
-    'contact-based-k':'Gevestigd','contact-based-v':'Zwolle, NL — <em>op locatie of hybride.</em>',
+    'contact-based-k':'Gevestigd','contact-site-k':'Op deze site','contact-site-v':'Werk en <em>artikelen.</em>','contact-based-v':'Zwolle, NL — <em>op locatie of hybride.</em>',
     'contact-based-note':'Open voor rollen in en rond Zwolle. Tijdzone: CET.',
 
     'sec-0':'00 / Index','sec-1':'01 / Over','sec-2':'02 / Werk','sec-3':'03 / Expertise','sec-4':'04 / Contact',
@@ -3799,7 +3585,7 @@ const i18n = {
     'cp-hint-nav':'navigeren','cp-hint-sel':'selecteer','cp-hint-esc':'sluit',
     'cp-nav-index':'Ga naar Index','cp-nav-about':'Ga naar Over','cp-nav-work':'Ga naar Werk',
     'cp-nav-expertise':'Ga naar Expertise','cp-nav-contact':'Ga naar Contact',
-    'copy-confirm':'E-mailadres gekopieerd',
+    'copy-confirm':'E-mailadres gekopieerd','cp-werk':'Werk — alle case studies',
     'cp-email':'E-mail kopiëren','cp-cv':'CV downloaden',
   }
 };
@@ -3810,6 +3596,10 @@ function applyLang(lang) {
   currentLang = lang;
   store.set('lang', lang);
   document.documentElement.lang = lang;
+  // the embedded demos switch their captions too
+  document.querySelectorAll('iframe.demo-frame').forEach((f) => {
+    try { if (f.src && f.contentWindow) f.contentWindow.postMessage({ type: 'portfolio-lang', lang: lang }, '*'); } catch (e) {}
+  });
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n;
     if (i18n[lang][key] !== undefined) el.innerHTML = i18n[lang][key];
@@ -3827,8 +3617,6 @@ function applyLang(lang) {
     });
   }
   renderLive();
-  // an open case study keeps its "hide" label in the new language
-  document.querySelectorAll('.case-toggle[aria-expanded="true"] .label-txt').forEach((t) => { t.textContent = i18n[lang]['case-toggle-hide']; });
 }
 
 /* --- Live project data: the latest version numbers from the public GitHub API.
@@ -3856,7 +3644,7 @@ if (currentLang !== 'nl') applyLang(currentLang);
 
   // Init theme
   const storedTheme = store.get('theme');
-  if (storedTheme === 'light') { html.classList.add('light'); setThemeActive('light'); }
+  if (storedTheme !== 'dark') { html.classList.add('light'); setThemeActive('light'); }   // light is the default
   else setThemeActive('dark');
 
   // Init lang active state
@@ -4052,59 +3840,6 @@ if (currentLang !== 'nl') applyLang(currentLang);
   video.play().catch(() => { /* silently ignore autoplay policy blocks */ });
 })();
 
-// Case study toggles: the panel lies across the card, under its two columns
-document.querySelectorAll('.case-toggle').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    const panel = document.getElementById(btn.getAttribute('aria-controls'));
-    if (!panel) return;
-    const open = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!open));
-    panel.setAttribute('data-open', String(!open));
-    const txt = btn.querySelector('.label-txt');
-    if (txt) txt.textContent = i18n[currentLang][open ? 'case-toggle' : 'case-toggle-hide'];
-    if (!open) {
-      // The panel opens below the card's columns, which can be below the fold: bring its start into view.
-      const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      setTimeout(() => {
-        if (panel.dataset.open !== 'true') return;   // closed again in the meantime
-        const top = panel.getBoundingClientRect().top;
-        // 'instant', not 'auto': 'auto' follows the page's own smooth scrolling
-        if (top > innerHeight * 0.6) window.scrollTo({ top: scrollY + top - innerHeight * 0.28, behavior: calm ? 'instant' : 'smooth' });
-      }, 140);
-    }
-    if (window.ScrollTrigger) setTimeout(() => ScrollTrigger.refresh(), 620);
-  });
-});
-// The panel's own "hide" button: on narrow screens the button that opened it is far above by then.
-document.querySelectorAll('.cs-close').forEach((close) => {
-  close.addEventListener('click', () => {
-    const btn = document.querySelector('.case-toggle[aria-controls="' + close.dataset.case + '"]');
-    if (!btn) return;
-    const fold = () => {
-      if (btn.getAttribute('aria-expanded') === 'true') btn.click();
-      btn.focus({ preventScroll: true });
-    };
-    const target = Math.max(0, Math.round(scrollY + btn.getBoundingClientRect().top - innerHeight * 0.4));
-    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (calm || Math.abs(target - scrollY) < 4) { window.scrollTo({ top: target, behavior: 'instant' }); fold(); return; }
-    // First scroll back up with the case study still open, then fold it away under its button.
-    // Scrolling while the panel shrank made the two fight, and the page stuttered on the way up.
-    window.scrollTo({ top: target, behavior: 'smooth' });
-    const t0 = performance.now();
-    let lastY = scrollY, still = 0;
-    const wait = () => {
-      const y = scrollY;
-      still = y === lastY ? still + 1 : 0;
-      lastY = y;
-      const arrived = Math.abs(y - target) < 2;
-      const stopped = still >= 6 && performance.now() - t0 > 250;   // the visitor took over, or the page could not go further
-      if (arrived || stopped || performance.now() - t0 > 2500) fold();
-      else requestAnimationFrame(wait);
-    };
-    requestAnimationFrame(wait);
-  });
-});
-
 /* ----------------------- Mobile nav toggle ----------------------- */
 (() => {
   const toggle = document.getElementById('navToggle');
@@ -4213,6 +3948,8 @@ document.querySelectorAll('.cs-close').forEach((close) => {
       { id:'work',       ico:'→', label:t('cp-nav-work'),      desc:mod+' 2', run:()=>scrollToSel('#work') },
       { id:'expertise',  ico:'→', label:t('cp-nav-expertise'), desc:mod+' 3', run:()=>scrollToSel('#expertise') },
       { id:'contact',    ico:'→', label:t('cp-nav-contact'),   desc:mod+' 4', run:()=>scrollToSel('#contact') },
+      { id:'werk',       ico:'→', label:t('cp-werk'),          desc:'/werk/', run:()=>{ location.href = 'werk/'; } },
+      { id:'articles',   ico:'→', label:t('footer-articles'),  desc:'/artikelen/', run:()=>{ location.href = 'artikelen/'; } },
       { id:'github',     ico:'↗', label:'Open GitHub',         desc:'github.com', run:()=>window.open('https://github.com/Bramvzw','_blank') },
       { id:'linkedin',   ico:'↗', label:'Open LinkedIn',       desc:'linkedin.com', run:()=>window.open('https://www.linkedin.com/in/bram-van-zwolle','_blank') },
       { id:'email',      ico:'✎', label:t('cp-email'),         desc:'bram@vanzwolle.net', run:copyEmail },
@@ -4493,7 +4230,7 @@ document.querySelectorAll('.cs-close').forEach((close) => {
 /* --- Pointer glow on cards --- */
 (() => {
   if (!window.matchMedia('(hover:hover)').matches) return;
-  document.querySelectorAll('.tech-cart, .project').forEach((el) => {
+  document.querySelectorAll('.tech-cart, .project, .cred-card').forEach((el) => {
     el.addEventListener('pointermove', (e) => {
       const r = el.getBoundingClientRect();
       el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
@@ -4762,6 +4499,65 @@ document.querySelectorAll('.cs-close').forEach((close) => {
     });
     tok.addEventListener('mousemove', pos);
     tok.addEventListener('mouseleave', () => tip.classList.remove('visible'));
+  });
+})();
+
+/* --- 16b. Wordmarks (the footer name on the subpages, the e-mail on index.html): the ink lines drift a
+       little while the wordmark scrolls past, and on a fine pointer a soft light follows the pointer
+       through the letters: the lines under it turn brighter and lean a few pixels toward it.
+       One rAF loop per wordmark, only while something moves. --- */
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var fine = window.matchMedia('(hover:hover) and (pointer:fine)');
+  document.querySelectorAll('svg.wm').forEach(function (svg) {
+    var move = svg.querySelector('.wm-move');
+    if (!move) return;
+    var host = svg.closest('footer, section') || svg;
+    var glow = svg.querySelector('.wm-glow'), spot = svg.querySelector('.wm-spot');
+    // with a viewBox the drawing is in its units; without one (the e-mail) it is in CSS pixels
+    var vb = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width ? svg.viewBox.baseVal : null;
+    var size = function () { if (vb) return [vb.width, vb.height]; var r = svg.getBoundingClientRect(); return [r.width, r.height]; };
+    var W = size()[0], H = size()[1];
+    var scrollX = 0, scrollY = 0, visible = false;
+    var tx = W / 2, ty = H / 2, cx = tx, cy = ty;      // pointer target and eased position (SVG units)
+    var dx = 0, dy = 0, tdx = 0, tdy = 0;            // lean of the lines toward the pointer
+    var running = false;
+    var readScroll = function () {
+      var r = host.getBoundingClientRect();
+      var p = Math.max(0, Math.min(1, (innerHeight - r.top) / (innerHeight + r.height)));
+      scrollX = -48 * p; scrollY = 26 * p;
+    };
+    var frame = function () {
+      cx += (tx - cx) * 0.16; cy += (ty - cy) * 0.16;
+      dx += (tdx - dx) * 0.08; dy += (tdy - dy) * 0.08;
+      if (glow) { glow.setAttribute('cx', cx.toFixed(1)); glow.setAttribute('cy', cy.toFixed(1)); }
+      if (spot) { spot.setAttribute('cx', (cx - scrollX - dx).toFixed(1)); spot.setAttribute('cy', (cy - scrollY - dy).toFixed(1)); }
+      move.setAttribute('transform', 'translate(' + (scrollX + dx).toFixed(2) + ' ' + (scrollY + dy).toFixed(2) + ')');
+      var still = Math.abs(tx - cx) < 0.3 && Math.abs(ty - cy) < 0.3 && Math.abs(tdx - dx) < 0.02 && Math.abs(tdy - dy) < 0.02;
+      if (still) { running = false; return; }
+      requestAnimationFrame(frame);
+    };
+    var kick = function () { if (!running) { running = true; requestAnimationFrame(frame); } };
+    window.addEventListener('scroll', function () { if (visible) { readScroll(); kick(); } }, { passive: true });
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) { readScroll(); kick(); } }).observe(svg);
+    else { visible = true; readScroll(); kick(); }
+    var toSvg = function (e) {
+      var r = svg.getBoundingClientRect(); var wh = size(); W = wh[0]; H = wh[1];
+      return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H];
+    };
+    var hoverHost = svg.closest('a') || svg;
+    hoverHost.addEventListener('pointerenter', function (e) {
+      if (!fine.matches || e.pointerType !== 'mouse') return;
+      var p = toSvg(e); cx = tx = p[0]; cy = ty = p[1];
+      svg.classList.add('lit'); kick();
+    });
+    hoverHost.addEventListener('pointermove', function (e) {
+      if (!fine.matches || e.pointerType !== 'mouse') return;
+      var p = toSvg(e); tx = p[0]; ty = p[1];
+      tdx = (tx - W / 2) / (W / 2) * 7; tdy = (ty - H / 2) / (H / 2) * 4;   // at most 7 and 4 units
+      kick();
+    });
+    hoverHost.addEventListener('pointerleave', function () { svg.classList.remove('lit'); tdx = 0; tdy = 0; kick(); });
   });
 })();
 

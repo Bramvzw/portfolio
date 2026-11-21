@@ -391,6 +391,33 @@ function setCaption(eyebrow, main) {
   }));
 }
 
+// The page that embeds this demo passes its language (&lang=en on load, a 'portfolio-lang' message on a
+// switch). The captions are written in Dutch above; DEMO_EN holds their English versions.
+const DEMO_EN = {
+ "Ochtendbriefing": "Morning briefing",
+ "Elke ochtend schrijft Claude een korte briefing uit het weer, de agenda, taken en het nieuws.": "Every morning Claude writes a short briefing from the weather, the calendar, tasks and the news.",
+ "Elke module heeft een eigen tegel, van weer en Spotify tot de 3D-printer.": "Every module has its own tile, from the weather and Spotify to the 3D printer.",
+ "Agenda": "Calendar",
+ "De agenda komt live uit Google Calendar, met de komende zeven dagen onder elkaar.": "The calendar comes live from Google Calendar, with the next seven days listed one below the other.",
+ "Weekmenu": "Weekly menu",
+ "Uit de aanbiedingen van Albert Heijn en Lidl komt een weekmenu, met wat je per recept bespaart.": "The offers at Albert Heijn and Lidl become a weekly menu, with what you save per recipe.",
+ "Prijzen volgen": "Price tracking",
+ "Producten op mijn verlanglijst worden gevolgd. Zakt de prijs, dan krijg ik een melding.": "Products on my wishlist are tracked. When the price drops, I get a notification.",
+ "Filmtips op basis van mijn smaakprofiel, met per film waarom hij past.": "Film tips based on my taste profile, with why each film fits."
+};
+let demoLang = (() => { try { return new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'nl'; } catch (e) { return 'nl'; } })();
+document.documentElement.lang = demoLang;
+const setCaptionNl = setCaption;
+let lastCaption = null;
+const tr = (t) => (demoLang === 'en' && DEMO_EN[t]) || t;
+setCaption = function (eyebrow, main) { lastCaption = [eyebrow, main]; setCaptionNl(tr(eyebrow), tr(main)); };
+window.addEventListener('message', (e) => {
+  const d = e.data;
+  if (!d || d.type !== 'portfolio-lang') return;
+  demoLang = d.lang === 'en' ? 'en' : 'nl'; document.documentElement.lang = demoLang;
+  if (lastCaption) setCaptionNl(tr(lastCaption[0]), tr(lastCaption[1]));
+});
+
 function setUrl(u) {
   urlEl.classList.add('swap');
   setTimeout(() => { urlEl.textContent = u; urlEl.classList.remove('swap'); }, 200);
