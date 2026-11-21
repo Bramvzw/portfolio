@@ -1584,6 +1584,8 @@
   }
   @media (max-width:1000px){ .tech-grid{ grid-template-columns:repeat(2,1fr); } }
   @media (max-width:560px){ .tech-grid{ grid-template-columns:1fr; } }
+  /* narrow phones: one card per row, two did not fit ("Skylanders Tracker", "Beginner … Expert" ran off) */
+  @media (max-width:420px){ .tech-grid, .tech-grid{ grid-template-columns:minmax(0,1fr) !important; } }
   .tech-cart{
     background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
     padding:24px 22px 22px;
@@ -2227,7 +2229,7 @@
     .project .meta   { display:none; }
 
     /* Stack: 2-column compact grid */
-    .tech-grid { grid-template-columns:repeat(2,1fr); }
+    .tech-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .tech-cart { padding:16px 14px; gap:8px; }
     .tech-cart .role { display:none; }
     .tech-cart .name { font-size:18px; }

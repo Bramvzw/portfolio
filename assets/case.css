@@ -257,3 +257,12 @@ html.light .b-link{border-color:var(--rule);}
   .w-card .tag, .b-hero .tag{ padding:6px clamp(6px, calc((100vw - 300px) * .1), 9px); font-size:11px; letter-spacing:clamp(.6px, calc((100vw - 330px) * .02), 1.32px); white-space:nowrap; }
   .w-card .tags .tag:nth-child(n+4), .b-hero .tags .tag:nth-child(n+4){ display:none; }
 }
+
+/* Up to 1100px the hero is one column: twelve columns with their gaps were wider than a phone,
+   so the text block kept its desktop width and ran off the right edge. */
+@media (max-width:1100px){
+  .b-hero{ grid-template-columns:minmax(0,1fr); column-gap:0; }
+  .b-hero > *{ grid-column:1 / -1; min-width:0; }
+  .b-hero .ctas, .b-hero .cta{ min-width:0; max-width:100%; }
+  .b-hero .cta *{ overflow-wrap:anywhere; }
+}

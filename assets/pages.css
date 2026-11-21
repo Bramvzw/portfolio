@@ -1061,3 +1061,4 @@ a.tag{ text-decoration:none; }
 
 /* /artikelen/: the list spans the content column; the summary keeps a readable line length */
 .art-list .page-head + * p, .art-list a p{ max-width:72ch; }
+.crumbs a{ text-transform:none; }   /* one case style: "Werk / Skylanders Tracker", as written */
