@@ -72,8 +72,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/pages.css?v=22">
-<link rel="stylesheet" href="/assets/case.css?v=15">
+<link rel="stylesheet" href="/assets/pages.css?v=24">
+<link rel="stylesheet" href="/assets/case.css?v=17">
 <noscript><style>
   .cursor-ring,.cursor-dot{ display:none !important; }
   body{ cursor:auto !important; }
@@ -268,7 +268,7 @@
   </div>
 </div>
 <script type="application/json" id="i18nPage">{"en": {"cta-play": "Open on Google Play", "cta-play-sub": "Closed beta · on request", "cta-apk": "Download APK directly", "cta-apk-sub": "Latest release · GitHub", "intro": "I collect Skylanders myself, and the good deals disappear fast.", "meta-role": "Role", "p4-role-v": "Solo engineer", "meta-parts": "Parts", "p4-users-v": "Backend + Android app", "meta-status": "Status", "p4-status-v": "Closed beta on Play", "problem-1": "Skylanders stopped making new figures back in 2017, so everything trades second-hand now.", "problem-2": "The rare pieces are usually buried in big mixed lots with a sloppy title and one blurry photo. To catch the good ones you sift through hundreds of listings a day and have to be quick.", "approach-1": "Scrapers bring in new listings from Vinted and Marktplaats, in the daytime only and at varying intervals.", "approach-2": "Claude reads the listing and its photo and determines which figure it is and in what condition. If the title says nothing, the app compares the photo with reference images from the catalogue and puts forward the three best candidates. The going price is the median of asking prices on Vinted; a score from 1 to 10 follows from that. Single figures with a low score disappear by themselves. The app recognises lots by their title and sets them apart; what is in them I fill in myself.", "result-1": "The app is in closed beta on Google Play and is now at version 1.4.", "result-2": "A little over two months of work: 342 commits, with more than a thousand tests on the backend. Signing in needs an account that I create; mail me if you want to try it. The APK on GitHub is still version 1.0.", "note": "Figures as of July 2026.", "fact1": "commits", "fact2": "backend tests", "fact3": "figures in the base catalogue", "fact4": "app version", "choice1-h": "The photo is a suggestion, not a decision.", "choice1-p": "The app never links an image match to a figure by itself; I confirm it with one tap.", "choice2-h": "Prices from the market I buy on.", "choice2-p": "The score uses asking prices on Vinted. PriceCharting is a fallback only: it is a different market, and it used to push the scores up.", "choice3-h": "An outage is not \"no match\".", "choice3-p": "If the AI call fails, the listing stays. Otherwise good deals would disappear because of an API failure.", "step1": "Search Vinted and Marktplaats about every hour", "gate1": "Search", "step2": "Only new listings; Skylanders clothing and merchandise are filtered out", "gate2": "Filter", "step3": "Which figure? The title first, otherwise the photo", "gate3": "Identify", "step4": "Going price: the median of asking prices on Vinted", "gate4": "Price", "step5": "A score from 1 to 10; the best send a push notification", "gate5": "Score"}}</script>
-<script src="/assets/pages.js?v=12"></script>
+<script src="/assets/pages.js?v=13"></script>
 <script src="/assets/case.js?v=6"></script>
 </body>
 </html>

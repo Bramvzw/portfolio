@@ -533,3 +533,22 @@
     tok.addEventListener('mouseleave', function () { tip.classList.remove('visible'); });
   });
 })();
+
+/* Phones: the e-mail is the eye-catcher of the contact block, so it is set on two centred lines
+   ("bram@" / "vanzwolle.net") at a size that fills the column, instead of one small line. */
+(function () {
+  var link = document.querySelector(".email-ink"); if (!link) return;
+  var texts = link.querySelectorAll("text.ei-text"); if (!texts.length) return;
+  var mq = window.matchMedia("(max-width:600px)");
+  var layout = function () {
+    texts.forEach(function (t) {
+      if (!t.dataset.orig) t.dataset.orig = t.innerHTML;
+      if (mq.matches) {
+        t.innerHTML = "<tspan x=\"50%\" dy=\"0\">bram<tspan class=\"ei-at\">@</tspan></tspan><tspan x=\"50%\" dy=\"1.02em\">vanzwolle<tspan class=\"ei-dot\">.</tspan>net</tspan>";
+        t.setAttribute("x", "50%"); t.setAttribute("text-anchor", "middle");
+      } else { t.innerHTML = t.dataset.orig; t.setAttribute("x", "0"); t.removeAttribute("text-anchor"); }
+    });
+    link.classList.toggle("ei-two", mq.matches);
+  };
+  layout(); (mq.addEventListener ? mq.addEventListener("change", layout) : mq.addListener(layout));
+})();

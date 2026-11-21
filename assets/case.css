@@ -266,3 +266,12 @@ html.light .b-link{border-color:var(--rule);}
   .b-hero .ctas, .b-hero .cta{ min-width:0; max-width:100%; }
   .b-hero .cta *{ overflow-wrap:anywhere; }
 }
+
+/* Phones: a calmer hero — like the home page cards, no Rol/Gebruikers/Status block, and the two
+   link buttons as one compact row of plain buttons without their second line. */
+@media (max-width:600px){
+  .b-hero .meta{ display:none; }
+  .case .ctas{ grid-template-columns:minmax(0,1fr); gap:8px; margin-top:22px; }
+  .case .cta{ padding:10px 12px; gap:8px; justify-content:center; }
+  .case .cta .cta-sub, .case .cta small, .case .cta-text > :last-child:not(:first-child){ display:none; }
+}

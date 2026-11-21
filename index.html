@@ -1585,7 +1585,17 @@
   @media (max-width:1000px){ .tech-grid{ grid-template-columns:repeat(2,1fr); } }
   @media (max-width:560px){ .tech-grid{ grid-template-columns:1fr; } }
   /* narrow phones: one card per row, two did not fit ("Skylanders Tracker", "Beginner … Expert" ran off) */
-  @media (max-width:420px){ .tech-grid, .tech-grid{ grid-template-columns:minmax(0,1fr) !important; } }
+  /* narrow phones: two compact cards per row — glyph and number, name, level bar and category;
+     "Gebruikt in" and the Beginner/Expert scale are left out so two fit side by side */
+  @media (max-width:420px){
+    .tech-grid{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+    .tech-cart{ padding:14px 12px !important; gap:8px !important; min-width:0; }
+    .tech-cart .timeline .years{ display:none !important; }
+    .tech-cart .name{ font-size:16px !important; line-height:1.2; overflow-wrap:anywhere; }
+    .tech-cart .glyph{ width:28px !important; height:28px !important; font-size:12px !important; }
+    .tech-cart .idx{ font-size:11px; }
+    .tech-cart .meta-row{ padding-top:8px !important; margin-top:0 !important; }
+  }
   .tech-cart{
     background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
     padding:24px 22px 22px;
@@ -1984,6 +1994,7 @@
   }
   .email-ink:focus-visible{ outline:2px solid var(--amber); outline-offset:10px; border-radius:var(--r-in); }
   .email-ink .sr-only{ font-size:16px; line-height:1.4; }
+  @media (max-width:600px){ .email-ink.ei-two{ --fs:clamp(34px, 13.2vw, 64px); } .email-ink.ei-two svg{ height:calc(var(--fs) * 2.25); } .email-ink.ei-two .ei-text{ font-weight:500; } .contact .kicker{ justify-content:center; text-align:center; } .contact .sec-label{ display:flex; justify-content:center; } }
   @media (prefers-reduced-motion:reduce){ .ei-solid, .ei-ink, .ei-outline{ transition:none; } }
 
   /* selection */
@@ -2269,19 +2280,8 @@
     .tech-cart .meta-row{ letter-spacing:0; }
   }
 
-  /* ---------- Stack <-> projects: jump links ---------- */
+  /* ---------- Project tags jump to their stack card ---------- */
   .project, .tech-cart{ scroll-margin-top:96px; }
-  .tech-cart .used-in{
-    display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px;
-    font-family:'JetBrains Mono',ui-monospace,monospace;
-    font-size:11px; letter-spacing:.04em; color:var(--ink-dim);
-  }
-  .tech-cart .used-in a{
-    color:var(--amber); text-decoration:none; white-space:nowrap;
-    border-bottom:1px solid transparent; transition:border-color .2s ease;
-  }
-  .tech-cart .used-in a::before{ content:"\2192\00a0"; }
-  .tech-cart .used-in a:hover, .tech-cart .used-in a:focus-visible{ border-bottom-color:var(--amber); }
   .project a.tag{ text-decoration:none; transition:color .2s ease, border-color .2s ease; }
   .project a.tag:hover, .project a.tag:focus-visible{ color:var(--amber); border-color:var(--amber); }
   .project:focus, .tech-cart:focus, section:focus{ outline:none; }
@@ -3147,7 +3147,6 @@
           <div class="cart-top"><span class="glyph">Lv</span><span class="idx">№ 01</span></div>
           <div class="name">Laravel</div>
           <div class="role" data-i18n="stack-1-role">Wat ik elke dag bij Sibi gebruik, en de basis van de meeste eigen projecten.</div>
-          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-hub" data-jump>Smart Home Hub</a><a href="#proj-skylanders" data-jump>Skylanders Tracker</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -3158,7 +3157,6 @@
           <div class="cart-top"><span class="glyph">Lw</span><span class="idx">№ 02</span></div>
           <div class="name">Livewire &amp; Filament</div>
           <div class="role" data-i18n="stack-2-role">De TALL-stack: interactieve schermen zonder PHP te verlaten. Droeg een fix bij aan Filament.</div>
-          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-hub" data-jump>Smart Home Hub</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -3169,7 +3167,6 @@
           <div class="cart-top"><span class="glyph">Db</span><span class="idx">№ 03</span></div>
           <div class="name">MariaDB / MySQL</div>
           <div class="role" data-i18n="stack-3-role">Multi-tenant databases op het werk: migraties, backfills, snapshots en query-tuning.</div>
-          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#about" data-jump data-i18n="stack-work">Werk bij Sibi</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -3180,7 +3177,6 @@
           <div class="cart-top"><span class="glyph">Pg</span><span class="idx">№ 04</span></div>
           <div class="name">Postgres</div>
           <div class="role" data-i18n="stack-4-role">De database onder mijn eigen projecten, zoals de Skylanders Tracker.</div>
-          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-skylanders" data-jump>Skylanders Tracker</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -3191,7 +3187,6 @@
           <div class="cart-top"><span class="glyph">Ts</span><span class="idx">№ 05</span></div>
           <div class="name">TypeScript</div>
           <div class="role" data-i18n="stack-5-role">Voor de Skylanders-app en mijn eigen tools.</div>
-          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-skylanders" data-jump>Skylanders Tracker</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -3202,7 +3197,6 @@
           <div class="cart-top"><span class="glyph">Rn</span><span class="idx">№ 06</span></div>
           <div class="name">React Native</div>
           <div class="role" data-i18n="stack-6-role">De Skylanders-app op Android.</div>
-          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-skylanders" data-jump>Skylanders Tracker</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -3213,7 +3207,6 @@
           <div class="cart-top"><span class="glyph">Rs</span><span class="idx">№ 07</span></div>
           <div class="name">Rust</div>
           <div class="role" data-i18n="stack-7-role">sooth, een CLI die flaky tests opspoort. Mijn eerste project in Rust.</div>
-          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-sooth" data-jump>sooth</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -3224,7 +3217,6 @@
           <div class="cart-top"><span class="glyph">Dk</span><span class="idx">№ 08</span></div>
           <div class="name">Docker &amp; CI/CD</div>
           <div class="role" data-i18n="stack-8-role">Lokale omgevingen, pipelines en geautomatiseerde checks: tests, PHPStan en Rector.</div>
-          <div class="used-in"><span data-i18n="stack-used">Gebruikt in</span><a href="#proj-hub" data-jump>Smart Home Hub</a></div>
           <div class="timeline">
             <div class="track"><div class="fill"></div></div>
             <div class="years"><span>Beginner</span><span>Expert</span></div>
@@ -3437,7 +3429,7 @@ const i18n = {
     'stack-7-role':'sooth, a CLI that finds flaky tests. My first project in Rust.',
     'stack-8-role':'Local environments, pipelines and automated checks: tests, PHPStan and Rector.',
     'stack-cat-lang':'Language','stack-cat-mobile':'Mobile','stack-cat-systems':'Systems',
-    'stack-used':'Used in','stack-work':'Work at Sibi',
+    
     'p6-index-live':'Project 01 — {v} released','live-version':'{v} · GitHub','live-crate':'{v} · crates.io',
 
     'meta-role':'Role','meta-users':'Users','meta-status':'Status',
@@ -3525,7 +3517,7 @@ const i18n = {
     'stack-7-role':'sooth, een CLI die flaky tests opspoort. Mijn eerste project in Rust.',
     'stack-8-role':'Lokale omgevingen, pipelines en geautomatiseerde checks: tests, PHPStan en Rector.',
     'stack-cat-lang':'Taal','stack-cat-mobile':'Mobiel','stack-cat-systems':'Systemen',
-    'stack-used':'Gebruikt in','stack-work':'Werk bij Sibi',
+    
     'p6-index-live':'Project 01 — {v} uitgebracht','live-version':'{v} · GitHub','live-crate':'{v} · crates.io',
 
     'meta-role':'Rol','meta-users':'Gebruikers','meta-status':'Status',
@@ -4502,6 +4494,25 @@ if (currentLang !== 'nl') applyLang(currentLang);
     tok.addEventListener('mousemove', pos);
     tok.addEventListener('mouseleave', () => tip.classList.remove('visible'));
   });
+})();
+
+/* Phones: the e-mail is the eye-catcher of the contact block, so it is set on two centred lines
+   ("bram@" / "vanzwolle.net") at a size that fills the column, instead of one small line. */
+(function () {
+  var link = document.querySelector(".email-ink"); if (!link) return;
+  var texts = link.querySelectorAll("text.ei-text"); if (!texts.length) return;
+  var mq = window.matchMedia("(max-width:600px)");
+  var layout = function () {
+    texts.forEach(function (t) {
+      if (!t.dataset.orig) t.dataset.orig = t.innerHTML;
+      if (mq.matches) {
+        t.innerHTML = "<tspan x=\"50%\" dy=\"0\">bram<tspan class=\"ei-at\">@</tspan></tspan><tspan x=\"50%\" dy=\"1.02em\">vanzwolle<tspan class=\"ei-dot\">.</tspan>net</tspan>";
+        t.setAttribute("x", "50%"); t.setAttribute("text-anchor", "middle");
+      } else { t.innerHTML = t.dataset.orig; t.setAttribute("x", "0"); t.removeAttribute("text-anchor"); }
+    });
+    link.classList.toggle("ei-two", mq.matches);
+  };
+  layout(); (mq.addEventListener ? mq.addEventListener("change", layout) : mq.addListener(layout));
 })();
 
 /* --- 16b. Wordmarks (the footer name on the subpages, the e-mail on index.html): the ink lines drift a
