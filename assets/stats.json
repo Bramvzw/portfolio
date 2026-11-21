@@ -1,11 +1,11 @@
 {
   "sooth": {
-    "version": "0.4.0",
+    "version": "0.4.1",
     "minor": "0.4",
-    "releases": 8,
+    "releases": 9,
     "binary_mb": 1.5,
-    "deps": 3,
-    "tests": 519
+    "deps": 4,
+    "tests": 543
   },
   "hub": {
     "versions": 9,
